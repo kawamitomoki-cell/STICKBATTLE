@@ -485,8 +485,9 @@ function playJotaroTimeStopBgm(){
     if(!jotaroTimeStopBgm){
       jotaroTimeStopBgm=new Audio(JOTARO_TIMESTOP_BGM_SRC);
       jotaroTimeStopBgm.preload='auto';
-      jotaroTimeStopBgm.volume=.9;
+      jotaroTimeStopBgm.volume=.9*(typeof prefs!=='undefined'?prefs.volume:1);
     }
+    jotaroTimeStopBgm.volume=.9*(typeof prefs!=='undefined'?prefs.volume:1);
     jotaroTimeStopBgm.pause();
     jotaroTimeStopBgm.currentTime=0;
     const pr=jotaroTimeStopBgm.play();
@@ -499,6 +500,36 @@ function stopJotaroTimeStopBgm(){
     if(!jotaroTimeStopBgm)return;
     jotaroTimeStopBgm.pause();
     jotaroTimeStopBgm.currentTime=0;
+  }catch(e){}
+}
+
+let jotaroMp3Unlocked=false;
+function unlockJotaroMp3(){
+  if(jotaroMp3Unlocked)return;
+  try{
+    if(!jotaroTimeStopBgm){
+      jotaroTimeStopBgm=new Audio(JOTARO_TIMESTOP_BGM_SRC);
+      jotaroTimeStopBgm.preload='auto';
+    }
+    const oldVol=jotaroTimeStopBgm.volume;
+    jotaroTimeStopBgm.volume=0;
+    jotaroTimeStopBgm.currentTime=0;
+    const pr=jotaroTimeStopBgm.play();
+    if(pr&&pr.then){
+      pr.then(()=>{
+        jotaroTimeStopBgm.pause();
+        jotaroTimeStopBgm.currentTime=0;
+        jotaroTimeStopBgm.volume=.9;
+        jotaroMp3Unlocked=true;
+      }).catch(()=>{
+        jotaroTimeStopBgm.volume=oldVol||.9;
+      });
+    }else{
+      jotaroTimeStopBgm.pause();
+      jotaroTimeStopBgm.currentTime=0;
+      jotaroTimeStopBgm.volume=.9;
+      jotaroMp3Unlocked=true;
+    }
   }catch(e){}
 }
 
@@ -684,6 +715,7 @@ function animeArea(e){
  const a=byId(e.id);if(!a||a.out)return;
  if(e.kind==='domain'&&a.cid!=='gojo')return;
  if(e.kind==='timestop'&&a.cid!=='jotaro')return;
+ if(e.kind==='timestop'&&!isLocal(a))playJotaroTimeStopBgm();
  for(const t of fighters){
   if(!isLocal(t)||t.id===a.id||t.out)continue;
   if(e.kind==='domain'){
@@ -727,7 +759,7 @@ function animeProjStep(q){
 const NARUTO_PASSIVE_FILL=100/(14*60);
 function animeTick(p){
  for(const k of ['infinityCd','slowT','comboT','fatigue','boostFlash','teleportCd','projectileSlipT'])if(p[k]>0)p[k]--;
- const stopBefore=p.timeStopSelfT||0;if(p.timeStopSelfT>0)p.timeStopSelfT--;if(p.timeStopSelfT===0)stopJotaroTimeStopBgm();if(stopBefore===1&&p.cid==='jotaro')animeSound('timego');
+ const stopBefore=p.timeStopSelfT||0;if(p.timeStopSelfT>0)p.timeStopSelfT--;if(stopBefore===1&&p.cid==='jotaro'){stopJotaroTimeStopBgm();animeSound('timego');}
  if(!isAnime(p))return;
  if(p.cid==='goku'&&p.form===3){p.energy=Math.max(0,p.energy-100/900);if(p.energy<=.0001){p.form=0;p.energy=0;p.fatigue=60;animeNotice(p,'超サイヤ人3 終了');}}
  if(p.modeT>0&&--p.modeT===0){p.energy=0;if(p.cid==='tanjiro')p.fatigue=95;if(p.cid==='naruto'&&p.form===2)p.form=1;animeNotice(p,p.cid==='tanjiro'?'ヒノカミ神楽終了':'九尾チャクラ終了');}
@@ -1201,9 +1233,9 @@ function unlockAudio() {
     if (actx.state === 'suspended') actx.resume();
   } catch (e) {}
 }
-window.addEventListener('pointerdown', unlockAudio);
+window.addEventListener('pointerdown',()=>{unlockAudio();unlockJotaroMp3();});
 window.addEventListener('keydown', e => {
-  unlockAudio();
+  unlockAudio();unlockJotaroMp3();
   if (scene === 'battle' && !editingText(e.target) && !e.isComposing && [32, 37, 38, 39, 40].includes(e.keyCode)) e.preventDefault();
 });
 // Native focus is retained for typing, selection, and mobile keyboards.
@@ -4492,7 +4524,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_17_ROOT_MP3_TIMESTOP_V1';
+const NET_PROTOCOL='SBO_NET_17_ROOT_MP3_TIMESTOP_FIX_V2';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
