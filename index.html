@@ -26,7 +26,7 @@
 #game{display:none;flex-direction:column;width:min(1200px,100%);height:100%;margin:auto;gap:8px;min-height:0}#bar{width:100%;display:flex;align-items:center;justify-content:space-between;padding:9px 2px;gap:8px;flex-shrink:0}#title{font-weight:1000;font-style:italic;font-size:11px;letter-spacing:-.2px;line-height:1.1}#title small{display:block;color:var(--red);font-size:9px;letter-spacing:3px;margin-top:4px}.barbtns{display:flex;gap:4px}.barbtn{background:#202a3a;border:1px solid #ffffff10;border-radius:4px;padding:8px 10px;min-height:36px;font-size:10px;font-weight:800}#btn-x{font-size:9px}#arena-shell{min-height:0;flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;width:100%}#match-info{display:flex;justify-content:space-between;width:min(900px,100%);font-size:9px;letter-spacing:2px;color:#8d9db5;padding:0 2px}#match-info b{color:var(--gold)}#wrap{width:min(900px,100%,calc((100dvh - 350px)*16/9));aspect-ratio:16/9;border:1px solid #415069;overflow:hidden;background:#07101c;flex-shrink:0;box-shadow:0 16px 50px #0006}#wrap canvas{display:block;width:100%!important;height:100%!important}#battle-roster{display:grid;grid-template-columns:repeat(var(--columns,2),1fr);width:min(900px,100%);gap:7px}.hud-card{position:relative;display:flex;align-items:center;min-width:0;height:70px;background:linear-gradient(110deg,var(--team),#1c2537 36%);border-bottom:3px solid var(--team);overflow:hidden;padding:5px 10px 8px;gap:8px}.hud-card.me{outline:1px solid #f7e6b4;outline-offset:1px}.hud-card.out{opacity:.3}.hud-portrait{width:55px;flex-shrink:0;height:54px}.hud-portrait svg{width:100%;height:100%}.hud-info{min-width:0;flex:1}.hud-name{font-size:9px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;font-weight:800;max-width:130px}.hud-damage{font-size:29px;font-weight:1000;line-height:1.1;font-style:italic;letter-spacing:-1px;text-shadow:2px 2px #090d18}.hud-stocks{position:absolute;right:7px;top:7px;display:flex;gap:3px}.hud-stocks i{height:4px;width:4px;border-radius:50%;background:#fff}.hud-meter{position:absolute;bottom:0;left:0;height:3px;background:var(--gold);width:var(--meter,0%)}.hud-skill{position:absolute;bottom:5px;right:7px;font-size:8px;color:#e8ebf4;letter-spacing:.5px}
 #pad{width:min(820px,100%);margin:0 auto;display:grid;grid-template-columns:minmax(100px,1fr) minmax(190px,1.5fr);gap:12px;height:200px;min-height:168px;flex:0 0 200px;align-items:center}#stick-zone{height:100%;min-width:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:10px;touch-action:none}#stick-zone:after{content:'MOVE';position:absolute;bottom:7px;color:#75869f;font-size:9px;letter-spacing:3px;pointer-events:none}#stick{width:108px;height:108px;border-radius:50%;border:1px solid #64758c;background:radial-gradient(circle,#253348 0%,#0c1422 75%);position:relative;pointer-events:none;flex-shrink:0;box-shadow:inset 0 0 0 13px #8296b60b}#stick:before,#stick:after{position:absolute;left:48px;font-size:10px;color:#8d9ab1}#stick:before{content:'↑';top:2px}#stick:after{content:'↓';bottom:2px}#knob{position:absolute;left:31px;top:31px;width:44px;height:44px;border-radius:50%;background:linear-gradient(145deg,#eff1f4,#6c829f);border:1px solid #b4c3d7;box-shadow:0 5px 12px #0008;pointer-events:none}#acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:63px 72px;grid-template-areas:'v c s' 'j a g';gap:8px;touch-action:none;width:100%}#acts button{position:relative;isolation:isolate;overflow:hidden;touch-action:none;border-radius:9px;border:1px solid #ffffff30;background:#2c3f5a;font-size:13px;font-weight:900;white-space:nowrap;box-shadow:inset 0 2px #ffffff13,0 4px 0 #0005}#acts button small{display:block;font-size:9px;font-weight:500;opacity:.75;margin-top:5px}#acts button:after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,#fff3 var(--charge,0%),transparent var(--charge,0%));pointer-events:none}#btn-a{grid-area:a;background:var(--red)!important;font-size:22px!important}#btn-j{grid-area:j;background:var(--paper)!important;color:#182232}#btn-v{grid-area:v}#btn-g{grid-area:g;background:#2f7a6c!important;font-size:12px!important}#btn-s{grid-area:s;background:#6d50a4!important}#btn-c{grid-area:c;background:#27658a!important;font-size:11px!important}#acts button.on{transform:scale(.95);filter:brightness(1.3)}#acts button.ready{background:var(--gold)!important;color:#152035;box-shadow:0 0 20px #ffd55e50;border-color:#fff3c4}#combat-hint{text-align:center;color:#8c9db5;font-size:10px;min-height:18px;padding:0 6px 6px;flex-shrink:0}.left-handed #stick-zone{order:2}.left-handed #pad{grid-template-columns:minmax(190px,1.5fr) minmax(100px,1fr)}
 #settings-dialog{margin:auto;padding:24px;width:min(420px,92vw);border:1px solid #67758a;border-radius:6px;background:#171f2e;color:white;max-height:90dvh;overflow:auto;touch-action:pan-y}#settings-dialog::backdrop{background:#080d18d9;backdrop-filter:blur(8px)}#settings-dialog h2{font-size:20px;color:var(--gold);margin-bottom:15px}.setting-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;font-size:13px;gap:12px}.setting-row input[type=range]{width:50%;accent-color:var(--red)}.setting-row input[type=checkbox]{width:22px;height:22px;accent-color:var(--red)}#settings-dialog p{font-size:11px;color:#9fafc6;line-height:1.8;margin-top:12px}#settings-close{width:100%;padding:13px;margin-top:20px;background:var(--red);font-weight:900}
-@media(max-width:700px){.screen{padding:54px 16px 18px;gap:16px;justify-content:flex-start}.screen:before{left:16px;top:18px;font-size:9px}.hd{font-size:30px;border-left-width:5px}.fighter-layout{display:flex;flex-direction:column;gap:12px}.fighter-left,.fighter-right{width:100%}.fighter-left{display:contents}.fighter-preview{height:146px;min-height:146px;width:100%;order:0}.fighter-preview>svg{height:185px;width:180px;position:absolute;right:8px;top:-18px}.fighter-preview:before{writing-mode:horizontal-tb;font-size:49px;left:10px;top:7px;letter-spacing:-2px;max-width:95%;overflow:hidden}.fighter-name{left:18px;bottom:16px}.fighter-name b{font-size:25px}.fighter-code{display:none}.fighter-right{order:1}.fighter-left #char-info{order:2}.ci{min-height:94px}.ci svg{height:69px}.ci small{font-size:11px;padding:4px 7px}#sc-chars>.nav{bottom:-18px;padding:10px 0}.namebox{padding:0}#char-info{padding:12px;margin-top:0}.ability-line{font-size:11px}.mode-grid{grid-template-columns:1fr;gap:12px}.mode-grid .big,.mode-grid #go-cpu,.mode-grid #go-howto{min-height:148px;grid-row:auto;padding:22px}.mode-no{top:13px!important;left:22px!important}.mode-art{height:130px;width:130px;right:15px;top:10px}.big b{font-size:32px}.stage-grid{grid-template-columns:1fr}.stc{display:grid;grid-template-columns:45% 55%;align-items:center}.stc b{font-size:16px}.stc .stage-meta{padding:16px 12px}.stc.sel:after{font-size:7px;top:5px;left:5px}.hud-card{height:60px;padding:4px 7px 8px;gap:4px}.hud-portrait{width:38px;height:44px}.hud-damage{font-size:26px}.hud-skill{font-size:7px}.hud-name{font-size:9px}.hud-card.crowded .hud-portrait{display:none}.hud-card.crowded .hud-damage{font-size:23px}.hud-card.crowded{padding-left:7px;height:54px}.hud-card.crowded .hud-name{font-size:8px}#pad{flex-basis:190px;height:190px}#wrap{width:100%}#title{max-width:103px;font-size:10px}.barbtn{padding:7px 7px;font-size:10px}.barbtns{gap:3px}#bar{padding:7px 0}#sc-title{justify-content:center;padding:24px}.title-art svg{width:190%;margin-left:-45%}.title-kicker{font-size:9px;letter-spacing:3px}.title-desc{font-size:10px;letter-spacing:1px}.logo{font-size:clamp(65px,20vw,120px)}.logo small{font-size:24px;letter-spacing:13px}.version-label{display:none}.nav button{padding:14px 12px}.optrow{gap:10px}.optrow>span{width:70px}.seg button{font-size:11px}#cpu-opts .seg button{min-height:36px}}
+@media(max-width:700px){.screen{padding:54px 16px 18px;gap:16px;justify-content:flex-start}.screen:before{left:16px;top:18px;font-size:9px}.hd{font-size:30px;border-left-width:5px}.fighter-layout{display:flex;flex-direction:column;gap:12px}.fighter-left,.fighter-right{width:100%}.fighter-left{display:contents}.fighter-preview{height:146px;min-height:146px;width:100%;order:0}.fighter-preview>svg{height:185px;width:180px;position:absolute;right:8px;top:-18px}.fighter-preview:before{writing-mode:horizontal-tb;font-size:49px;left:10px;top:7px;letter-spacing:-2px;max-width:95%;overflow:hidden}.fighter-name{left:18px;bottom:16px}.fighter-name b{font-size:25px}.fighter-code{display:none}.fighter-right{order:1}.fighter-left #char-info{order:2}.ci{min-height:94px}.ci svg{height:69px}.ci small{font-size:11px;padding:4px 7px}#sc-chars>.nav{bottom:-18px;padding:10px 0}.namebox{padding:0}#char-info{padding:12px;margin-top:0}.ability-line{font-size:11px}.mode-grid{grid-template-columns:1fr;gap:12px}.mode-grid .big,.mode-grid #go-cpu,.mode-grid #go-howto{min-height:148px;grid-row:auto;padding:22px}.mode-no{top:13px!important;left:22px!important}.mode-art{height:130px;width:130px;right:15px;top:10px}.big b{font-size:32px}.stage-grid{grid-template-columns:1fr}.stc{display:grid;grid-template-columns:45% 55%;align-items:center}.stc b{font-size:16px}.stc .stage-meta{padding:16px 12px}.stc.sel:after{font-size:7px;top:5px;left:5px}.hud-card{height:60px;padding:4px 7px 8px;gap:4px}.hud-portrait{width:38px;height:44px}.hud-damage{font-size:26px}.hud-skill{font-size:7px}.hud-name{font-size:9px}.hud-card.crowded .hud-portrait{display:none}.hud-card.crowded .hud-damage{font-size:23px}.hud-card.crowded{padding-left:7px;height:54px}.hud-card.crowded .hud-name{font-size:8px}#pad{flex-basis:190px;height:190px}#wrap{width:100%}#title{max-width:103px;font-size:10px}.barbtn{padding:7px 7px;font-size:10px}.barbtns{gap:3px}#bar{padding:7px 0}#sc-title{justify-content:center;padding:24px}.title-art svg{width:190%;margin-left:-45%}.title-kicker{font-size:9px;letter-spacing:3px}.title-desc{font-size:10px;letter-spacing:1px}.logo{font-size:clamp(65px,20vw,120px)}.logo small{font-size:24px;letter-spacing:13px}.version-label{display:block;right:14px;bottom:9px;font-size:8px}.nav button{padding:14px 12px}.optrow{gap:10px}.optrow>span{width:70px}.seg button{font-size:11px}#cpu-opts .seg button{min-height:36px}}
 @media(max-width:360px){#bar{gap:3px}.barbtn{padding:6px 5px;font-size:9px}#title{font-size:9px;max-width:82px}#btn-x{font-size:8px}#pad{gap:5px;grid-template-columns:minmax(94px,1fr) minmax(190px,1.6fr)}#acts{gap:6px;grid-template-rows:58px 66px}#stick{width:96px;height:96px}#knob{left:25px;top:25px}#stick:before,#stick:after{left:42px}#combat-hint{font-size:9px}.hud-damage{font-size:24px}}
 @media(orientation:landscape) and (max-height:560px){#game{position:relative;padding-left:120px;padding-right:158px;gap:0}#bar{position:absolute;top:0;left:0;width:100%;height:38px;padding:2px 0}#title{max-width:none;font-size:10px}#title small{display:inline;margin-left:6px}#arena-shell{width:100%;height:100%;padding:40px 0 18px;gap:6px;justify-content:center}#match-info{font-size:8px}#wrap{max-height:calc(100dvh - 135px);height:auto;width:min(100%,calc((100dvh - 135px)*16/9));aspect-ratio:16/9}#battle-roster{gap:5px}.hud-card{height:47px;padding-bottom:4px}.hud-portrait{height:35px;width:32px}.hud-damage{font-size:22px}.hud-name{font-size:8px}.hud-skill{font-size:7px}.hud-card.crowded{height:43px}.hud-card.crowded .hud-damage{font-size:18px}#pad{display:contents}#stick-zone{position:absolute;left:0;bottom:8px;width:112px;height:calc(100% - 48px)}#acts{position:absolute;right:0;bottom:16px;width:148px;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:53px 58px 65px;grid-template-areas:'v s' 'c j' 'a g';gap:7px}#combat-hint{position:absolute;bottom:0;left:120px;right:158px;font-size:8px;padding:0;min-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.left-handed #game{padding-left:158px;padding-right:120px}.left-handed #stick-zone{left:auto;right:0}.left-handed #acts{left:0;right:auto}.left-handed #combat-hint{left:158px;right:120px}.screen{justify-content:flex-start;padding-top:46px}.fighter-layout{display:grid;grid-template-columns:.8fr 1.2fr}.fighter-left{display:block}.fighter-preview{height:210px}.fighter-preview>svg{width:100%;height:240px}.fighter-preview .fighter-name{bottom:10px}.ci{min-height:88px}.ci svg{height:65px}.logo{font-size:75px}.logo small{font-size:22px;margin-top:6px}.title-kicker{margin-bottom:10px}.title-desc{display:none}.tap{margin-top:22px;padding:12px 24px}.mode-grid{grid-template-columns:1.1fr 1fr}.mode-grid #go-cpu{grid-row:span 2}.mode-grid .big{min-height:130px}#sc-title{justify-content:center}.title-content{padding-top:20px}.stage-grid{grid-template-columns:repeat(3,1fr)}.stc{display:block}.stc .stage-meta{padding:12px}.stc b{font-size:14px}.winner-art{height:100px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
@@ -80,6 +80,84 @@ input,textarea,select{touch-action:manipulation}.mu{width:100%;border-collapse:c
 padding:3px 6px;border-radius:2px;font-size:8px;font-weight:1000;letter-spacing:1px;z-index:3;
 box-shadow:0 2px 7px #0008}
 
+
+/* How To Play v2 — reveal essentials before advanced details. */
+#sc-howto{justify-content:flex-start;gap:16px;padding:62px 16px 16px;scroll-padding-bottom:90px;overflow-y:auto;overscroll-behavior:contain}
+#sc-howto>.hd{width:min(850px,100%);font-size:clamp(24px,4.6vw,37px)}
+#sc-howto>.hd small{margin-top:6px;letter-spacing:1px}
+.howto-layout{width:min(850px,100%);display:flex;flex-direction:column;gap:15px;padding-bottom:4px}
+.howto-eyebrow{color:#9facbf;font-size:10px;font-weight:900;letter-spacing:1.7px}
+.howto-eyebrow span{color:var(--gold)}
+.howto-hero{border:1px solid #ffd45d48;border-top:3px solid var(--gold);background:linear-gradient(122deg,#2b2933,#171f2b 60%);padding:20px;border-radius:7px}
+.howto-hero h2{font-size:clamp(19px,4vw,29px);letter-spacing:-.6px;margin-top:7px;line-height:1.45}
+.howto-hero h2 span{color:var(--gold)}
+.howto-hero>p{font-size:12px;line-height:1.8;color:#c7d1e0;margin:6px 0 15px}
+.howto-hero>p b{color:#fff}
+.howto-flow{display:grid;grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr) 18px minmax(0,1fr);align-items:stretch;gap:5px}
+.howto-flow-card{background:#0d1522b8;border:1px solid #ffffff17;border-radius:5px;min-height:105px;padding:13px 11px;position:relative;overflow:hidden}
+.howto-flow-no{font-size:10px;color:var(--gold);font-weight:950}
+.howto-flow-card strong{display:block;font-size:13px;margin:5px 0 4px;line-height:1.45}
+.howto-flow-card small{display:block;font-size:10px;color:#adbed2;line-height:1.6}
+.howto-flow-arrow{display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:27px;font-weight:900}
+.howto-mini-icon{position:absolute;right:7px;bottom:-17px;font-size:57px;color:#f5dc8355;transform:rotate(-16deg)}
+.howto-percent,.howto-stock-demo{font-size:15px;font-weight:900;color:#ffd66c;margin-top:8px}
+.howto-percent span{font-size:11px;color:#a2b6d0}.howto-stock-demo{color:#ff7b7b;letter-spacing:2px}.howto-stock-demo span{color:#69788d}
+.howto-section{border:1px solid #ffffff1d;border-radius:6px;padding:17px 18px;background:#1a2230}
+.howto-section-head{margin-bottom:13px}
+.howto-section-head h3{font-size:16px;line-height:1.5;margin-top:3px}
+.howto-matchups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.howto-matchup{display:flex;align-items:center;gap:5px;min-height:52px;border:1px solid #ffffff1a;border-radius:4px;background:#101925;padding:8px;justify-content:center}
+.howto-type{display:inline-flex;align-items:center;justify-content:center;text-align:center;padding:6px 8px;min-width:0;font-size:11px;font-weight:900;border-radius:3px;white-space:nowrap}
+.howto-type.basic{background:#2e495d;color:#c8eaff}.howto-type.counter{background:#28566c;color:#7cf4e8}.howto-type.charge{background:#665034;color:#ffd793}
+.howto-wins{font-size:9px;color:#aab8c9;flex-shrink:0;white-space:nowrap}
+.howto-note{font-size:11px;color:#b9c8da;line-height:1.7;margin-top:10px}
+.howto-note b{color:#fff}.howto-note span{color:#899cb3}
+.howto-tabs{display:flex;gap:6px;margin-bottom:12px}
+.howto-tab{flex:1;min-height:43px;padding:7px 6px;background:#2c384b;color:#aab9cd;border:1px solid #ffffff18;border-radius:4px;font-weight:900;font-size:12px}
+.howto-tab.is-active{background:#e8ecef;color:#14202e;border-color:#fff;box-shadow:inset 0 -3px 0 #f2bd49}
+.howto-device-panel[hidden]{display:none!important}
+.howto-control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.howto-control-item{display:flex;align-items:center;gap:10px;background:#101925;border:1px solid #ffffff14;border-radius:4px;padding:10px;min-width:0}
+.howto-control-key{display:flex;align-items:center;justify-content:center;text-align:center;flex:0 0 94px;min-height:37px;background:#34465f;border:1px solid #63738a;border-bottom-width:3px;border-radius:5px;font-size:11px;font-weight:900;color:#fff}
+.howto-control-key.key-attack{background:#763b36;border-color:#c45d54}
+.howto-control-key.key-special{background:#563e76;border-color:#9975c7}
+.howto-control-key.key-defense{background:#2a5d77;border-color:#52a3ca}
+.howto-control-item>div{min-width:0}.howto-control-item b{display:block;font-size:12px;line-height:1.4}
+.howto-control-item small{display:block;color:#a7b7cc;font-size:10px;line-height:1.6;margin-top:3px}
+.howto-extra{background:#161f2e;border:1px solid #ffffff25;border-radius:6px;overflow:hidden}
+.howto-extra summary{min-height:52px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 18px;font-size:13px;font-weight:900;cursor:pointer;list-style:none;color:#cbd8e8}
+.howto-extra summary::-webkit-details-marker{display:none}.howto-extra summary span{font-size:20px;color:var(--gold);font-weight:400}
+.howto-extra[open] summary span{transform:rotate(45deg)}
+.howto-extra-body{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;border-top:1px solid #ffffff14;padding:15px 18px}
+.howto-extra-body b{color:var(--gold);font-size:12px}.howto-extra-body p{font-size:11px;color:#b2c0d1;line-height:1.75;margin-top:3px}
+.howto-footer{width:min(850px,100%);position:sticky;bottom:0;z-index:5;background:linear-gradient(transparent,#0c1019 30%);padding:14px 0 max(8px,env(safe-area-inset-bottom))}
+.howto-footer button{width:100%;min-height:51px;font-size:15px;font-weight:900;background:var(--red);border-radius:4px}
+.char-select-tip{font-size:11px;color:#afc0d7;margin:8px 0 0;line-height:1.6}
+.stage-help-tip{width:min(700px,100%);font-size:11px;color:#99adc4;text-align:center;line-height:1.5}
+@media(max-width:720px){
+ #sc-howto{padding:55px 12px 12px}
+ .howto-layout{gap:11px}
+ .howto-hero{padding:15px}
+ .howto-hero>p{font-size:11px}
+ .howto-flow{grid-template-columns:1fr;gap:5px}
+ .howto-flow-card{display:grid;grid-template-columns:20px minmax(0,1fr);gap:2px 8px;min-height:unset;padding:10px 12px}
+ .howto-flow-no{grid-row:span 2;align-self:center;font-size:16px}
+ .howto-flow-card strong{margin:0;font-size:12px}
+ .howto-flow-card small{font-size:10px}
+ .howto-flow-arrow{height:12px;line-height:12px;font-size:17px;transform:rotate(90deg)}
+ .howto-mini-icon,.howto-percent,.howto-stock-demo{display:none}
+ .howto-section{padding:13px 12px}
+ .howto-matchups{grid-template-columns:1fr}
+ .howto-matchup{min-height:36px;justify-content:space-between;padding:6px 9px}
+ .howto-type{flex:1;padding:5px 6px}
+ .howto-wins{flex:0 0 82px;text-align:center}
+ .howto-control-grid{grid-template-columns:1fr;gap:6px}
+ .howto-control-item{padding:8px}
+ .howto-control-key{flex-basis:90px;min-height:32px}
+ .howto-extra-body{grid-template-columns:1fr}
+ .howto-tab{font-size:11px}
+}
+
 </style>
 </head>
 <body>
@@ -87,13 +165,13 @@ box-shadow:0 2px 7px #0008}
 <div id="sc-title" class="screen" style="display:flex">
  <div class="title-art"></div><div class="title-content"><div class="title-kicker">ONE ARENA. NO LIMITS.</div>
  <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">17人のファイター。勝負を決める、ただ一撃。</p>
- <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">SPECIAL FIGHTERS / CPU POOL UPDATE</div>
+ <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">TIME STOP CUTIN V12 / 承太郎</div>
 </div>
 <div id="sc-mode" class="screen">
  <div class="hd">CHOOSE YOUR BATTLE<small>モードを選択</small></div><div class="mode-grid">
  <button class="big" id="go-cpu"><span class="mode-no">01 / LOCAL BATTLE</span><span class="mode-art" data-portrait="karate"></span><b>SMASH THE CPU.</b><span>CPU対戦</span><small>1〜7体のライバルと。自分の限界を超えろ。</small></button>
  <button class="big" id="go-online"><span class="mode-no">02 / ONLINE</span><b>BRING YOUR RIVALS.</b><span>オンライン対戦</span><small>部屋コード・QRで、友達と同じアリーナへ。</small></button>
- <button class="big" id="go-howto"><span class="mode-no">03 / HOW TO PLAY</span><b>LEARN THE RULES.</b><small>操作と三すくみをチェック</small></button></div>
+ <button class="big" id="go-howto"><span class="mode-no">03 / HOW TO PLAY</span><b>30秒でわかるルール</b><small>勝ち方と基本操作だけ。はじめての人はこちら！</small></button></div>
 </div>
 
 <div id="sc-online" class="screen">
@@ -112,7 +190,7 @@ box-shadow:0 2px 7px #0008}
 
 <div id="sc-chars" class="screen" style="z-index:8">
  <div class="hd">CHOOSE YOUR FIGHTER<small>プレイスタイルで選べ。個性で勝て。</small></div>
- <div class="fighter-layout"><div class="fighter-left"><div class="fighter-preview" id="fighter-showcase"></div><div id="char-info" class="card"></div></div>
+ <div class="fighter-layout"><div class="fighter-left"><div class="fighter-preview" id="fighter-showcase"></div><div id="char-info" class="card"></div><p class="char-select-tip">技が分からなくてもOK！「上必殺技・キャラ特性を見る」で詳しく確認できます。</p></div>
  <div class="fighter-right"><div id="char-grid" class="cgrid"></div>
  <div class="namebox"><label for="player-name">PLAYER NAME</label><input id="player-name" maxlength="12" autocomplete="off" placeholder="PLAYER"></div>
  <div id="cpu-opts" style="display:flex;flex-direction:column"><div class="optrow"><span>CPUの数</span><div class="seg" id="seg-cpun"></div></div><div class="optrow"><span>CPUキャラ</span><div class="seg" id="seg-cpupool"></div></div><div class="optrow"><span>CPUの強さ</span><div class="seg" id="seg-cpulv"></div></div></div></div></div>
@@ -122,11 +200,11 @@ box-shadow:0 2px 7px #0008}
 <div id="sc-stage" class="screen">
   <div class="hd">SELECT YOUR ARENA<small>勝負の舞台を選択</small></div>
   <div class="stage-grid" id="stage-grid" style="width:min(560px,100%)"></div>
-  <div class="optrow" style="width:min(560px,100%)"><span>ルール</span><div class="seg" id="seg-team-mode"></div></div>
+  <div class="optrow" style="width:min(560px,100%)"><span>対戦形式</span><div class="seg" id="seg-team-mode"></div></div>
   <div class="optrow" id="team-side-row" style="width:min(560px,100%);display:none"><span>自分のチーム</span><div class="seg" id="seg-team-side"></div></div>
   <div class="optrow" style="width:min(560px,100%)"><span>武器</span><div class="seg" id="seg-wpn"></div></div>
   <div class="optrow" style="width:min(560px,100%)"><span>残機</span><div class="seg" id="seg-stock"></div></div>
-  <div class="nav"><button class="back" id="stage-back">もどる</button><button class="next" id="stage-next">バトル開始！</button></div>
+  <p class="stage-help-tip">残機＝場外へ飛ばされても復活できる回数。迷ったら設定はそのままでOK！</p><div class="nav"><button class="back" id="stage-back">もどる</button><button class="next" id="stage-next">バトル開始！</button></div>
 </div>
 
 <div id="sc-lobby" class="screen">
@@ -165,56 +243,81 @@ box-shadow:0 2px 7px #0008}
 </div>
 
 <div id="sc-howto" class="screen" style="z-index:8">
-  <div class="hd">HOW TO PLAY<small>ルール・相性・操作</small></div>
-  <div class="card">
-    <h3>勝ち方</h3>
-    ・攻撃を当てると相手の<b>ダメージ％</b>が増え、％が高いほど遠くへ吹っ飛ぶ。<br>
-    ・画面の外へ吹っ飛ばすと<b>撃墜</b>。残機（1〜5）が0になったら脱落、最後の1人が勝ち。<br>
-    ・<b>2〜8人</b>で対戦。CPU戦はCPU 1〜7体、オンラインは人＋CPUで最大8人。<br>
-    ・<b>スペシャルキャラの技</b>は方向入力で変化。悟空は特殊長押しでかめはめ波、超3の上特殊で龍拳。五条は特殊で蒼／赫、長押しで茈、下特殊で無量空処。<br>
-     ・<b>チーム戦</b>ではRED／BLUEの2チームに分かれ、味方への攻撃・弾・爆発は当たらない。相手チームを全滅させれば勝利。<br>
-    ・武器（剣・銃）は<b>初期設定でなし</b>。ステージ選択で「あり」にすると降ってくる。剣は5回ほど振ると壊れる。
-    <h3>三すくみ</h3>
-    ・<b>溜め攻撃 ＞ 通常攻撃</b>：溜め中は通常攻撃でひるまない（ARMOR!）<br>
-    ・<b>カウンター ＞ 溜め攻撃</b>：張り手や突撃も返せる（COUNTER!!）<br>
-    ・<b>通常攻撃 ＞ カウンター</b>：構えている相手を殴ると GUARD BREAK!<br>
-    ・飛び道具はカウンターで防げる。<b>爆発・KOアッパー・狂戦士の斧</b>はカウンターできない。
-    <h3>ステージと人数のおすすめ</h3>
-    <table class="mu"><tr><th>人数</th><th>おすすめ</th><th>特徴</th></tr>
-    <tr><td>2人</td><td>せまい闘技場・月夜の社・動力炉</td><td>狭くて接近戦。撃墜が早い</td></tr>
-    <tr><td>3〜4人</td><td>スタンダード・雨の港湾</td><td>足場が多く、逃げと攻めのバランスが良い</td></tr>
-    <tr><td>5〜8人</td><td>ひろびろ平原・極光の氷原</td><td>広くて混戦向き。飛び道具キャラが強い</td></tr></table>
-    <h3>キャラ相性（目安）</h3>
-    <table class="mu"><tr><th>キャラ</th><th>得意</th><th>苦手</th></tr>
-    <tr><td>格闘家</td><td>ボクサー（背後も返せるカウンター）</td><td>狂戦士（斧は返せない）</td></tr>
-    <tr><td>爆弾魔</td><td>力士・狂戦士（鈍足に爆弾）</td><td>忍者（速くて当たらない）</td></tr>
-    <tr><td>忍者</td><td>弓使い・ガンマン（すぐ間合いを詰める）</td><td>力士（軽いので張り手で飛ぶ）</td></tr>
-    <tr><td>力士</td><td>忍者・ボクサー（重くて飛ばない）</td><td>弓使い・爆弾魔（遠くから削られる）</td></tr>
-    <tr><td>ボクサー</td><td>力士（KOアッパーなら重くても飛ぶ）</td><td>槍使い（リーチ負け）</td></tr>
-    <tr><td>ヤンキー</td><td>ガンマン・弓使い（怒り中は飛び道具で怯まない）</td><td>剣士（旋空はアーマーも貫通）</td></tr>
-    <tr><td>剣士</td><td>ヤンキー・力士（旋空で一閃）</td><td>忍者（ゲージが溜まる前に攻められる）</td></tr>
-    <tr><td>槍使い</td><td>ボクサー・格闘家（リーチの差）</td><td>弓使い（さらに遠くから撃たれる）</td></tr>
-    <tr><td>ガンマン</td><td>力士・狂戦士（鈍足に弾を当て放題）</td><td>ヤンキー・忍者</td></tr>
-    <tr><td>弓使い</td><td>狂戦士・力士・槍使い</td><td>忍者（3段ジャンプで潜り込まれる）</td></tr>
-    <tr><td>狂戦士</td><td>格闘家・カウンター待ちの相手</td><td>弓使い・ガンマン（近づく前に削られる）</td></tr>
-    <tr><td>ルフィ</td><td>槍使い（ゴムの腕がさらに長い）・力士</td><td>爆弾魔（ギアが上がる前に削られる）</td></tr></table>
-    <h3>スマホ</h3>
-    <span class="chip">左エリア</span>触れた場所からドラッグで移動。<b>下に倒すと上段の足場から降りる</b><br>
-    <span class="chip">跳ぶ</span>空中でもう1回（忍者は2回）<br>
-    <span class="chip red">攻撃</span>タップで通常攻撃／長押しで溜め（溜めすぎると OVERHEAT）<br>
-    <span class="chip pur">特殊</span>キャラごとの必殺技。<b>↑上技</b>ボタンで上必殺技（復帰にも使える）<br>
-    <span class="chip">↓下技</span>ルフィのギアチェンジ（他のキャラは特殊と同じ）<br>
-    <span class="chip blue">カウンター</span>そのまま押すとカウンター、スティックを倒しながらで回避
-    <h3>PC</h3>
-    移動：A D ／ ← →　ジャンプ：スペース ／ W ／ ↑　足場降り：S ／ ↓<br>
-    攻撃：J ／ Z　特殊：K ／ X　カウンター：L ／ C<br>
-    W＋特殊で上必殺技、S＋特殊で下必殺技、移動しながら特殊で横必殺技（ルフィのゴムゴムのバズーカ）。移動キー＋カウンターで回避。
-    <h3>Switch Proコントローラー</h3>
-    左スティック／十字キー：移動　下入力：足場降り<br>
-    Y／X／L／ZL：ジャンプ　A：攻撃　B：特殊　R／ZR：カウンター／回避<br>
-    上＋Bで上必殺技、下＋Bで下必殺技、横＋Bで横必殺技。
-  </div>
-  <div class="nav"><button class="next" id="howto-back">OK！</button></div>
+  <div class="hd">HOW TO PLAY<small>基本だけ分かれば、すぐ戦える。</small></div>
+  <main class="howto-layout" aria-label="はじめての遊び方">
+    <section class="howto-hero" aria-labelledby="howto-goal">
+      <div class="howto-eyebrow">01 <span>THE OBJECTIVE</span> / まずはこれだけ</div>
+      <h2 id="howto-goal">相手を<span>場外へ吹っ飛ばそう！</span></h2>
+      <p>攻撃してダメージ％を上げるほど、相手は遠くへ飛ぶ。<b>相手の残機を0にすれば勝ち！</b></p>
+      <div class="howto-flow" aria-label="勝利までの3ステップ">
+        <div class="howto-flow-card"><span class="howto-flow-no">1</span><strong>攻撃を当てる</strong><small>パンチや必殺技でヒット！</small><div class="howto-mini-icon" aria-hidden="true">✦</div></div>
+        <div class="howto-flow-arrow" aria-hidden="true">›</div>
+        <div class="howto-flow-card"><span class="howto-flow-no">2</span><strong>ダメージ％が増える</strong><small>％が高いほど遠くへ飛ぶ</small><div class="howto-percent" aria-hidden="true">0% <span>→</span> 120%</div></div>
+        <div class="howto-flow-arrow" aria-hidden="true">›</div>
+        <div class="howto-flow-card"><span class="howto-flow-no">3</span><strong>場外に飛ばして撃墜</strong><small>残機が0で脱落</small><div class="howto-stock-demo" aria-hidden="true">♥ ♥ <span>♡</span></div></div>
+      </div>
+    </section>
+
+    <section class="howto-section" aria-labelledby="howto-matchup">
+      <div class="howto-section-head"><span class="howto-eyebrow">02 / FIGHT SMART</span><h3 id="howto-matchup">攻撃には「得意・苦手」がある</h3></div>
+      <div class="howto-matchups" aria-label="攻撃の三すくみ">
+        <div class="howto-matchup"><b class="howto-type basic">通常攻撃</b><span class="howto-wins">に強い →</span><b class="howto-type counter">カウンター</b></div>
+        <div class="howto-matchup"><b class="howto-type counter">カウンター</b><span class="howto-wins">に強い →</span><b class="howto-type charge">溜め攻撃</b></div>
+        <div class="howto-matchup"><b class="howto-type charge">溜め攻撃</b><span class="howto-wins">に強い →</span><b class="howto-type basic">通常攻撃</b></div>
+      </div>
+      <p class="howto-note">左の攻撃が右の攻撃に強い！ まずは<b>通常攻撃・溜め攻撃・カウンター</b>を覚えよう。<span>※ 一部の必殺技は例外</span></p>
+    </section>
+
+    <section class="howto-section" id="howto-controls-section" aria-labelledby="howto-controls-title">
+      <div class="howto-section-head"><span class="howto-eyebrow">03 / CONTROLS</span><h3 id="howto-controls-title">操作を確認</h3></div>
+      <div class="howto-tabs" role="tablist" aria-label="操作する端末">
+        <button type="button" class="howto-tab" data-howto-device="touch" id="howto-tab-touch" role="tab" aria-controls="howto-panel-touch" aria-selected="false">スマホ・iPad</button>
+        <button type="button" class="howto-tab" data-howto-device="pc" id="howto-tab-pc" role="tab" aria-controls="howto-panel-pc" aria-selected="false">PC</button>
+        <button type="button" class="howto-tab" data-howto-device="pad" id="howto-tab-pad" role="tab" aria-controls="howto-panel-pad" aria-selected="false">コントローラー</button>
+      </div>
+      <div class="howto-device-panel" id="howto-panel-touch" role="tabpanel" aria-labelledby="howto-tab-touch" hidden>
+        <div class="howto-control-grid">
+          <div class="howto-control-item"><span class="howto-control-key">左スティック</span><div><b>移動</b><small>下に倒すと足場から降りる</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key">跳ぶ</span><div><b>ジャンプ</b><small>空中でもう1回ジャンプできる</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-attack">攻撃</span><div><b>通常攻撃 ／ 溜め攻撃</b><small>タップで攻撃、長押しして離すと強攻撃</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-special">特殊・上下技</span><div><b>キャラ固有の技</b><small>↑上技・↓下技のボタンで技が変わる</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-defense">カウンター</span><div><b>防御 ／ 回避</b><small>そのまま押すとカウンター、移動しながら押すと回避</small></div></div>
+        </div>
+      </div>
+      <div class="howto-device-panel" id="howto-panel-pc" role="tabpanel" aria-labelledby="howto-tab-pc" hidden>
+        <div class="howto-control-grid">
+          <div class="howto-control-item"><span class="howto-control-key">A / D</span><div><b>左右に移動</b><small>← / → キーでもOK。S / ↓ で足場から降りる</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key">SPACE</span><div><b>ジャンプ</b><small>W / ↑ でもOK。空中ジャンプも可能</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-attack">J / Z</span><div><b>通常攻撃 ／ 溜め攻撃</b><small>長押しして離すと強攻撃</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-special">K / X</span><div><b>特殊技</b><small>方向キー＋特殊で「横技・上技・下技」</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-defense">L / C</span><div><b>カウンター ／ 回避</b><small>移動キー＋カウンターで回避</small></div></div>
+        </div>
+      </div>
+      <div class="howto-device-panel" id="howto-panel-pad" role="tabpanel" aria-labelledby="howto-tab-pad" hidden>
+        <div class="howto-control-grid">
+          <div class="howto-control-item"><span class="howto-control-key">左スティック</span><div><b>移動</b><small>十字キーでもOK。下入力で足場から降りる</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key">Y / X</span><div><b>ジャンプ</b><small>L / ZL でもジャンプ</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-attack">A</span><div><b>通常攻撃 ／ 溜め攻撃</b><small>長押しして離すと強攻撃</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-special">B</span><div><b>特殊技</b><small>方向＋Bで「横技・上技・下技」</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-defense">R / ZR</span><div><b>カウンター ／ 回避</b><small>移動しながら押すと回避</small></div></div>
+        </div>
+      </div>
+      <p class="howto-note">必殺技の効果はキャラごとに違う！ <b>キャラ選択画面の「特殊技・特性」</b>でチェックできます。</p>
+    </section>
+
+    <details class="howto-extra">
+      <summary>もう少し詳しく知る <span>＋</span></summary>
+      <div class="howto-extra-body">
+        <div><b>溜めすぎには注意</b><p>攻撃ボタンを長押しすると強力になる。ただし、溜めすぎるとオーバーヒートする。</p></div>
+        <div><b>吹っ飛ばされたら復帰しよう</b><p>ジャンプや上必殺技でステージへ戻ろう。上必殺技の動き方はキャラによって違う。</p></div>
+        <div><b>チーム戦もできる</b><p>RED / BLUE に分かれて相手チームを全滅させれば勝ち。味方には攻撃が当たらない。</p></div>
+        <div><b>武器はオプション</b><p>ステージ選択で武器を「あり」にすると、剣や銃が登場する。</p></div>
+        <div><b>カウンターにも例外あり</b><p>飛び道具を防げることもあるが、爆発・KOアッパーなどの一部の大技は返せない。</p></div>
+        <div><b>人数と残機</b><p>2〜8人で対戦。残機は1〜5から選べる。ステージは好みでOK。</p></div>
+      </div>
+    </details>
+  </main>
+  <div class="howto-footer"><button class="next" type="button" id="howto-back">わかった！ 対戦へ</button></div>
 </div>
 
 <div id="game">
@@ -222,7 +325,7 @@ box-shadow:0 2px 7px #0008}
     <div id="title">STICK BATTLE<small>ONLINE</small></div>
     <div class="barbtns"><button class="barbtn" id="b-settings">設定</button>
       <button class="barbtn" id="b-char">キャラ</button>
-      <button class="barbtn" id="b-help">操作</button>
+      <button class="barbtn" id="b-help" aria-label="操作・ルールを確認">操作・ルール</button>
       <button class="barbtn" id="b-quit">やめる</button>
     </div>
   </div>
@@ -293,6 +396,7 @@ const GUN_MAX = 6, GUN_RELOAD = 108, GUN_COOLDOWN = 36;             // リボル
 const SWORD_DUR = 5;                            // 拾った剣の耐久（振るたび1、溜めは2消費）
 const GEAR_FILL = 100 / (9 * 60), GEAR5_T = 900, GEAR_TIRED = 180, GEAR_FREEZE = 40;
 const ANIME_FORM_FREEZE = 42; // ルフィのギアチェンジと同じ全員停止カットイン
+const JOTARO_TIMESTOP_CUTIN_FREEZE = 48; // 時止めの3.5秒とは別枠の0.8秒カットイン
 const GEAR_NAME = ['', 'BASE', 'GEAR 2', 'GEAR 3', 'GEAR 4', 'GEAR 5'];
 const GEAR_JP = ['', '通常', 'ギア2', 'ギア3', 'ギア4', 'ギア5'];
 const GEAR_COL = ['', '#ffd55e', '#ff5549', '#ff8a5b', '#7b4b9f', '#ffffff'];
@@ -449,7 +553,7 @@ const ANIME_COLORS={rubber:'#e8bb66',goku:'#ffb445',gojo:'#a48cff',tanjiro:'#5cd
 const ANIME_COMMON={ctx:0,back:false,ctc:1,dgc:1,dgs:1,jumps:2,size:1};
 Object.assign(CHARS,{
  goku:{...ANIME_COMMON,name:'孫悟空',en:'SON GOKU',mark:'悟',spd:1.08,jump:1.05,wt:.94,pow:1.14,st:[4,4,3],sp:'特殊：気弾。長押しして離すとかめはめ波（移動しながらチャージ可能）。下特殊：気を溜め、MAXでもう一度押すと超サイヤ人→2→3',up:'通常～超2は攻撃判定なしの大ジャンプ。超3のみ龍拳',ab:'SS1は総合強化。SS2は火力特化＋溜め攻撃貫通。SS3は15秒限定の完全無敵・超火力ボス性能。横特殊は足場から落ちない瞬間移動。気弾には吹っ飛ばしなし'},
- gojo:{...ANIME_COMMON,name:'五条悟',en:'SATORU GOJO',mark:'無',spd:1.04,jump:1.05,wt:.98,pow:1.05,st:[3,5,3],sp:'特殊：即離し＝蒼／少し溜め＝赫／長押し＝茈。横特殊は踏み込み強打で約1/6の確率で黒閃',up:'上特殊：攻撃判定のない大ジャンプ。下特殊：術式ゲージMAXで領域展開「無量空処」',ab:'無下限により飛び道具を常時無効。横特殊はなし。無量空処は範囲内の敵を行動不能にするが、被弾・吹っ飛び・撃墜は通常どおり発生'},
+ gojo:{...ANIME_COMMON,name:'五条悟',en:'SATORU GOJO',mark:'無',spd:1.04,jump:1.05,wt:.98,pow:1.05,st:[3,5,3],sp:'特殊：即離し＝蒼／少し溜め＝赫／長押し＝茈。横特殊は踏み込み強打で約1/6の確率で黒閃',up:'上特殊：攻撃判定のない大ジャンプ。下特殊：術式ゲージMAXで領域展開「無量空処」',ab:'無下限により飛び道具を常時無効。横特殊は踏み込み打撃、稀に黒閃。無量空処は範囲内の敵を行動不能にするが、被弾・吹っ飛び・撃墜は通常どおり発生'},
  tanjiro:{...ANIME_COMMON,name:'竈門炭治郎',en:'TANJIRO',mark:'水',spd:1.08,jump:1.02,wt:.98,pow:1.12,st:[4,4,3],sp:'通常攻撃は日輪刀。特殊＝壱ノ型 水面斬り／横特殊＝参ノ型 流流舞い／上特殊＝弐ノ型 水車',up:'下特殊で呼吸ゲージMAX時にヒノカミ神楽へ。神楽中：特殊＝碧羅の天、横＝烈日紅鏡、上＝飛輪陽炎、下＝幻日虹',ab:'水の呼吸は高火力の剣技。ヒノカミ神楽は18秒、火力と吹っ飛ばしが大幅強化。幻日虹は残像を残して攻撃を回避'},
  naruto:{...ANIME_COMMON,name:'うずまきナルト',en:'NARUTO',mark:'忍',spd:1.13,jump:1.08,wt:.96,pow:1.05,st:[5,3,3],sp:'特殊＝風遁・螺旋手裏剣（長距離投射）、横特殊＝螺旋丸、下特殊＝チャクラ解放・2段変身',up:'上特殊：一瞬で上へ移動する高速瞬身（攻撃判定なし）',ab:'チャクラゲージは技や攻撃では消費・増加せず、時間経過だけで蓄積。MAXで仙人モード→再び時間でMAXにして九尾チャクラモード'},
  jotaro:{...ANIME_COMMON,name:'空条承太郎',en:'JOTARO KUJO',mark:'星',spd:1.02,jump:1.02,wt:.90,pow:1.13,st:[4,4,4],sp:'特殊＝スタープラチナのオラオララッシュ。横特殊＝スターフィンガー',up:'上特殊：スタープラチナと共に大ジャンプ（攻撃判定なし）。下特殊：ゲージMAXで時を止める',ab:'時止め中は時間経過・攻撃ヒットのどちらでもゲージが増えない。承太郎だけが行動でき、止まった相手へのダメージと吹っ飛ばしは時が動き出した瞬間に反映される'}
@@ -647,12 +751,13 @@ function animeGojoRush(p){
  const black=Math.random()<GOJO_BLACK_FLASH_RATE;
  const kind=black?'gblackflash':'gojopunch';
  p.vx=p.f*Math.max(2.5,Math.abs(p.vx)*.35);
- animeMove(p,kind,black?53:19,black?28:13,
-  black?{lunge:13,reach:70,R:54,yo:35,ks:.18,up:.55,ko:true,pierce:true,minKb:38}:
-        {lunge:10,reach:55,R:35,yo:35,ks:.09,up:.43,pierce:true});
- p.spc=black?115:70;
- animeCall(p,black?'黒閃！！':'打撃！',black?'#bc8eff':'#c4ddff',true);
- animeEmit(p,black?'blackflash':'gojopunch',{life:black?37:28});
+ animeMove(p,kind,black?56:12,black?31:9.5,
+  black?{lunge:13,reach:70,R:54,yo:35,ks:.19,up:.57,ko:true,pierce:true,minKb:42}:
+        {lunge:10,reach:55,R:35,yo:35,ks:.065,up:.40,pierce:false});
+ p.spc=black?115:66;
+ // 黒閃は命中して初めて判明する。空振りでは予兆・黒球・専用文字を一切出さない。
+ animeCall(p,'踏み込み打撃','#c4ddff',true);
+ animeEmit(p,'gojopunch',{life:27});
 }
 
 const JOTARO_FILL=100/(22*60),JOTARO_STOP_T=210;
@@ -674,6 +779,15 @@ function animeTimeStop(p){
  animeCall(p,'時よ止まれ！','#efe1ff',true,1.05,.70);
  const e={k:'animearea',id:p.id,kind:'timestop',x:p.x,y:p.y-34,f:p.f,range:9999,life:JOTARO_STOP_T};
  animeArea(e);send(e);animeEmit(p,'timestop',{life:JOTARO_STOP_T});
+ // ギア変身と同じ：全員停止→承太郎＋スタープラチナの専用カットイン→時が止まった世界。
+ beginJotaroTimeStopCutin({id:p.id,x:Math.round(p.x),y:Math.round(p.y-38)});
+}
+function beginJotaroTimeStopCutin(e){
+ if(online&&!cinDispatching){requestCinematic('timestop',e);return;}
+ const p=byId(e.id);if(!p||p.cid!=='jotaro')return;
+ freezeT=JOTARO_TIMESTOP_CUTIN_FREEZE;freezeMax=JOTARO_TIMESTOP_CUTIN_FREEZE;
+ fzType='timestopcin';fz={x:e.x,y:e.y,att:e.id,cnt:e.id};
+ shake=Math.max(shake,12);
 }
 function animeTeleport(p,side){
  if(p.teleportCd>0){sfxNo();return;}
@@ -694,7 +808,17 @@ function animeDomain(p){
  p.energy=0;p.spc=285;p.sh=38;animeCall(p,'領域展開・無量空処！','#d7c8ff',true,1.05,.82);
  const e={k:'animearea',id:p.id,kind:'domain',x:p.x,y:p.y-34,f:p.f,range:270};animeArea(e);send(e);
  animeEmit(p,'domain',{title:'領域展開「無量空処」',life:DOMAIN_STOP_T});
+ // 効果発動後、全員が一瞬止まる領域専用シネマティックへ移行。
+ beginDomainCutin({id:p.id,x:Math.round(p.x),y:Math.round(p.y-38)});
 }
+const DOMAIN_CUTIN_FREEZE=54;
+function beginDomainCutin(e){
+ if(online&&!cinDispatching){requestCinematic('domain',e);return;}
+ const p=byId(e.id);if(!p||p.cid!=='gojo')return;
+ freezeT=DOMAIN_CUTIN_FREEZE;freezeMax=DOMAIN_CUTIN_FREEZE;fzType='domain';
+ fz={x:e.x,y:e.y,att:e.id,cnt:e.id};shake=Math.max(shake,12);
+}
+
 function animeKagura(p){
  if(p.energy<100||p.modeT>0||p.fatigue>0)return;
  p.energy=0;p.modeT=1080;clearActs(p);p.sph=0;p.spc=36;p.boostFlash=62;
@@ -756,7 +880,7 @@ function animeUp(p){
  if(p.rec){sfxNo();return;}
  p.rec=true;p.g=false;p.jn=jumpsOf(p);p.rise=22;
  if(p.cid==='goku'){
-  if(p.form===3){p.vx=p.f*9;p.vy=-23;animeMove(p,'gdragon',52,31,{up:1.55,ko:true,pierce:true,R:88,reach:68,minKb:40,ks:.19});p.spc=123;animeCall(p,'龍拳！！','#ffe08c',true,1.2,.88);animeEmit(p,'dragon',{title:'龍拳',life:82});}
+  if(p.form===3){p.vx=p.f*9;p.vy=-23;animeMove(p,'gdragon',52,31,{up:1.55,ko:true,pierce:true,R:88,reach:68,minKb:40,ks:.19});p.spc=123;animeCall(p,'龍拳！！','#ffe08c',true,1.2,.88);animeEmit(p,'dragon',{title:'龍拳',life:28});}
   else{p.vy=-19.3;p.spc=31;animeEmit(p,'rise',{life:22});}
  }else if(p.cid==='gojo'){p.vy=-19.5;p.spc=30;animeEmit(p,'rise',{life:16});}
  else if(p.cid==='tanjiro'){p.vy=-17;animeMove(p,p.modeT>0?'tflame':'trise',p.modeT>0?23:16,p.modeT>0?16:10,{up:1.35});p.spc=34;const call=p.modeT>0?'飛輪陽炎！':'弐ノ型・水車！';animeCall(p,call,p.modeT>0?'#ff9a61':'#8ee9ff',true,1.25,.92);animeEmit(p,p.modeT>0?'flameslash':'water',{title:call,life:28});}
@@ -823,7 +947,12 @@ function animeTick(p){
  else if(p.cid==='jotaro'&&isLocal(p)&&!p.out&&p.timeStopSelfT<=0&&!animeTimeStopActive())p.energy=Math.min(100,(p.energy||0)+JOTARO_FILL);
  else animeGain(p,p.cid==='gojo'?.055:p.cid==='tanjiro'?.070:0);
 }
-function animeWorldTick(){animeClock++;for(const e of animeFx)e.life--;animeFx=animeFx.filter(e=>e.life>0);}
+function animeWorldTick(){
+ animeClock++;
+ // 時止めの発動カットイン中は3.5秒の停止時間を消費しない。
+ for(const e of animeFx){if(!(freezeT>0&&fzType==='timestopcin'&&e.kind==='timestop'))e.life--;}
+ animeFx=animeFx.filter(e=>e.life>0);
+}
 function animeAI(p,I,A,adx){
  if(!isAnime(p)||p.spc>0||p.a>0||p.sph>0||p.fatigue>0||p.domainT>0)return false;
  if(p.energy>=100){if(p.cid==='gojo'){I.gd=true;aiSpecial(I,A,2);return true;}if(p.cid==='goku'||p.cid==='naruto'||p.cid==='tanjiro'){I.gd=true;aiSpecial(I,A,2);return true;}}
@@ -915,7 +1044,7 @@ function animeBody(p,t,ghost=false){
 function animeArm(x,y,hx,hy,c,w=5){noFill();stroke('#162131');strokeWeight(w+2);line(x,y,hx,hy);stroke(c);strokeWeight(w);line(x,y,hx,hy);}
 
 function drawStarPlatinum(p,t,mv,active){
- const starJump=(p.rise||0)>0&&p.rec; const show=(p.a>0&&mv&&['ora','starfinger'].includes(mv.kind))||p.timeStopSelfT>0||starJump;
+ const starJump=(p.rise||0)>0&&p.rec; const show=(p.a>0&&mv&&['ora','starfinger'].includes(mv.kind))||p.timeStopSelfT>0||starJump||(freezeT>0&&fzType==='timestopcin'&&fz?.att===p.id);
  if(!show)return;
  // drawAnimeActor側ですでにscale(p.f,1)済み。ここでは+Xを常に前方として扱う。
  push();translate(-12,-18);drawingContext.globalAlpha*=.72;
@@ -1006,20 +1135,10 @@ function drawAnimeActor(p,t,ghost=false){
  if(p.cid==='gojo'){
   if(p.sph>0){const oc=p.sph>=GOJO_PURPLE_HOLD?'#b98cff':p.sph>=GOJO_RED_HOLD?'#ff5b6b':'#59bcff';animeGlow(hx+4,hy,8+Math.min(p.sph/70,1)*12,oc);}
   if(atk&&['gojopunch','gblackflash'].includes(mv.kind)){
-   const black=mv.kind==='gblackflash',x=hx+8,y=hy;
-   if(active){
-    noFill();stroke(black?'#6e2aa2':'#a8e4ff');strokeWeight(black?7:4);
-    arc(x-8,y,black?87:60,black?65:48,-PI*.7,PI*.4);
-   }
-   noStroke();fill(black?'#05030a':'#bceaff');circle(x,y,black?32:22);
-   if(black){
-    noFill();stroke('#a74ee8');strokeWeight(3);circle(x,y,40);
-    stroke('#eee0ff');strokeWeight(1.5);
-    for(let i=0;i<6;i++){
-     const a=i*TWO_PI/6+t*.06;
-     line(x+cos(a)*22,y+sin(a)*22,x+cos(a)*38,y+sin(a)*38);
-    }
-   }
+   // 命中前は普通の呪力パンチ。黒閃はヒット確定後にだけ発生する。
+   const x=hx+8,y=hy;
+   if(active){noFill();stroke('#a8e4ff');strokeWeight(4);arc(x-8,y,60,48,-PI*.7,PI*.4);}
+   noStroke();fill('#bceaff');circle(x,y,22);
   }
   if(atk&&mv.kind==='purplecast'&&p.a<32){const q=p.a/32;animeGlow(24,-44-16*(1-q),13,'#5abfff');animeGlow(24,-28+16*(1-q),13,'#ff4c70');if(q>.55)animeGlow(26,-36,(q-.55)*52,'#bb87ff');}
   if(p.ct>0||p.infinityCd>7){noFill();stroke('#a6d6ff');strokeWeight(1.5);ellipse(23,-37,11,54);}
@@ -1135,6 +1254,7 @@ function paintAnimeBackdrop(){
 }
 
 function paintTimeStopPostFx(){
+ if(freezeT>0&&fzType==='timestopcin')return;
  const ts=activeTimeStopFx();if(!ts)return;
  const elapsed=ts.max-ts.life;
  const intro=Math.max(0,1-elapsed/12);
@@ -1200,29 +1320,41 @@ function paintAnimeFx(){
     else if(e.cid==='tanjiro'){strokeWeight(3*a);line(-24-q*15,25+q*10,24+q*15,-25-q*10);}
     else ellipse(0,0,15+q*75,15+q*60);
   }else if(e.kind==='dragon'){
-   const headY=28-q*235,phase=q*11;
-   // Golden dragon spirals upward around Goku's rising fist.
-   noFill();strokeCap(ROUND);strokeJoin(ROUND);
-   const pts=[];for(let i=0;i<28;i++){const yy=headY+i*8.6,xx=18+Math.sin(i*.68-phase)*24*(1-i/40);pts.push([xx,yy]);}
-   stroke(255,169,35,48*a);strokeWeight(20);beginShape();for(const [x,y] of pts)vertex(x,y);endShape();
-   stroke(255,221,94,220*a);strokeWeight(8);beginShape();for(const [x,y] of pts)vertex(x,y);endShape();
-   stroke(255,251,195,245*a);strokeWeight(2.6);beginShape();for(const [x,y] of pts)vertex(x,y);endShape();
-   for(let i=4;i<pts.length;i+=4){const [x,y]=pts[i];noStroke();fill(255,190,47,120*a);ellipse(x,y,12,7);}
-   const hx=pts[0][0],hy=pts[0][1];push();translate(hx,hy);rotate(-.10+Math.sin(phase)*.08);noStroke();fill(255,210,66,245*a);ellipse(0,0,38,27);triangle(-12,-8,-25,-22,-5,-14);triangle(10,-9,25,-23,8,-14);fill(255,239,152,255*a);ellipse(12,5,25,15);fill('#fff');ellipse(-8,-4,7,6);ellipse(7,-4,7,6);fill('#a92b16');circle(-7,-4,2.7);circle(8,-4,2.7);stroke(255,232,133,220*a);strokeWeight(2);noFill();bezier(15,4,38,-7,43,-2,53,-10);bezier(15,8,37,15,43,8,55,16);pop();
-   noFill();stroke(255,242,166,170*a);strokeWeight(2);for(let i=0;i<8;i++){const yy=38-q*255+i*31;line(-35+(i%2)*12,yy,-4+(i%3)*7,yy-20);}
-   if(q<.18){noStroke();fill(255,244,180,150*a);circle(0,0,90*(1-q/.18));}
+   // 龍の絵は一切使わない：龍拳は金色の超高速エネルギーアッパーとして表現する。
+   const rush=1-Math.pow(1-q,5),fade=Math.min(1,e.life/9),rr=1+q*.3;
+   const top=-36-270*rush;
+   noFill();strokeCap(ROUND);
+   stroke(255,149,31,75*fade);strokeWeight(39*rr);line(9,39,21,top);
+   stroke(255,207,61,195*fade);strokeWeight(17*rr);line(9,38,21,top);
+   stroke(255,253,219,245*fade);strokeWeight(6);line(11,36,22,top);
+   // 斜めに切り裂く光の刃。頭・尻尾・輪郭などの動物的な形は描画しない。
+   for(let i=0;i<16;i++){
+    const yy=26-i*22-rush*40,xx=12+Math.sin(i*3.1)*26;
+    stroke(i%3===0?color(255,255,241,220*fade):color(255,165,34,165*fade));
+    strokeWeight(i%4===0?4:2);
+    line(xx-24,yy+18,xx+20,yy-27);
+   }
+   for(let i=0;i<6;i++){
+    const yy=30-rush*240+i*17;
+    stroke(255,237,116,95*fade);strokeWeight(1.8);
+    arc(17,yy,62+i*11,16+i*3,PI*.1,PI*.9);
+   }
   }else if(['gojopunch','blackflash'].includes(e.kind)){
+   // 黒閃の予備エフェクトが来ても黒球は描かない。
+   // 通常の横特殊は手元の小さな呪力のみ。
    const black=e.kind==='blackflash';
-   noFill();stroke(black?'#b974ff':'#c4e8ff');strokeWeight(black?5*a:3*a);
+   const r=18+q*(black?100:55);
+   noFill();stroke(black?color(255,50,70,185*a):color(173,225,255,150*a));strokeWeight(black?3:2);
    for(let i=0;i<(black?9:4);i++){
-    const an=i*TWO_PI/(black?9:4)+q*1.1;
-    const r=22+q*(black?102:58);
-    line(cos(an)*r,sin(an)*r*.65,cos(an)*(r+32),sin(an)*(r+32)*.65);
+    const t=i*TWO_PI/(black?9:4),x=Math.cos(t),y=Math.sin(t);
+    line(x*r,y*r*.6,x*(r+26),y*(r+26)*.6);
    }
    if(black){
-    noStroke();fill(5,3,13,170*a);circle(57,-2,57+q*45);
-    noFill();stroke('#c887ff');strokeWeight(4*a);circle(57,-2,66+q*50);
-    stroke('#faf3ff');strokeWeight(1.6*a);circle(57,-2,80+q*50);
+    stroke(21,6,14,210*a);strokeWeight(7);
+    for(let i=0;i<5;i++){
+     const xx=10+i*22;
+     line(xx,-26+(i%2)*18,xx+9,-44+(i%2)*13);
+    }
    }
   }else if(['blue','red'].includes(e.kind)){const blue=e.kind==='blue',x=blue?72:36,c=blue?'#69caff':'#ff5979';animeGlow(x,0,(blue?24:35)*(1-q*.4),c,a);noFill();
    for(let i=0;i<5;i++){const r=blue?150*(1-(q+i*.17)%1):15+((q+i*.17)%1)*185;stroke(blue?color(110,194,255,130*a):color(255,105,143,130*a));strokeWeight(2);ellipse(x,0,r,r*.65);}
@@ -1403,6 +1535,23 @@ const MAPS = {
 };
 
 Object.assign(MAPS,{"shrine": {"name": "月夜の社", "w": 800, "h": 450, "bg": "#392b49", "wpn": true, "plats": [{"x": 125, "y": 390, "w": 550, "h": 22}, {"x": 150, "y": 265, "w": 135, "h": 14}, {"x": 515, "y": 265, "w": 135, "h": 14}]}, "harbor": {"name": "雨の港湾", "w": 960, "h": 540, "bg": "#28475a", "wpn": true, "plats": [{"x": 110, "y": 465, "w": 740, "h": 24}, {"x": 160, "y": 330, "w": 180, "h": 16}, {"x": 410, "y": 245, "w": 150, "h": 16}, {"x": 650, "y": 345, "w": 150, "h": 16}]}, "reactor": {"name": "動力炉", "w": 800, "h": 450, "bg": "#273c32", "wpn": false, "plats": [{"x": 130, "y": 390, "w": 540, "h": 22}, {"x": 230, "y": 285, "w": 340, "h": 14}, {"x": 340, "y": 180, "w": 120, "h": 14}]}, "aurora": {"name": "極光の氷原", "w": 1040, "h": 585, "bg": "#345368", "wpn": true, "plats": [{"x": 125, "y": 505, "w": 790, "h": 24}, {"x": 195, "y": 375, "w": 180, "h": 16}, {"x": 665, "y": 375, "w": 180, "h": 16}, {"x": 430, "y": 275, "w": 180, "h": 16}]}});
+
+// 大型マップ：すべて16:9比率。中央だけに戦場が偏らないよう複数の拠点足場を配置。
+Object.assign(MAPS,{
+ sunset:{name:'夕焼け大峡谷',w:1400,h:788,bg:'#c77664',wpn:true,plats:[
+  {x:100,y:678,w:480,h:26},{x:815,y:678,w:485,h:26},
+  {x:570,y:586,w:264,h:18},{x:192,y:466,w:240,h:16},{x:964,y:466,w:242,h:16},
+  {x:550,y:354,w:310,h:17},{x:350,y:241,w:155,h:14},{x:905,y:241,w:155,h:14}]},
+ metro:{name:'超巨大都市',w:1600,h:900,bg:'#283b5b',wpn:true,plats:[
+  {x:95,y:786,w:1410,h:28},{x:170,y:617,w:280,h:18},{x:1140,y:617,w:280,h:18},
+  {x:600,y:667,w:400,h:18},{x:490,y:464,w:235,h:16},{x:875,y:464,w:235,h:16},
+  {x:230,y:332,w:210,h:16},{x:1160,y:332,w:210,h:16},{x:665,y:255,w:270,h:16}]},
+ orbit:{name:'天空の浮遊遺跡',w:1500,h:844,bg:'#344c70',wpn:true,plats:[
+  {x:165,y:715,w:400,h:24},{x:935,y:715,w:400,h:24},
+  {x:600,y:634,w:300,h:20},{x:85,y:495,w:300,h:16},{x:1120,y:495,w:300,h:16},
+  {x:520,y:428,w:460,h:16},{x:270,y:274,w:245,h:16},{x:985,y:274,w:245,h:16},
+  {x:645,y:181,w:210,h:16}]}
+});
 
 const AI_LV = [
   { think: 16, read: 0.25, spec: 0.12, err: 0.25 },
@@ -2793,10 +2942,13 @@ function playFx(e, remote) {
     const kb = e.kb, n = 8 + Math.floor(kb);
     if(isAnime(a))animeVisual({kind:'impact',id:a.id,cid:a.cid,x:e.x,y:e.y,f:a.f,boost:a.modeT>0,life:18});
     if(e.style==='blackflash'){
-      burst(e.x,e.y,45,16,'#170a24',14);
-      burst(e.x,e.y,23,13,'#bd6cff',9);
-      burst(e.x,e.y,12,9,'#ffffff',6);
-      ring(e.x,e.y,24,22);
+      // アニメの黒閃：黒い衝撃に深紅の稲妻と火花。命中時にだけ表示。
+      // 大きな黒い塊は禁止。黒赤の細かな破片＋赤い閃光だけ。
+      burst(e.x,e.y,14,13,'#10080b',5);
+      burst(e.x,e.y,43,19,'#ef2440',8);
+      burst(e.x,e.y,22,13,'#ffb1a1',5);
+      shake=Math.max(shake,15);
+      popups.push({x:e.x,y:e.y-76,txt:'黒閃',life:42,max:42,size:42,c:'#ff454f'});
     }else if(e.style==='dragon'){
       burst(e.x,e.y,38,16,'#ffd75c',13);
       ring(e.x,e.y,23,20);
@@ -2844,7 +2996,13 @@ function doCounter(e) {
 function startKOFreeze(e) {
   if(online&&!cinDispatching){requestCinematic('ko',e);return;}
   freezeT = FREEZE_KO; freezeMax = FREEZE_KO;
-  fzType = e.style==='dragon'?'dragon':e.style==='blackflash'?'blackflash':'ko';
+  // ローカル・オンラインとも技固有の漢字カットインを必ず選ぶ。
+  // 旧イベントにstyleが欠けていても、攻撃者の技情報から補完する。
+  const attacker=byId(e.a);
+  const moveName=attacker?.mv?.kind||'';
+  const style=e.style==='dragon'||e.style==='blackflash'?e.style:
+    moveName==='gdragon'?'dragon':moveName==='gblackflash'?'blackflash':'ko';
+  fzType=style;
   fz = { x: e.x, y: e.y, att: e.a, cnt: e.t };
   shake = fzType==='dragon'?20:fzType==='blackflash'?18:12;
   if(fzType==='dragon')animeSound('dragon');
@@ -2869,6 +3027,17 @@ function endFreeze() {
     shake=Math.max(shake,fz?.cid==='goku'&&fz?.form===3?19:13);
     sfxCounterBoom();return;
   }
+  if (fzType === 'timestopcin') {
+    if(fz){burst(fz.x,fz.y,45,12,'#c1a7fa',12);burst(fz.x,fz.y,20,8,'#adffe6',7);ring(fz.x,fz.y,27,24);}
+    shake=Math.max(shake,13);
+    // 時止めMP3は発動時に再生しており、解除までは止めない。
+    return;
+  }
+  if (fzType === 'domain') {
+    sfxCounterBoom();
+    if(fz){burst(fz.x,fz.y,55,12,'#b2b6ff',12);ring(fz.x,fz.y,23,22);}
+    shake=Math.max(shake,13);return;
+  }
   if (fzType === 'rage') {
     sfxCounterBoom();
     if (fz) { burst(fz.x, fz.y, 55, 17, '#ef4747', 14); burst(fz.x, fz.y, 24, 10, '#ffd166', 10); ring(fz.x, fz.y, 30, 24); }
@@ -2878,10 +3047,16 @@ function endFreeze() {
     sfxKOBoom();
     if (fz) {
       const ink=fzType==='blackflash',dragon=fzType==='dragon';
-      burst(fz.x,fz.y,90,24,ink?'#1b0928':dragon?'#ffe071':'#ffd166',17);
-      burst(fz.x,fz.y,52,17,ink?'#9b4ede':dragon?'#ff8c26':'#ef4747',13);
-      burst(fz.x,fz.y,34,13,ink?'#f1dcff':'#ffffff',10);
-      ring(fz.x, fz.y, 30, 26); ring(fz.x, fz.y, 18, 20);
+      if(ink){
+       burst(fz.x,fz.y,18,25,'#16070c',5);
+       burst(fz.x,fz.y,85,25,'#fa263d',11);
+       burst(fz.x,fz.y,46,16,'#ffad96',8);
+      }else{
+       burst(fz.x,fz.y,90,24,dragon?'#ffe071':'#ffd166',17);
+       burst(fz.x,fz.y,52,17,dragon?'#ff8c26':'#ef4747',13);
+       burst(fz.x,fz.y,34,13,'#ffffff',10);
+       ring(fz.x,fz.y,30,26);ring(fz.x,fz.y,18,20);
+      }
     }
     shake = 28;
     return;
@@ -4148,6 +4323,42 @@ function closeBattleChars() {
   scene = 'battle';
 }
 
+
+// HOW TO PLAY: show one input method at a time, selected automatically for the device.
+function suggestedHowtoDevice(){
+ const pref=typeof prefs==='object'?prefs.controls:'auto';
+ if(pref==='touch')return 'touch';
+ if(pref==='keyboard')return 'pc';
+ const hasFinePointer=window.matchMedia&&window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+ return hasFinePointer?'pc':'touch';
+}
+function selectHowtoDevice(mode){
+ const current=['touch','pc','pad'].includes(mode)?mode:'touch';
+ document.querySelectorAll('[data-howto-device]').forEach(btn=>{
+  const active=btn.dataset.howtoDevice===current;
+  btn.classList.toggle('is-active',active);
+  btn.setAttribute('aria-selected',String(active));
+  btn.tabIndex=active?0:-1;
+ });
+ ['touch','pc','pad'].forEach(key=>{
+  const panel=document.getElementById('howto-panel-'+key);
+  if(panel)panel.hidden=key!==current;
+ });
+}
+function openHowto(fromBattle){
+ const sc=document.getElementById('sc-howto');
+ howtoFrom=fromBattle?'battle':'sc-mode';
+ selectHowtoDevice(suggestedHowtoDevice());
+ const details=sc.querySelector('.howto-extra');
+ if(details)details.open=false;
+ document.getElementById('howto-back').textContent=fromBattle?'バトルにもどる':'わかった！ メニューにもどる';
+ if(fromBattle){
+  if(!online)scene='pause';
+  sc.style.display='flex';
+ }else show('sc-howto');
+ sc.scrollTop=0;
+}
+
 function buildMenus() {
   const grid = document.getElementById('char-grid');
   renderChars = () => {
@@ -4216,7 +4427,7 @@ function buildMenus() {
   roomCodeInput.addEventListener('keydown', e => {
     if (e.key === 'Enter'&&!e.isComposing&&e.keyCode!==229) { e.preventDefault(); joinByTypedCode(); }
   });
-  document.getElementById('go-howto').onclick = () => { howtoFrom = 'sc-mode'; show('sc-howto'); };
+  document.getElementById('go-howto').onclick = () => openHowto(false);
   document.getElementById('chars-back').onclick = () => {
     if (charMode === 'battle') closeBattleChars();
     else if (charMode === 'result') document.getElementById('sc-chars').style.display = 'none';
@@ -4251,15 +4462,14 @@ function buildMenus() {
     else show('sc-title');
   };
 
+  document.querySelectorAll('[data-howto-device]').forEach(btn=>{
+    btn.onclick=()=>selectHowtoDevice(btn.dataset.howtoDevice);
+  });
   document.getElementById('howto-back').onclick = () => {
     if (howtoFrom === 'battle') { document.getElementById('sc-howto').style.display = 'none'; scene = 'battle'; }
     else show(howtoFrom);
   };
-  document.getElementById('b-help').onclick = () => {
-    howtoFrom = 'battle';
-    if (!online) scene = 'pause';
-    document.getElementById('sc-howto').style.display = 'flex';
-  };
+  document.getElementById('b-help').onclick = () => openHowto(true);
   document.getElementById('b-char').onclick = () => openChars('battle');
   document.getElementById('b-quit').onclick = () => {
     if (online) { if (confirm('部屋から退出しますか？')) leaveRoom(); }
@@ -4448,6 +4658,11 @@ setInterval(()=>{
 },70);
 const themes={small:{top:'#160f28',bottom:'#39243e',accent:'#ffa678',name:'EMBER / 闘技場'},std:{top:'#071528',bottom:'#1c3c53',accent:'#79e6ff',name:'SKYLINE / スタンダード'},wide:{top:'#0b242b',bottom:'#345c54',accent:'#b4e8a0',name:'VERDANT / 平原'}};
 Object.assign(themes,{"shrine": {"top": "#100e23", "bottom": "#483048", "accent": "#edb1b9", "name": "MOON SHRINE / 月夜の社", "kind": "shrine"}, "harbor": {"top": "#0a1928", "bottom": "#32566b", "accent": "#9bd2df", "name": "RAIN HARBOR / 雨の港湾", "kind": "harbor"}, "reactor": {"top": "#081b1b", "bottom": "#314538", "accent": "#c9e895", "name": "REACTOR / 動力炉", "kind": "reactor"}, "aurora": {"top": "#0b1830", "bottom": "#385f70", "accent": "#b3ede1", "name": "AURORA / 極光の氷原", "kind": "aurora"}});
+Object.assign(themes,{
+ sunset:{top:'#291c35',bottom:'#dc806b',accent:'#ffe0a0',name:'SUNSET CANYON / 夕焼け大峡谷',kind:'sunset'},
+ metro:{top:'#091023',bottom:'#304c7b',accent:'#6bd9ff',name:'MEGA CITY / 超巨大都市',kind:'metro'},
+ orbit:{top:'#101e3d',bottom:'#566d97',accent:'#b6d4ff',name:'SKY RUINS / 天空の浮遊遺跡',kind:'orbit'}
+});
 function theme(){return themes[Object.keys(MAPS).find(k=>MAPS[k]===stage)]||themes.std;}
 let stageCache=null,stageCacheKey='';
 function paintArena(){
@@ -4736,10 +4951,13 @@ window.addEventListener('resize',fitArena);
 function paintImpactWorld(){
  if(!fz)return;const a=byId(fz.att),c=byId(fz.cnt),el=freezeMax-freezeT;
  const pal=fzType==='animeform'?animeFormPalette(fz.cid,fz.form):null;
- const tint=pal?pal.main:fzType==='gear'?GEAR_COL[fz?.lv||2]:fzType==='rage'?'#ff5549':fzType==='dragon'?'#ffe783':fzType==='blackflash'?'#ae65ea':fzType==='ko'?'#ffd55e':'#81e5ff';
+ const tint=pal?pal.main:fzType==='gear'?GEAR_COL[fz?.lv||2]:fzType==='rage'?'#ff5549':fzType==='dragon'?'#ffe783':fzType==='blackflash'?'#e92b43':fzType==='domain'?'#969dff':fzType==='ko'?'#ffd55e':'#81e5ff';
  push();noStroke();fill(3,8,17,215);rect(-300,-300,stage.w+600,stage.h+600);
  for(let i=0;i<28;i++){const ang=i*TWO_PI/28+.12,r=65+(i%4)*12;stroke(tint+'99');strokeWeight(i%4===0?3:1);line(fz.x+cos(ang)*r,fz.y+sin(ang)*r,fz.x+cos(ang)*(r+180+el*5),fz.y+sin(ang)*(r+180+el*5));}
- noFill();stroke(tint+'70');strokeWeight(2);circle(fz.x,fz.y,100+el*3);stroke(tint+'20');strokeWeight(18);circle(fz.x,fz.y,125+el*3);
+ if(fzType!=='blackflash'){
+  noFill();stroke(tint+'70');strokeWeight(2);circle(fz.x,fz.y,100+el*3);
+  stroke(tint+'20');strokeWeight(18);circle(fz.x,fz.y,125+el*3);
+ }
  if(pal){
    // 本家ギアチェンジの暗い背景を使い、キャラクターだけを色鮮やかに残す。
    // 変身の間だけ光の柱が立ち上る。描画は既存のp5プリミティブだけ。
@@ -4770,41 +4988,156 @@ function paintImpactWorld(){
     for(let j=0;j<4;j++)arc(fz.x-9+j*8,fz.y+7,68+j*17,93+j*15,-2.5,-.35);
    }
  }
+ if(fzType==='timestopcin'){
+   // スタンドと人物は drawFighter で前面に表示される。
+   // ルフィと同じ暗転背景の中、紫の時空亀裂と青緑の発光を重ねる。
+   const pulse=1+.06*sin(el*.28);
+   noStroke();fill(33,15,69,125);rect(-300,-300,stage.w+600,stage.h+600);
+   noFill();
+   for(let i=0;i<9;i++){
+    const rr=(52+i*44+Math.max(0,el-9)*5)*pulse;
+    stroke(i%2?color(100,239,224,132-i*8):color(206,159,255,155-i*8));
+    strokeWeight(i%3===0?3:1.4);
+    push();translate(fz.x,fz.y);rotate((i-4)*.047+sin(el*.13)*.018);
+    ellipse(0,0,rr*1.95,rr*.62);pop();
+   }
+   for(let i=0;i<25;i++){
+    const a=i*TWO_PI/25+.03,r=65+(i%3)*16,r2=270+(i%5)*35+Math.min(el,24)*3;
+    stroke(i%3===0?color(248,224,255,125):color(130,242,227,85));strokeWeight(i%4===0?2.3:1.0);
+    line(fz.x+cos(a)*r,fz.y+sin(a)*r*.72,fz.x+cos(a)*r2,fz.y+sin(a)*r2*.72);
+   }
+   // 演出後半に一度だけ時空が切り替わる閃光。
+   if(el>=22&&el<28){noStroke();fill(206,250,241,110*(1-abs(el-25)/3));rect(-300,-300,stage.w+600,stage.h+600);}
+ }
+ if(fzType==='domain'){
+   // 無量空処：無数の情報と星が放射する深い虚空。
+   noStroke();fill(5,7,22,188);rect(-300,-300,stage.w+600,stage.h+600);
+   const pulse=1+Math.sin(el*.32)*.06;
+   noFill();stroke('#8bb9ff');strokeWeight(2);
+   for(let k=0;k<7;k++){const r=(90+k*62+el*3)*pulse;stroke(152,165,255,80-k*7);ellipse(fz.x,fz.y,r*2,r*.72);}
+   for(let i=0;i<115;i++){
+     const an=i*2.39996,rad=16+Math.sqrt(i)*37;
+     const x=fz.x+Math.cos(an)*rad,y=fz.y+Math.sin(an)*rad*.73;
+     fill(i%5===0?'#ffffff':i%2?'#b8bdff':'#89e8ff');noStroke();
+     circle(x,y,i%7===0?4:1.6);
+     if(i%9===0){stroke(161,191,255,80);line(x-12,y,x+12,y);line(x,y-12,x,y+12);}
+   }
+ }
  if(fzType==='dragon'){
-   // 龍拳の巨大な黄金龍：命中位置を渦巻く頭と尾
-   noFill();stroke('#ffb638');strokeWeight(26);
-   bezier(fz.x-190,fz.y+95,fz.x-130,fz.y-105,fz.x+140,fz.y+140,fz.x+90,fz.y-80);
-   stroke('#fff4bd');strokeWeight(10);
-   bezier(fz.x-190,fz.y+95,fz.x-130,fz.y-105,fz.x+140,fz.y+140,fz.x+90,fz.y-80);
-   noStroke();fill('#ffd460');ellipse(fz.x+94,fz.y-82,72,47);
-   triangle(fz.x+65,fz.y-94,fz.x+48,fz.y-126,fz.x+97,fz.y-105);
-   triangle(fz.x+113,fz.y-96,fz.x+136,fz.y-120,fz.x+123,fz.y-72);
-   fill('#fffef0');ellipse(fz.x+108,fz.y-88,12,9);fill('#9d3517');circle(fz.x+110,fz.y-88,4);
-   noFill();stroke('#ffe7a0');strokeWeight(3);arc(fz.x+116,fz.y-64,33,16,-PI*.1,PI*.7);
+   // 龍拳カットイン：獣の形はゼロ。天空を裂く金の光柱＋拳の残光。
+   const flicker=.84+.16*Math.sin(el*.65),y0=fz.y+145,y1=fz.y-205;
+   noFill();strokeCap(ROUND);
+   stroke(210,87,8,58*flicker);strokeWeight(69);line(fz.x-27,y0,fz.x+46,y1);
+   stroke(255,156,20,145*flicker);strokeWeight(38);line(fz.x-25,y0,fz.x+44,y1);
+   stroke(255,220,87,230*flicker);strokeWeight(18);line(fz.x-22,y0,fz.x+42,y1);
+   stroke(255,255,229,240*flicker);strokeWeight(5);line(fz.x-21,y0,fz.x+42,y1);
+   // 上へ走る高速の斬光と金色の稲妻
+   for(let i=0;i<18;i++){
+     const off=(i-8.5)*25,y=fz.y+130-(i%5)*70-(el%5)*16;
+     stroke(i%3===0?color(255,255,219,220):color(255,171,39,146));
+     strokeWeight(i%4===0?3.5:1.6);
+     line(fz.x+off-18,y+24,fz.x+off+32,y-43);
+   }
+   // 衝撃の同心弧はあくまで輪郭線（龍の頭などは作らない）。
+   stroke(255,241,148,105);strokeWeight(3);noFill();
+   for(let i=0;i<5;i++)arc(fz.x+24,fz.y-85,130+i*44,35+i*15,-PI*.78,PI*.74);
  }
  if(fzType==='blackflash'){
-   // 黒閃の黒い閃光・紫の縁光：中央に黒を残す
-   noStroke();fill('#030108');ellipse(fz.x,fz.y,190,152);
-   noFill();stroke('#ca8dff');strokeWeight(5);
-   for(let i=0;i<12;i++){
-    const an=i*TWO_PI/12,rr=40+(i%3)*12;
-    const x=fz.x+cos(an)*rr,y=fz.y+sin(an)*rr;
-    line(x,y,x+cos(an)*175,y+sin(an)*142);
+   // 黒閃カットイン：黒い丸・球体を描かず、空間の裂け目と赤い雷のみ。
+   // 斜めの黒い亀裂は「線」であり塗り潰しの楕円は使わない。
+   strokeCap(ROUND);strokeJoin(MITER);noFill();
+   for(let i=0;i<11;i++){
+     const ang=i*TWO_PI/11+.11,spread=(i%4)*17;
+     const x=fz.x+Math.cos(ang)*12,y=fz.y+Math.sin(ang)*10;
+     const mx=fz.x+Math.cos(ang)*(61+spread)-Math.sin(ang)*(i%2?13:-13);
+     const my=fz.y+Math.sin(ang)*(44+spread)+Math.cos(ang)*(i%2?13:-13);
+     const ex=fz.x+Math.cos(ang)*(205+spread),ey=fz.y+Math.sin(ang)*(154+spread);
+     // 奥の黒い亀裂、周囲の赤い発光、中心の白赤い電光。
+     stroke(13,2,8,235);strokeWeight(13);
+     line(x,y,mx,my);line(mx,my,ex,ey);
+     stroke(241,21,45,225);strokeWeight(5);
+     line(x+3,y+2,mx+3,my+2);line(mx+3,my+2,ex+3,ey+2);
+     if(i%3===0){stroke(255,186,179,200);strokeWeight(2);line(x+6,y,mx+5,my);}
    }
-   stroke('#fff4ff');strokeWeight(2);circle(fz.x,fz.y,107);
+   // 大きな球体ではなく一直線の赤い閃光。
+   stroke(255,58,61,120);strokeWeight(21);line(fz.x-240,fz.y+106,fz.x+220,fz.y-102);
+   stroke(255,240,231,215);strokeWeight(3);line(fz.x-240,fz.y+106,fz.x+220,fz.y-102);
  }
  if(a)drawFighter(a);if(c&&c!==a)drawFighter(c);pop();
 }
+function paintDomainCutin(){
+ const el=freezeMax-freezeT;
+ const q=Math.min(1,el/11),a=Math.min(q,Math.max(0,freezeT/11));
+ push();
+ // 画面の両端から黒紺の帯が閉じて虚空へ切り替わる。
+ noStroke();fill(3,6,17,208*a);rect(0,WH*.50,W,WH*.40);
+ stroke('#929eff');strokeWeight(1.5*a);
+ for(let i=0;i<19;i++){
+  const x=i*W/18;
+  line(x,WH*.50,x+(x-W*.5)*.15,WH*.14);
+ }
+ noFill();stroke(143,188,255,140*a);strokeWeight(2.5);
+ ellipse(W*.72,WH*.32,150+el*5,45+el);
+ ellipse(W*.72,WH*.32,250+el*8,75+el*2);
+ textAlign(LEFT,CENTER);textStyle(BOLD);textSize(21);noStroke();fill('#9ab0ff');
+ text('領域展開',32-(1-q)*180,WH*.63);
+ textSize(67);fill('#f3f6ff');stroke('#1b2457');strokeWeight(6);
+ text('無量空処',28-(1-q)*225,WH*.79);
+ noStroke();fill('#b7c9f9');textSize(12);text('果てしない情報の海へ',34,WH*.89);
+ pop();
+}
+function paintJotaroTimeStopCutin(){
+ if(!fz)return;
+ const t=1-freezeT/Math.max(1,freezeMax);
+ const slide=1-Math.pow(1-Math.min(1,t*5.5),3);
+ push();
+ noStroke();fill('#080a16');rect(0,0,W,23);rect(0,WH-23,W,23);
+ if(t>.39&&t<.49){fill(231,255,247,170*(1-abs(t-.44)/.05));rect(0,0,W,WH);}
+ const y=WH*.745;
+ fill(8,9,25,235);quad(0,y-48,W,y-73,W,y+52,0,y+67);
+ fill('#9164c4');quad(0,y-48,W*.74,y-66,W*.74,y-60,0,y-40);
+ fill('#a5f2dc');quad(0,y-38,W*.64,y-49,W*.64,y-44,0,y-34);
+ textAlign(LEFT,CENTER);textFont('sans-serif');textStyle(BOLD);
+ stroke('#100c24');strokeWeight(7);fill('#faf3ff');textSize(61);
+ text('時よ止まれ！',28-(1-slide)*W*.65,y-5);
+ noStroke();fill('#b9fff0');textSize(16);text('スタープラチナ・ザ・ワールド',31,y+45);
+ textSize(11);fill('#d1bfec');text('空条承太郎',32,y+69);
+ // 時間の停止を象徴する、割れた時計針。目立ちすぎない控えめな装飾。
+ noFill();stroke(194,173,237,95);strokeWeight(1.8);
+ const cx=W*.83,cy=WH*.34,r=78;
+ ellipse(cx,cy,r*2,r*2);
+ for(let i=0;i<12;i++){
+  const a=i*TWO_PI/12;
+  line(cx+cos(a)*(r-10),cy+sin(a)*(r-10),cx+cos(a)*r,cy+sin(a)*r);
+ }
+ stroke('#d7fff6');strokeWeight(3);
+ line(cx,cy,cx-26,cy-34);line(cx,cy,cx+43,cy-16);
+ pop();
+}
 function paintImpactText(){
+ if(fzType==='timestopcin'){paintJotaroTimeStopCutin();return;}
  if(fzType==='gear'){paintGearCutin();return;}
  if(fzType==='animeform'){paintAnimeFormCutin();return;}
+ if(fzType==='domain'){paintDomainCutin();return;}
  const el=freezeMax-freezeT,t=el/freezeMax,q=Math.min(1,t/.16);
- const theme=fzType==='gear'?['GEAR '+(fz?.lv||2),GEAR_JP[fz?.lv||2]+' 発動',GEAR_COL[fz?.lv||2]]:fzType==='rage'?['RAGE IGNITION','怒りを解き放て','#ff5549']:fzType==='dragon'?['DRAGON FIST','龍拳、炸裂！！','#ffe783']:fzType==='blackflash'?['BLACK FLASH','黒閃——決定的一撃','#bd72ff']:fzType==='ko'?['K.O. UPPERCUT','一撃で、決めろ','#ffd55e']:['COUNTER','読み勝った、その一瞬','#81e5ff'];
+ const theme=fzType==='rage'?['RAGE IGNITION','怒りを解き放て','#ff5549']:fzType==='dragon'?['龍拳','限界を超える一撃','#ffe783']:fzType==='blackflash'?['黒閃','黒と紅の衝撃','#ff354b']:fzType==='ko'?['K.O. UPPERCUT','一撃で、決めろ','#ffd55e']:['COUNTER','読み勝った、その一瞬','#81e5ff'];
  push();noStroke();fill('#050b15');rect(0,0,W,24);rect(0,WH-24,W,24);
  if(el<3){fill(245,248,240,95*(1-el/3));rect(0,0,W,WH);}
  const y=WH*.75;fill(theme[2]);quad(-60+(1-q)*-250,y-32,W*.78+(1-q)*-250,y-52,W*.72+(1-q)*-250,y+38,-60,y+58);
- textAlign(LEFT,CENTER);textStyle(BOLDITALIC);textSize(['ko','dragon','blackflash'].includes(fzType)?49:57);fill('#0d1725');text(theme[0],24-(1-q)*250,y);
- textStyle(BOLD);textSize(11);fill('#e7eef9');text(theme[1],26,y+81);pop();
+ textAlign(LEFT,CENTER);
+ // 漢字を斜体ラテン字体へ任せず、日本語対応フォントを明示。
+ if(fzType==='dragon'||fzType==='blackflash'){
+  textFont('sans-serif');textStyle(BOLD);textSize(76);
+  stroke('#090a12');strokeWeight(9);fill('#fff9e9');
+  text(theme[0],26-(1-q)*250,y-8);
+  noStroke();fill(theme[2]);textSize(16);textStyle(BOLD);
+  text(theme[1],30,y+75);
+ }else{
+  textStyle(BOLDITALIC);textSize(['ko','dragon','blackflash'].includes(fzType)?49:57);
+  fill('#0d1725');text(theme[0],24-(1-q)*250,y);
+  textStyle(BOLD);textSize(11);fill('#e7eef9');text(theme[1],26,y+81);
+ }
+ pop();
 }
 
 function applyInputMode(){
@@ -5030,6 +5363,34 @@ function drawNewScenery(c,th,w,h){
   poly([[130,172],[167,219],[130,203],[97,220]],'#9ebac4');poly([[365,120],[428,194],[363,165],[320,185]],'#d0e0df');poly([[681,170],[722,218],[678,199],[649,210]],'#a1c5cf');
   poly([[0,382],[170,338],[325,370],[490,332],[650,371],[800,349],[800,450],[0,450]],'#38586b');
  }
+ if(th.kind==='sunset'){
+  const sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#261a40');sky.addColorStop(.7,'#bf6e72');sky.addColorStop(1,'#d19c70');c.fillStyle=sky;c.fillRect(0,0,w,h);
+  c.fillStyle='#f8c38b';c.beginPath();c.arc(w*.76,h*.28,64,0,Math.PI*2);c.fill();
+  for(let i=0;i<4;i++){const pts=[[0,h]];for(let x=0;x<=w;x+=45)pts.push([x,305+i*25+Math.sin(x*.009+i)*28]);pts.push([w,h]);poly(pts,['#83526a','#6b4762','#533b57','#3a344b'][i]);}
+  for(let i=0;i<5;i++){const x=22+i*160;poly([[x,330],[x+28,225-(i%2)*58],[x+65,330]],'#44364d');}
+ }
+ if(th.kind==='metro'){
+  for(let row=0;row<2;row++)for(let i=0;i<20;i++){
+   const x=i*46+row*15,y=185+row*52-((i*47+row*73)%100);
+   c.fillStyle=row?'#172742':'#14213a';c.fillRect(x,y,37,350);
+   for(let j=0;j<8;j++)for(let k=0;k<3;k++){
+    c.fillStyle=(i+j+k)%5===0?'#81e2ff33':'#e9c0ff22';c.fillRect(x+5+k*11,y+10+j*16,4,7);
+   }
+  }
+  line(0,357,w,320,'#6bbbe64a',3);line(0,379,w,345,'#86f6ff22',4);
+ }
+ if(th.kind==='orbit'){
+  c.fillStyle='#e0f1ff';c.beginPath();c.arc(w*.79,h*.19,33,0,Math.PI*2);c.fill();
+  for(let i=0;i<4;i++){
+   const y=260+i*22;line(0,y,w,y-20,'#c1e5ff1a',4);
+  }
+  for(let i=0;i<9;i++){
+   const x=35+i*100,y=300+(i%3)*33;
+   poly([[x,y],[x+75,y-15],[x+93,y+38],[x+10,y+51]],'#3b5679');
+   line(x+10,y+11,x+68,y,'#9baeca75',2);
+  }
+ }
+
 }
 function stageBackdropSVG(id){
  const k=themes[id].kind;
@@ -5037,11 +5398,14 @@ function stageBackdropSVG(id){
  if(k==='harbor')return '<path d="M0 42h100v15H0z" fill="#31566b"/><path d="M19 42V14L43 9M40 10v19M70 43V18l23-8" fill="none" stroke="#66848c" stroke-width="1.5"/>';
  if(k==='reactor')return '<circle cx="50" cy="25" r="15" fill="none" stroke="#acda9860" stroke-width="2"/><path d="M50 13l6 12-6 12-6-12z" fill="#bde7a1"/><path d="M10 7v40M90 7v40" stroke="#4d6c5c" stroke-width="5"/>';
  if(k==='aurora')return '<path d="M0 13Q26 30 53 12T100 14" fill="none" stroke="#83dbc56a" stroke-width="5"/><path d="M0 48l26-26 16 19L62 18l38 30" fill="#527285"/><path d="M62 18l10 13-12-5-6 2z" fill="#c0dddd"/>';
+ if(k==='sunset')return '<circle cx="80" cy="17" r="12" fill="#f9b46b"/><path d="M0 47L22 25 44 45 67 25 100 45V57H0" fill="#7d4152"/>';
+ if(k==='metro')return '<path d="M0 54V28H13V10H22V31H38V16H50V54M61 54V25H75V5H85V54" fill="#152949" stroke="#63c6fc" stroke-width="1"/>';
+ if(k==='orbit')return '<path d="M0 45L26 19 47 45 73 17 100 46" fill="none" stroke="#89aede" stroke-width="2"/><path d="M5 49h35m22 0h33" stroke="#c8dcff" stroke-width="4"/>';
  return '<circle cx="76" cy="13" r="9" fill="'+themes[id].accent+'20"/><path d="M0 50L25 22 40 40 67 19 100 48V57H0Z" fill="#080f1e40"/>';
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_17_DRAGON_BLACKFLASH_V8';
+const NET_PROTOCOL='SBO_NET_17_JOTARO_TIMESTOP_CUTIN_V12';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -5073,10 +5437,12 @@ function enqueueCinematic(kind,data,cid){
  cinQueue.push({kind,data});pumpCinematics();return true;
 }
 function validCinematic(kind,d){
- if(!d||!['senku','counter','ko','rage','gear','animeform'].includes(kind))return false;
+ if(!d||!['senku','counter','ko','rage','gear','animeform','domain','timestop'].includes(kind))return false;
  if(!Number.isFinite(d.x)||!Number.isFinite(d.y))return false;
  if(kind==='senku')return typeof d.eid==='string'&&!!byId(d.id)&&(d.dir===1||d.dir===-1);
  if(kind==='rage')return !!byId(d.id);
+ if(kind==='domain')return !!byId(d.id)&&byId(d.id).cid==='gojo';
+ if(kind==='timestop')return !!byId(d.id)&&byId(d.id).cid==='jotaro';
  if(kind==='gear')return !!byId(d.id)&&Number.isInteger(d.lv)&&d.lv>=2&&d.lv<=5;
  if(kind==='animeform')return !!byId(d.id)&&['goku','tanjiro','naruto'].includes(d.cid)&&d.cid===byId(d.id).cid&&Number.isInteger(d.form)&&d.form>=1&&d.form<=3&&typeof d.title==='string'&&d.title.length<=64;
  if(kind==='ko')return !!byId(d.a)&&!!byId(d.t);
@@ -5107,6 +5473,8 @@ function pumpCinematics(){
   else if(cmd.kind==='rage')doRageTransform(cmd.data,true);
   else if(cmd.kind==='gear')doGearShift(cmd.data);
   else if(cmd.kind==='animeform')animeFormShift(cmd.data);
+  else if(cmd.kind==='domain')beginDomainCutin(cmd.data);
+  else if(cmd.kind==='timestop')beginJotaroTimeStopCutin(cmd.data);
   else startKOFreeze(cmd.data);
  }finally{cinDispatching=false;}
  if(freezeT<=0){activeCinematic=null;pumpCinematics();}
