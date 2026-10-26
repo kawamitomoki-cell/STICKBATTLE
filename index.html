@@ -14,7 +14,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}html,body{width:100%;height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:var(--paper);font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',system-ui,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}button,input{font:inherit}button{cursor:pointer;border:0;color:inherit}button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}button{transition:transform .12s,background .12s,box-shadow .12s}button:active{transform:translateY(2px) scale(.985)}input{user-select:text;-webkit-user-select:text}svg{display:block}button small{pointer-events:none}body{padding:env(safe-area-inset-top) max(8px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(8px,env(safe-area-inset-left))}
 .screen{position:fixed;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:20px;padding:64px 28px 28px;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;background:radial-gradient(ellipse at 90% 30%,#26334688,transparent 60%),repeating-linear-gradient(120deg,transparent 0 139px,#ffffff03 140px 141px),var(--bg)}.screen:before{content:'STICK BATTLE ONLINE';position:absolute;top:max(20px,env(safe-area-inset-top));left:28px;letter-spacing:3px;font-size:10px;font-weight:900;color:#c9d0dc}.screen>*{flex-shrink:0}.hd{width:min(1100px,100%);font-size:clamp(28px,5vw,50px);font-weight:950;font-style:italic;letter-spacing:-1px;line-height:1.1;border-left:7px solid var(--red);padding-left:16px}.hd small{display:block;color:var(--muted);font-size:11px;letter-spacing:3px;font-weight:500;font-style:normal;margin-top:8px}
 /* Title: a full-bleed versus illustration and oversized identity. */
-#sc-title{padding:30px;isolation:isolate;justify-content:center;background:radial-gradient(ellipse at 65% 25%,#293747,#0c1019 70%);cursor:pointer}#sc-title:before{content:'LUFFY JOINS / 12 FIGHTERS';color:#aeb9ca}#sc-title:after{content:'スティックバトルオンライン';position:absolute;bottom:20px;left:28px;font-size:11px;letter-spacing:3px;color:#aeb9ca}.title-art{position:absolute;inset:0;z-index:-1;overflow:hidden}.title-art svg{height:100%;width:100%;object-fit:cover}.title-art:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#0c1019b0,transparent 70%)}.title-content{width:min(1100px,100%);position:relative}.title-kicker{color:var(--gold);letter-spacing:5px;font-size:11px;font-weight:900;margin-bottom:20px}.logo{font-family:Impact,'Arial Black',system-ui,sans-serif;font-weight:1000;font-style:italic;font-size:clamp(68px,12vw,154px);line-height:.83;letter-spacing:-4px;text-shadow:0 5px 0 #0005;transform:skew(-5deg);width:max-content}.logo em{display:block;color:var(--red);font-style:inherit}.logo small{display:block;letter-spacing:clamp(8px,2vw,22px);font-size:clamp(22px,4vw,40px);line-height:1.2;margin-top:12px;color:var(--paper);font-style:normal}.title-desc{font-size:12px;letter-spacing:3px;color:#b6c0d0;margin-top:25px}.tap{display:inline-flex;margin-top:34px;background:var(--paper);color:#131720;padding:17px 30px;font-size:14px;font-weight:900;letter-spacing:1px;clip-path:polygon(0 0,100% 0,calc(100% - 13px) 100%,0 100%);animation:breathe 2.5s ease-in-out infinite}.tap:after{content:'↗';margin-left:32px;font-size:18px}.version-label{color:#ffffff40;font-size:10px;position:absolute;bottom:20px;right:28px;letter-spacing:2px}@keyframes breathe{50%{box-shadow:0 0 32px #ff493f50;filter:brightness(.88)}}
+#sc-title{padding:30px;isolation:isolate;justify-content:center;background:radial-gradient(ellipse at 65% 25%,#293747,#0c1019 70%);cursor:pointer}#sc-title:before{content:'SECRET COMMANDS / 16 FIGHTERS';color:#aeb9ca}#sc-title:after{content:'スティックバトルオンライン';position:absolute;bottom:20px;left:28px;font-size:11px;letter-spacing:3px;color:#aeb9ca}.title-art{position:absolute;inset:0;z-index:-1;overflow:hidden}.title-art svg{height:100%;width:100%;object-fit:cover}.title-art:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#0c1019b0,transparent 70%)}.title-content{width:min(1100px,100%);position:relative}.title-kicker{color:var(--gold);letter-spacing:5px;font-size:11px;font-weight:900;margin-bottom:20px}.logo{font-family:Impact,'Arial Black',system-ui,sans-serif;font-weight:1000;font-style:italic;font-size:clamp(68px,12vw,154px);line-height:.83;letter-spacing:-4px;text-shadow:0 5px 0 #0005;transform:skew(-5deg);width:max-content}.logo em{display:block;color:var(--red);font-style:inherit}.logo small{display:block;letter-spacing:clamp(8px,2vw,22px);font-size:clamp(22px,4vw,40px);line-height:1.2;margin-top:12px;color:var(--paper);font-style:normal}.title-desc{font-size:12px;letter-spacing:3px;color:#b6c0d0;margin-top:25px}.tap{display:inline-flex;margin-top:34px;background:var(--paper);color:#131720;padding:17px 30px;font-size:14px;font-weight:900;letter-spacing:1px;clip-path:polygon(0 0,100% 0,calc(100% - 13px) 100%,0 100%);animation:breathe 2.5s ease-in-out infinite}.tap:after{content:'↗';margin-left:32px;font-size:18px}.version-label{color:#ffffff40;font-size:10px;position:absolute;bottom:20px;right:28px;letter-spacing:2px}@keyframes breathe{50%{box-shadow:0 0 32px #ff493f50;filter:brightness(.88)}}
 /* Main navigation */
 .mode-grid{width:min(1100px,100%);display:grid;grid-template-columns:1.3fr 1fr;gap:16px}.big{position:relative;text-align:left;overflow:hidden;padding:28px;background:var(--paper);color:#161b25;font-weight:900;min-height:110px;width:min(560px,100%);display:flex;flex-direction:column;justify-content:flex-end;gap:9px;border-radius:3px;isolation:isolate}.big small{font-size:12px;font-weight:600;opacity:.75;line-height:1.5}.big b{font-size:clamp(24px,4vw,42px);font-style:italic;letter-spacing:-1px}.big .mode-no{position:absolute;top:20px;left:24px;font-size:11px;letter-spacing:3px;opacity:.7}.mode-grid .big{width:100%;min-height:230px}.mode-grid #go-cpu{background:var(--red);color:white;grid-row:span 2;min-height:390px}.mode-grid #go-online{background:var(--gold)}.mode-grid #go-howto{min-height:145px;background:#253044;color:#e9edf5}.mode-art{position:absolute;width:200px;height:200px;right:-15px;top:20px;opacity:.28;z-index:-1;transform:rotate(-12deg)}
 /* Fighter selection */
@@ -81,7 +81,7 @@ input,textarea,select{touch-action:manipulation}.mu{width:100%;border-collapse:c
 
 <div id="sc-title" class="screen" style="display:flex">
  <div class="title-art"></div><div class="title-content"><div class="title-kicker">ONE ARENA. NO LIMITS.</div>
- <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">12人のファイター。勝負を決める、ただ一撃。</p>
+ <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">16人のファイター。勝負を決める、ただ一撃。</p>
  <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">LUFFY / TEAM BATTLE</div>
 </div>
 <div id="sc-mode" class="screen">
@@ -166,7 +166,8 @@ input,textarea,select{touch-action:manipulation}.mu{width:100%;border-collapse:c
     ・攻撃を当てると相手の<b>ダメージ％</b>が増え、％が高いほど遠くへ吹っ飛ぶ。<br>
     ・画面の外へ吹っ飛ばすと<b>撃墜</b>。残機（1〜5）が0になったら脱落、最後の1人が勝ち。<br>
     ・<b>2〜8人</b>で対戦。CPU戦はCPU 1〜7体、オンラインは人＋CPUで最大8人。<br>
-    ・<b>チーム戦</b>ではRED／BLUEの2チームに分かれ、味方への攻撃・弾・爆発は当たらない。相手チームを全滅させれば勝利。<br>
+    ・<b>隠し4人の技</b>は特殊／上＋特殊／下＋特殊／横＋特殊の4方向で発動。特殊長押しは悟空のかめはめ波と五条の茈。<br>
+     ・<b>チーム戦</b>ではRED／BLUEの2チームに分かれ、味方への攻撃・弾・爆発は当たらない。相手チームを全滅させれば勝利。<br>
     ・武器（剣・銃）は<b>初期設定でなし</b>。ステージ選択で「あり」にすると降ってくる。剣は5回ほど振ると壊れる。
     <h3>三すくみ</h3>
     ・<b>溜め攻撃 ＞ 通常攻撃</b>：溜め中は通常攻撃でひるまない（ARMOR!）<br>
@@ -418,13 +419,18 @@ const SECRET_IDS=['rubber',...ANIME_IDS];
 const ANIME_COLORS={rubber:'#e8bb66',goku:'#ffb445',gojo:'#a48cff',tanjiro:'#5cdbc1',naruto:'#ffb558'};
 const ANIME_COMMON={ctx:0,back:false,ctc:1,dgc:1,dgs:1,jumps:2,size:1};
 Object.assign(CHARS,{
- goku:{...ANIME_COMMON,name:'孫悟空',en:'SON GOKU',mark:'悟',spd:1.08,jump:1.05,wt:.94,pow:1.14,st:[4,4,3],sp:'特殊を長押し：気を溜める。離すと気弾、1.5秒溜めて離すとかめはめ波。溜め中は移動不可。気MAX＋下特殊で超サイヤ人→超2→超3',up:'舞空昇撃：気をまとって上昇する攻撃',ab:'殴ると気が増える。変身するほど火力・速度・吹っ飛ばしが上昇。超3は12秒の決着形態、終了すると通常へ。超3中は気を補充できない'},
- gojo:{...ANIME_COMMON,name:'五条悟',en:'SATORU GOJO',mark:'無',spd:1.04,jump:1.05,wt:.98,pow:1.05,st:[3,5,3],sp:'短押し：蒼（術式18）で吸引。0.6秒長押し：赫（術式30）で反発。MAX＋下特殊：虚式「茈」。MAX＋上特殊：無量空処',up:'術式MAXなら無量空処：敵だけ3秒スロー。通常時は瞬間移動で復帰（術式10）',ab:'術式は時間・命中で回復。無下限は16消費して通常攻撃・気弾を自動防御。発動後0.4秒は再防御不可。連打・爆発・大技は対抗手段になる'},
- tanjiro:{...ANIME_COMMON,name:'竈門炭治郎',en:'TANJIRO',mark:'水',spd:1.08,jump:1.02,wt:.98,pow:1.04,st:[4,4,3],sp:'通常は斬り→返し斬り→水車の3連コンボ。特殊を短押しすると水面斬り→水車→打ち潮の順で発動。呼吸MAXで特殊を0.7秒長押し：ヒノカミ神楽',up:'水車：縦回転の斬撃で復帰。神楽中は炎の円舞へ変化',ab:'呼吸は命中で大きく、時間でも少し回復。神楽は10秒間、火力・吹っ飛ばし・機動力が上昇。終了後は2秒間スタミナ切れ'},
- naruto:{...ANIME_COMMON,name:'うずまきナルト',en:'NARUTO',mark:'忍',spd:1.13,jump:1.08,wt:.96,pow:1.05,st:[5,3,3],sp:'特殊短押し：影分身を1体、6秒間召喚（チャクラ15）。分身は0.5秒遅れて通常攻撃。0.5秒長押しして離す：螺旋丸で突進（チャクラ20）',up:'分身踏み台：空中の分身を蹴って大きく上昇',ab:'MAX＋下特殊で九尾チャクラモード、10秒間高速化・リーチ増加・螺旋丸強化。分身は同時に1体まで。敵を殴るとチャクラが増える'}
+ goku:{...ANIME_COMMON,name:'孫悟空',en:'SON GOKU',mark:'悟',spd:1.08,jump:1.05,wt:.94,pow:1.14,st:[4,4,3],sp:'特殊：気弾／長押しして離すとかめはめ波（移動チャージ可能）。下特殊：気を溜める→MAXで再入力すると超サイヤ人→2→3',up:'通常～超2：攻撃なしの大ジャンプ。超3：龍拳（当てれば確定級の超必殺）',ab:'横特殊で安全な足場に瞬間移動。超2の溜め攻撃はガード貫通。超3は通常パンチから超強吹っ飛ばし。気弾はダメージ専用'},
+ gojo:{...ANIME_COMMON,name:'五条悟',en:'SATORU GOJO',mark:'無',spd:1.04,jump:1.05,wt:.98,pow:1.05,st:[3,5,3],sp:'特殊：術式ゲージMAXで領域展開「無量空処」（範囲内の敵を停止）。横特殊：蒼か赫の球を発射／長押しで茈',up:'上特殊：攻撃判定のない大ジャンプ。下特殊：反転術式で術式ゲージを消費しダメージ％回復',ab:'無下限により飛び道具を常時無効。蒼はダメージ、赫は吹っ飛ばし、茈は超高火力。無量空処は周囲の敵を一時停止'},
+ tanjiro:{...ANIME_COMMON,name:'竈門炭治郎',en:'TANJIRO',mark:'水',spd:1.08,jump:1.02,wt:.98,pow:1.12,st:[4,4,3],sp:'通常攻撃は日輪刀。特殊＝壱ノ型 水面斬り／横特殊＝参ノ型 流流舞い／上特殊＝弐ノ型 水車',up:'下特殊で呼吸ゲージMAX時にヒノカミ神楽へ。神楽中：特殊＝碧羅の天、横＝烈日紅鏡、上＝飛輪陽炎、下＝幻日虹',ab:'水の呼吸は高火力の剣技。ヒノカミ神楽は18秒、火力と吹っ飛ばしが大幅強化。幻日虹は残像を残して攻撃を回避'},
+ naruto:{...ANIME_COMMON,name:'うずまきナルト',en:'NARUTO',mark:'忍',spd:1.13,jump:1.08,wt:.96,pow:1.05,st:[5,3,3],sp:'特殊＝螺旋丸、横特殊＝螺旋手裏剣（長距離投射）、下特殊＝チャクラ解放・2段変身',up:'上特殊：一瞬で上へ移動する高速瞬身（攻撃判定なし）',ab:'ゲージMAXで仙人モード→さらにMAXで九尾チャクラモード。仙人は強化継続、九尾は15秒間の超高火力'}
+
 });
 const ANIME_MOVES={
  gupper:{type:'normal',act0:3,act1:13,end:24,reach:8,R:27,yo:60,cd:8},
+ gdragon:{type:'heavy',act0:4,act1:18,end:31,reach:27,R:43,yo:66,cd:14,glow:3},
+ tazure:{type:'heavy',act0:6,act1:12,end:23,reach:52,R:34,yo:40,cd:8},
+ tredmirror:{type:'heavy',act0:6,act1:18,end:35,reach:88,R:32,yo:36,cd:12,line:1,multi:7},
+ tflame:{type:'heavy',act0:3,act1:16,end:29,reach:20,R:42,yo:63,cd:10},
  tcut1:{type:'normal',act0:4,act1:8,end:17,reach:43,R:24,yo:34,cd:2},
  tcut2:{type:'normal',act0:4,act1:9,end:18,reach:48,R:25,yo:33,cd:2},
  twheel:{type:'normal',act0:5,act1:13,end:25,reach:29,R:38,yo:42,cd:6},
@@ -438,16 +444,16 @@ const ANIME_MOVES={
 };
 let animeFx=[],animeClock=0;
 function isAnime(p){return !!p&&ANIME_IDS.includes(p.cid);}
-function animeInit(p){Object.assign(p,{energy:p.cid==='gojo'?45:p.cid==='naruto'?25:0,form:0,modeT:0,fatigue:0,infinityCd:0,slowT:0,combo:0,comboT:0,waterForm:0,cloneT:0,echoQueue:[],castFired:false,boostFlash:0});}
-function animeGain(p,n){if(!isAnime(p)||!isLocal(p)||p.out||p.fatigue>0||p.modeT>0||(p.cid==='goku'&&p.form===3))return;p.energy=Math.min(100,(p.energy||0)+n);}
+function animeInit(p){Object.assign(p,{energy:p.cid==='gojo'?45:p.cid==='naruto'?25:0,form:0,modeT:0,fatigue:0,infinityCd:0,domainT:0,slowT:0,combo:0,comboT:0,waterForm:0,cloneT:0,echoQueue:[],castFired:false,boostFlash:0,orbColor:'blue',castStyle:'',teleportCd:0,projectileSlipT:0});}
+function animeGain(p,n){if(!isAnime(p)||!isLocal(p)||p.out||p.fatigue>0||(p.cid==='goku'&&p.form===3)||(p.cid==='naruto'&&p.form===2))return;p.energy=Math.min(100,(p.energy||0)+n);}
 function animeStats(p){
- if(p.cid==='goku'){const g=p.form||0;return{spd:[1,1.16,1.3,1.55][g],dm:[1,1.24,1.5,1.95][g],kb:[1,1.13,1.35,1.7][g]};}
- if(p.cid==='tanjiro'&&p.modeT>0)return{spd:1.18,dm:1.65,kb:1.45};
- if(p.cid==='naruto'&&p.modeT>0)return{spd:1.4,dm:1.4,kb:1.4};
+ if(p.cid==='goku'){const g=p.form||0;return{spd:[1,1.15,1.28,1.52][g],dm:[1,1.3,1.58,2.05][g],kb:[1,1.18,1.42,1.88][g]};}
+ if(p.cid==='tanjiro'&&p.modeT>0)return{spd:1.24,dm:2.02,kb:1.69};
+ if(p.cid==='naruto'){const f=p.form||0;return{spd:[1,1.26,1.53][f],dm:[1,1.55,2.15][f],kb:[1,1.35,1.88][f]};}
  return{spd:p.fatigue>0?.62:1,dm:1,kb:1};
 }
 function animeSlow(p){return p.slowT>0?.38:1;}
-function animeLocked(p){return isAnime(p)&&((p.cid==='goku'&&p.sph>=12)||p.mv?.kind==='purplecast'||p.mv?.kind==='beamcast');}
+function animeLocked(p){return isAnime(p)&&((p.cid==='goku'&&p.castStyle==='beamcast'&&p.a>0)||p.mv?.kind==='purplecast');}
 function animeNotice(p,txt,col=ANIME_COLORS[p.cid]){popups.push({x:p.x,y:p.y-115,txt,life:46,max:46,size:18,c:col});}
 function animeSound(kind){
  if(kind==='charge'){tone(180,650,.18,.045,'triangle');return;}
@@ -457,84 +463,149 @@ function animeSound(kind){
  if(kind==='blue'){tone(620,90,.36,.13,'sine');noiseHit(.18,.15,1200);return;}
  if(kind==='red'){tone(150,36,.24,.28,'sine');noiseHit(.13,.3,2000);return;}
  if(kind==='domain'){tone(75,45,.6,.24,'sine');tone(880,878,.65,.07,'sine');noiseHit(.35,.13,800);return;}
+ if(kind==='dragon'){tone(110,950,.48,.24,'sawtooth');noiseHit(.48,.32,1700);shake=Math.max(shake,17);return;}
  if(kind==='beam'||kind==='purple'){noiseHit(.4,.24,1800);tone(140,36,.42,.25,'sine');tone(780,190,.28,.09,'sawtooth');return;}
  tone(90,32,.3,.23,'sine');noiseHit(.17,.23,1500);tone(320,640,.22,.055,'triangle');
 }
-function animeVisual(e){
- const limit=80;if(animeFx.length>=limit)animeFx.shift();
- animeFx.push({...e,life:e.life||36,max:e.life||36});
- if(e.kind!=='echo'&&e.kind!=='impact')animeSound(e.kind);
-}
+function animeVisual(e){if(animeFx.length>=80)animeFx.shift();animeFx.push({...e,life:e.life||36,max:e.life||36});if(e.kind!=='echo'&&e.kind!=='impact')animeSound(e.kind);}
 function animeEmit(p,kind,data={}){const e={k:'animefx',id:p.id,kind,x:Math.round(p.x),y:Math.round(p.y-34),f:p.f,cid:p.cid,form:p.form||0,boost:p.modeT>0,...data};animeVisual(e);send(e);}
 function animeMove(p,kind,dm,kb,extra={}){const s=animeStats(p);p.mv={...mkMv(kind),dm:dm*s.dm,k0:kb*s.kb,ks:.075,up:.6,...extra};p.a=1;p.hit={};p.sph=0;p.castFired=false;}
 function animeBasic(p,ch){
  if(!isAnime(p)||p.w)return false;
- if(p.cid==='tanjiro'&&ch<CH_TH){p.combo=p.comboT>0?(p.combo+1)%3:0;p.comboT=50;const k=['tcut1','tcut2','twheel'][p.combo];animeMove(p,k,[7,8,11][p.combo],[4,5,8][p.combo]);animeSound('water');return true;}
+ if(p.cid==='tanjiro'&&ch<CH_TH){p.combo=p.comboT>0?(p.combo+1)%3:0;p.comboT=55;const k=['tcut1','tcut2','twheel'][p.combo];animeMove(p,k,[10,11,13][p.combo],[6,7,9][p.combo]);animeSound('water');return true;}
  return false;
 }
 function animeDecorate(p,mv){
  if(!isAnime(p)||p.w||!mv)return;
  const s=animeStats(p);mv.dm*=s.dm;mv.k0*=s.kb;mv.ks*=s.kb;
- if(p.cid==='tanjiro'){mv.reach+=20;mv.R+=4;mv.charSword=true;}
- if(p.cid==='naruto'&&p.modeT>0){mv.reach+=20;mv.R+=5;}
- if(p.cid==='naruto'&&p.cloneT>0){p.echoQueue=p.echoQueue||[];if(p.echoQueue.length<4)p.echoQueue.push({delay:30,dm:mv.dm*.5,k0:mv.k0*.65,ks:mv.ks*.6,reach:mv.reach,kind:mv.kind});}
+ if(p.cid==='goku'){
+   if(p.form>=2&&mv.kind==='charge')mv.pierce=true;
+   if(p.form===3&&mv.kind==='normal'){mv.minKb=17.5;mv.k0=Math.max(mv.k0,15.5);mv.ks=Math.max(mv.ks,.11);}
+ }
+ if(p.cid==='tanjiro'){mv.reach+=22;mv.R+=6;mv.charSword=true;mv.dm*=1.13;}
+ if(p.cid==='naruto'&&p.form>0){mv.reach+=p.form===2?26:13;mv.R+=p.form===2?7:3;}
 }
+// Special button interpretation: neutral / side / up / down are distinct commands.
 function animeStart(p,inp,up=false){
  if(p.spc>0||p.fatigue>0){if(!p.cpu)sfxNo();return;}
- if(up){animeUp(p);return;}
- if(inp.d||inp.gd){animeTransform(p);return;}
- p.sph=1;animeSound('charge');
+ const side=(inp.r?1:0)-(inp.l?1:0);
+ if(up||inp.u){animeUp(p);return;}
+ if(inp.d||inp.gd){animeDown(p);return;}
+ if(side){animeSide(p,side);return;}
+ if(p.cid==='goku'){p.castStyle='ki';p.sph=1;animeSound('charge');}
+ else if(p.cid==='gojo'){animeDomain(p);}
+ else if(p.cid==='tanjiro'){animeTanjiroMove(p,false);}
+ else if(p.cid==='naruto'){animeRasengan(p);}
 }
-function animeTransform(p){
- if(p.energy<100||p.modeT>0||(p.cid==='goku'&&p.form>=3)){if(!p.cpu)sfxNo();return;}
- if(p.cid==='goku'){p.form++;p.energy=p.form===3?100:0;p.spc=28;p.boostFlash=38;animeEmit(p,'transform',{title:['','SUPER SAIYAN','SUPER SAIYAN 2','SUPER SAIYAN 3'][p.form],life:42});}
- else if(p.cid==='gojo'){p.energy=0;p.spc=100;animeMove(p,'purplecast',0,0);animeNotice(p,'虚式「茈」');animeEmit(p,'merge',{life:32});}
- else if(p.cid==='tanjiro'){animeKagura(p);}
- else if(p.cid==='naruto'){p.energy=0;p.modeT=600;p.spc=25;animeEmit(p,'transform',{title:'九尾チャクラモード',life:44});}
+function animeDown(p){
+ if(p.cid==='goku'){
+  if(p.form>=3){sfxNo();return;}
+  if(p.energy>=100){p.form++;p.energy=p.form===3?100:0;p.castStyle='';p.spc=28;p.boostFlash=45;animeEmit(p,'transform',{title:['','SUPER SAIYAN','SUPER SAIYAN 2','SUPER SAIYAN 3'][p.form],life:48});}
+  else{p.castStyle='charge';p.sph=1;animeSound('charge');}
+ }else if(p.cid==='gojo'){
+  if(p.energy<25||p.d<1){sfxNo();return;}
+  const healed=Math.min(26,p.d);p.energy-=25;p.d=Math.max(0,p.d-healed);p.spc=75;animeEmit(p,'heal',{title:'反転術式',life:35});animeNotice(p,'-'+Math.round(healed)+'%','#b9ffe3');
+ }else if(p.cid==='tanjiro'){
+  if(p.modeT>0){animeKaguraDodge(p);return;}
+  if(p.energy>=100)animeKagura(p);else sfxNo();
+ }else if(p.cid==='naruto'){
+  if(p.energy<100||p.form>=2){sfxNo();return;}
+  p.form++;p.energy=0;p.spc=32;p.boostFlash=48;
+  if(p.form===2)p.modeT=900;
+  animeEmit(p,'transform',{title:p.form===1?'仙人モード':'九尾チャクラモード',life:50});
+ }
 }
-function animeKagura(p){if(p.energy<100||p.modeT>0||p.fatigue>0)return;p.energy=0;p.modeT=600;p.sph=0;p.spc=24;animeEmit(p,'transform',{title:'ヒノカミ神楽',life:44});}
+function animeSide(p,side){
+ if(p.cid==='goku'){animeTeleport(p,side);return;}
+ if(p.cid==='gojo'){p.f=side;p.castStyle='orb';p.sph=1;p.orbColor=Math.random()<.5?'red':'blue';animeSound('charge');return;}
+ if(p.cid==='tanjiro'){p.f=side;animeTanjiroMove(p,true);return;}
+ if(p.cid==='naruto'){p.f=side;animeRasenShuriken(p);}
+}
+function animeTeleport(p,side){
+ if(p.teleportCd>0){sfxNo();return;}
+ const startX=p.x,startY=p.y,targetX=Math.max(20,Math.min(stage.w-20,p.x+side*145));
+ // Safety: teleport must end above a platform, even if the player triggers it near an edge.
+ const candidate=stage.plats.map((pl,i)=>({pl,i,px:Math.max(pl.x+22,Math.min(pl.x+pl.w-22,targetX))}))
+   .filter(v=>v.pl.w>=50&&v.pl.y>=p.y-65).sort((a,b)=>Math.abs(a.px-targetX)+Math.abs(a.pl.y-p.y)*.55-(p.g&&a.i===p.groundPl?20:0)-(a.pl.y===Math.max(...stage.plats.map(x=>x.y))?8:0));
+ const dest=candidate[0]||stage.plats.map((pl,i)=>({pl,i,px:Math.max(pl.x+22,Math.min(pl.x+pl.w-22,targetX))})).sort((a,b)=>Math.abs(a.px-targetX))[0];
+ if(!dest){sfxNo();return;}
+ animeEmit(p,'blink',{x:startX,y:startY-34,life:23});
+ p.x=dest.px;p.y=dest.pl.y;p.vx=0;p.vy=0;p.g=true;p.groundPl=dest.i;p.dropT=0;p.dropPl=-1;p.inv=Math.max(p.inv,12);p.teleportCd=85;p.spc=30;
+ animeEmit(p,'blink',{life:23});
+}
+function animeDomain(p){
+ if(p.energy<100){sfxNo();return;}
+ p.energy=0;p.spc=210;p.sh=30;
+ const e={k:'animearea',id:p.id,kind:'domain',x:p.x,y:p.y-34,f:p.f,range:255};animeArea(e);send(e);
+ animeEmit(p,'domain',{title:'領域展開「無量空処」',life:145});
+}
+function animeKagura(p){if(p.energy<100||p.modeT>0||p.fatigue>0)return;p.energy=0;p.modeT=1080;p.sph=0;p.spc=25;animeEmit(p,'transform',{title:'ヒノカミ神楽',life:50});}
+function animeKaguraDodge(p){if(p.dgc>0){sfxNo();return;}p.dg=1;p.dgd=p.f;p.inv=Math.max(p.inv,32);p.dgc=95;p.spc=29;p.vx=p.f*11;animeEmit(p,'blink',{title:'幻日虹',life:30});}
+function animeTanjiroMove(p,side){
+ const flame=p.modeT>0;
+ const kind=flame?(side?'tredmirror':'tazure'):(side?'tflow':'tcut1');
+ const dm=flame?(side?13:25):(side?9:17),kb=flame?(side?11:16):(side?7:10);
+ const extra=side?{lunge:flame?11:15,rush:true,multi:6}:{};
+ animeMove(p,kind,dm,kb,extra);p.spc=flame?39:side?33:22;
+ if(!flame&&side)p.projectileSlipT=29;
+ animeEmit(p,flame?'flameslash':'water',{title:flame?(side?'烈日紅鏡':'碧羅の天'):(side?'参ノ型 流流舞い':'壱ノ型 水面斬り'),life:25});
+}
+function animeRasengan(p){animeMove(p,'rasengan',p.form===2?42:p.form===1?29:21,p.form===2?24:14,{lunge:p.form===2?18:13,R:p.form===2?41:30});p.spc=45;animeEmit(p,'rasengan',{title:p.form===2?'超大玉螺旋丸':'螺旋丸',life:27});}
+function animeRasenShuriken(p){
+ if(p.energy<12){sfxNo();return;}p.energy-=12;p.spc=62;
+ animeProjectile(p,'rasenshuriken',{vx:p.f*10,r:p.form===2?36:26,dm:34*animeStats(p).dm,k0:20*animeStats(p).kb,ks:.12,life:85});
+ animeEmit(p,'rasenshuriken',{title:'風遁・螺旋手裏剣',life:32});
+}
 function animeHold(p,inp){
- if(inp.s){p.sph=Math.min(150,p.sph+1);
-  if(p.cid==='goku'&&p.sph>=12)animeGain(p,.46);
-  if(p.cid==='goku'&&p.sph===90){tone(880,1320,.12,.09,'sine');animeNotice(p,'かめはめ波 READY','#9ceaff');}
-  if(p.cid==='tanjiro'&&p.sph>=42&&p.energy>=100&&p.modeT<=0)animeKagura(p);
+ if(inp.s){p.sph=Math.min(180,p.sph+1);
+  if(p.cid==='goku'&&p.castStyle==='charge')animeGain(p,1.65);
+  if(p.cid==='goku'&&p.castStyle==='ki'&&p.sph===85)animeNotice(p,'かめはめ波 MAX','#99eaff');
+  if(p.cid==='gojo'&&p.castStyle==='orb'&&p.sph===65){p.orbColor='purple';animeNotice(p,'虚式「茈」 READY','#d7aaff');}
   return;
  }
- const held=p.sph;p.sph=0;
- if(p.cid==='goku'){const s=animeStats(p),full=held>=90;
-  if(full){animeMove(p,'beamcast',0,0);animeProjectile(p,'kamehameha',{range:440+(p.form||0)*60,r:18+(p.form||0)*5,dm:23*s.dm,k0:12*s.kb,ks:.10,life:20,beam:true});p.energy=Math.max(0,p.energy-(p.form===3?0:20));animeEmit(p,'beam',{title:'かめはめ波',life:22});p.spc=58;}
-  else{animeProjectile(p,'ki',{vx:p.f*(9+(p.form||0)),r:9+(p.form||0)*2,dm:7*s.dm,k0:5*s.kb,life:65});p.sh=12;p.spc=22;animeSound('red');}
- }else if(p.cid==='gojo'){const red=held>=36,cost=red?30:18;if(p.energy<cost){sfxNo();return;}p.energy-=cost;p.spc=red?55:42;p.sh=22;animeEmit(p,red?'red':'blue',{life:30});
-  const e={k:'animearea',id:p.id,kind:red?'red':'blue',x:p.x,y:p.y-34,f:p.f};animeArea(e);send(e);
- }else if(p.cid==='tanjiro'){const k=['tflow','twheel','ttide'][p.waterForm%3];p.waterForm=(p.waterForm+1)%3;animeMove(p,k,k==='ttide'?5:13,k==='ttide'?4:8);p.spc=35;animeNotice(p,p.modeT>0?'ヒノカミ神楽・'+['円舞','烈日紅鏡','炎舞'][(p.waterForm+2)%3]:['壱ノ型 水面斬り','弐ノ型 水車','肆ノ型 打ち潮'][(p.waterForm+2)%3]);animeSound('water');
- }else if(p.cid==='naruto'){
-  const long=held>=30,cost=long?20:15;if(p.modeT<=0&&p.energy<cost){sfxNo();return;}if(p.modeT<=0)p.energy-=cost;
-  if(long){animeMove(p,'rasengan',p.modeT>0?23:18,p.modeT>0?15:11,{lunge:p.modeT>0?17:13,reach:p.modeT>0?63:43,R:p.modeT>0?33:28});p.spc=65;animeEmit(p,'rasengan',{life:26,title:p.modeT>0?'大玉螺旋丸':'螺旋丸'});}
-  else{p.cloneT=360;p.spc=70;animeEmit(p,'clone',{life:22});animeNotice(p,'影分身の術');}
+ const held=p.sph,style=p.castStyle;p.sph=0;p.castStyle='';
+ if(p.cid==='goku'){
+  if(style==='charge')return;
+  const st=animeStats(p),charge=Math.max(0,Math.min(1,(held-28)/65));
+  if(held>=28){
+   animeMove(p,'beamcast',0,0);p.castStyle='beamcast';p.spc=65;
+   animeProjectile(p,'kamehameha',{range:1050+(p.form||0)*75,r:22+charge*13,dm:(30+25*charge)*st.dm,k0:(17+8*charge)*st.kb,ks:.13,life:24,beam:true});
+   animeEmit(p,'beam',{title:'かめはめ波',life:31});
+  }else{animeProjectile(p,'ki',{vx:p.f*13,r:10+(p.form||0)*2,dm:9*st.dm,k0:0,ks:0,up:0,life:65});p.sh=12;p.spc=15;animeSound('red');}
+ }else if(p.cid==='gojo'&&style==='orb'){
+  const purple=p.orbColor==='purple'||held>=65,red=p.orbColor==='red';
+  const kind=purple?'purple':red?'red':'blue';
+  animeProjectile(p,kind,{vx:p.f*(purple?5.1:3.25),r:purple?34:21,dm:purple?52:red?12:15,k0:purple?28:red?22:3.5,ks:purple?.14:red?.15:.025,life:purple?170:145});
+  p.spc=purple?115:50;animeEmit(p,kind,{title:purple?'虚式「茈」':red?'術式反転「赫」':'術式順転「蒼」',life:34});
  }
 }
 function animeUp(p){
- if(p.cid==='gojo'&&p.energy>=100){p.energy=0;p.spc=150;p.sh=30;const e={k:'animearea',id:p.id,kind:'domain',x:p.x,y:p.y-34,f:p.f};animeArea(e);send(e);animeEmit(p,'domain',{title:'領域展開「無量空処」',life:180});return;}
- if(p.rec)return;
- if(p.cid==='gojo'&&p.energy<10){sfxNo();return;}
- p.rec=true;p.g=false;p.jn=jumpsOf(p);p.rise=20;
- if(p.cid==='goku'){p.vy=-15.8;animeMove(p,'gupper',10,8,{up:1.2});animeEmit(p,'rise',{life:16});}
- if(p.cid==='gojo'){p.energy-=10;animeEmit(p,'blink',{life:20});p.y-=85;p.x+=p.f*20;p.vy=-6;p.inv=Math.max(p.inv,8);animeEmit(p,'blink',{life:20});p.spc=45;}
- if(p.cid==='tanjiro'){p.vy=-14.8;animeMove(p,'trise',11,8,{up:1.25});animeSound('water');}
- if(p.cid==='naruto'){animeEmit(p,'stepclone',{x:p.x,y:p.y+18,life:22});p.vy=-17.7;animeMove(p,'nkick',7,6,{up:1.15});}p.spc=Math.max(p.spc,28);
+ if(p.rec){sfxNo();return;}
+ p.rec=true;p.g=false;p.jn=jumpsOf(p);p.rise=22;
+ if(p.cid==='goku'){
+  if(p.form===3){p.vy=-23;animeMove(p,'gdragon',42,27,{up:1.7,ko:true,pierce:true});p.spc=110;animeEmit(p,'dragon',{title:'龍拳爆発！',life:55});}
+  else{p.vy=-19.3;p.spc=31;animeEmit(p,'rise',{title:'大ジャンプ',life:22});}
+ }else if(p.cid==='gojo'){p.vy=-19.5;p.spc=30;animeEmit(p,'rise',{life:16});}
+ else if(p.cid==='tanjiro'){p.vy=-17;animeMove(p,p.modeT>0?'tflame':'trise',p.modeT>0?23:16,p.modeT>0?16:10,{up:1.35});p.spc=34;animeEmit(p,p.modeT>0?'flameslash':'water',{title:p.modeT>0?'飛輪陽炎':'弐ノ型 水車',life:28});}
+ else if(p.cid==='naruto'){animeEmit(p,'blink',{x:p.x,y:p.y-34,life:24});p.y=Math.max(-65,p.y-110);p.vy=-6;p.inv=Math.max(p.inv,13);p.spc=37;animeEmit(p,'blink',{life:24});}
 }
 function animeArea(e){
  const a=byId(e.id);if(!a||a.out||a.cid!=='gojo')return;
- for(const t of fighters){if(!isLocal(t)||t.id===a.id||t.out||sameTeam(a,t)||isInvuln(t))continue;
+ for(const t of fighters){if(!isLocal(t)||t.id===a.id||t.out||sameTeam(a,t))continue;
   const dx=t.x-e.x,dy=t.y-34-e.y;
-  if(e.kind==='domain'){t.slowT=Math.max(t.slowT||0,180);continue;}
-  if(e.kind==='blue'&&Math.hypot(dx,dy)<175){clearActs(t);t.vx=-Math.sign(dx)*Math.min(9,Math.abs(dx)*.08);t.vy=-2;t.kb=13;t.d+=4;addDealt(a.id,4);emitFx({res:'hit',a:a.id,t:t.id,x:t.x,y:t.y-34,kb:3,c:'#74cfff',gain:2});}
-  if(e.kind==='red'&&dx*e.f>-15&&dx*e.f<220&&Math.abs(dy)<75){const kb=applyHit(t,{dm:19,k0:16,ks:.09,up:.45,f:e.f},false,a.id);emitFx({res:'hit',a:a.id,t:t.id,x:t.x,y:t.y-34,kb,c:'#ff5773',gain:5});}
+  if(e.kind==='domain'&&Math.hypot(dx,dy)<= (e.range||255)){
+   t.domainT=Math.max(t.domainT||0,145);t.vx=0;t.vy=0;clearActs(t);t.ch=0;t.ct=0;
+   emitFx({res:'block',t:t.id,a:a.id,x:t.x,y:t.y-32});
+  }
  }
 }
 function animeInfinity(t,kind,attackerId,bypass=false){
- if(t.cid!=='gojo'||t.energy<16||t.infinityCd>0||t.kb>0||t.stn>0||bypass)return false;
- if(kind!=='normal'&&kind!=='projectile')return false;
+ if(t.cid!=='gojo')return false;
+ if(kind==='projectile'){
+   if(t.infinityCd<=0){t.infinityCd=12;animeEmit(t,'infinity',{life:16});}
+   return true; // 無下限：気弾・銃弾・斬撃飛び道具・茈も無効化する
+ }
+ if(kind!=='normal'||t.energy<16||t.infinityCd>0||t.kb>0||t.stn>0||bypass)return false;
  t.energy-=16;t.infinityCd=24;animeEmit(t,'infinity',{life:18});return true;
 }
 function animeProjectile(p,kind,opts={}){
@@ -542,45 +613,36 @@ function animeProjectile(p,kind,opts={}){
  projs.push({...q,local:true,hitIds:{}});send({k:'proj',q});
 }
 function animeProjStep(q){
- const oldx=q.x;const a=byId(q.o);
- q.life--;q.rot+=.3;
+ const oldx=q.x;const a=byId(q.o);q.life--;q.rot+=.3;
  if(!q.beam)q.x+=q.vx;
  if(q.local&&q.life>0){for(const t of fighters){if(t.id===q.o||t.out||sameTeam(a,t)||q.hitIds?.[t.id]||isInvuln(t))continue;
   const y=t.y-32,dx=(t.x-q.x)*q.dir;
   const touching=q.beam?(dx>=-10&&dx<=q.range&&Math.abs(y-q.y)<q.r+20):(t.x>=Math.min(oldx,q.x)-q.r-14&&t.x<=Math.max(oldx,q.x)+q.r+14&&Math.abs(y-q.y)<q.r+25);
-  if(!touching)continue;
-  q.hitIds=q.hitIds||{};q.hitIds[t.id]=1;
+  if(!touching)continue;q.hitIds=q.hitIds||{};q.hitIds[t.id]=1;
   const Q={o:q.o,x:q.x,vx:q.vx,dir:q.dir,dm:q.dm,k0:q.k0,ks:q.ks,up:q.up,animeKind:q.kind,bypassInfinity:q.kind==='purple'||q.beam};
   if(isLocal(t))resolveProj(Q,t);else send({k:'ph',to:t.id,q:Q});
   if(!q.beam&&q.kind!=='purple'){q.life=0;send({k:'pg',pid:q.pid});break;}
  }}
- return q.life<=0||q.x<-300||q.x>stage.w+300;
-}
-function animeEcho(p,item){
- const x=p.x-p.f*32,y=p.y;animeEmit(p,'echo',{x,y,life:17,reach:item.reach});
- for(const t of fighters){if(t.id===p.id||t.out||sameTeam(p,t))continue;if(Math.hypot(t.x-(x+p.f*item.reach),t.y-34-(y-34))>43)continue;
- const mv={type:'normal',kind:'echo',dm:item.dm,k0:item.k0,ks:item.ks,up:.5};
- if(isLocal(t))resolveMelee({id:p.id,x,f:p.f,c:p.c,mv},t);else send({k:'mh',to:t.id,a:p.id,ax:x,f:p.f,c:p.c,mv});}
+ return q.life<=0||q.x<-450||q.x>stage.w+450;
 }
 function animeTick(p){
- for(const k of ['infinityCd','slowT','comboT','fatigue','boostFlash'])if(p[k]>0)p[k]--;
+ for(const k of ['infinityCd','slowT','comboT','fatigue','boostFlash','teleportCd','projectileSlipT'])if(p[k]>0)p[k]--;
  if(!isAnime(p))return;
- if(p.cid==='goku'&&p.form===3){p.energy=Math.max(0,p.energy-100/720);if(p.energy<=.0001){p.form=0;p.energy=0;p.fatigue=60;animeNotice(p,'超サイヤ人3 終了');}}
- if(p.modeT>0&&--p.modeT===0){p.energy=0;if(p.cid==='tanjiro')p.fatigue=120;animeNotice(p,p.cid==='tanjiro'?'呼吸を整える…':'チャクラモード終了');}
- animeGain(p,p.cid==='gojo'?.10:p.cid==='naruto'?.055:p.cid==='tanjiro'?.025:0);
- if(p.cloneT>0){p.cloneT--;p.echoQueue=p.echoQueue||[];for(const q of p.echoQueue)q.delay--;const due=p.echoQueue.filter(q=>q.delay<=0);p.echoQueue=p.echoQueue.filter(q=>q.delay>0);if(p.cloneT>0)for(const q of due)animeEcho(p,q);}else p.echoQueue=[];
- if(p.mv?.kind==='purplecast'&&p.a>=32&&!p.castFired){p.castFired=true;animeProjectile(p,'purple',{vx:p.f*13,r:34,dm:48,k0:24,ks:.13,life:65});animeEmit(p,'purple',{title:'虚式「茈」',life:27});}
+ if(p.cid==='goku'&&p.form===3){p.energy=Math.max(0,p.energy-100/900);if(p.energy<=.0001){p.form=0;p.energy=0;p.fatigue=60;animeNotice(p,'超サイヤ人3 終了');}}
+ if(p.modeT>0&&--p.modeT===0){p.energy=0;if(p.cid==='tanjiro')p.fatigue=95;if(p.cid==='naruto'&&p.form===2)p.form=1;animeNotice(p,p.cid==='tanjiro'?'ヒノカミ神楽終了':'九尾チャクラ終了');}
+ animeGain(p,p.cid==='gojo'?.17:p.cid==='naruto'?.065:p.cid==='tanjiro'?.070:0);
 }
 function animeWorldTick(){animeClock++;for(const e of animeFx)e.life--;animeFx=animeFx.filter(e=>e.life>0);}
 function animeAI(p,I,A,adx){
- if(!isAnime(p)||p.spc>0||p.a>0||p.sph>0||p.fatigue>0)return false;
- if(p.energy>=100&&p.modeT<=0){if(p.cid==='tanjiro'){aiSpecial(I,A,46);}else if(p.cid==='gojo'&&Math.random()<.25){I.u=true;aiSpecial(I,A,2);}else{I.gd=true;aiSpecial(I,A,2);}return true;}
- if(p.cid==='goku'&&adx>170){aiSpecial(I,A,p.energy<95?95:3);return true;}
- if(p.cid==='gojo'&&p.energy>=30&&adx<200){aiSpecial(I,A,adx<85?3:40);return true;}
- if(p.cid==='tanjiro'&&adx<115){aiSpecial(I,A,3);return true;}
- if(p.cid==='naruto'&&p.energy>=20&&adx<185){aiSpecial(I,A,p.cloneT>0?35:3);return true;}return false;
+ if(!isAnime(p)||p.spc>0||p.a>0||p.sph>0||p.fatigue>0||p.domainT>0)return false;
+ if(p.energy>=100){if(p.cid==='gojo'){aiSpecial(I,A,2);return true;}if(p.cid==='goku'||p.cid==='naruto'||p.cid==='tanjiro'){I.gd=true;aiSpecial(I,A,2);return true;}}
+ if(p.cid==='goku'&&adx>150){I.gd=p.energy<95;aiSpecial(I,A,p.energy<95?28:60);return true;}
+ if(p.cid==='gojo'&&adx<260){I[p.f>0?'r':'l']=true;aiSpecial(I,A,adx<110?3:70);return true;}
+ if(p.cid==='tanjiro'&&adx<160){aiSpecial(I,A,2);return true;}
+ if(p.cid==='naruto'&&adx<250){if(adx>110)I[p.f>0?'r':'l']=true;aiSpecial(I,A,2);return true;}
+ return false;
 }
-function animeRemoteMove(f){if(!isAnime(f)||!f.mv)return;const g=animeStats(f);if(f.cid==='naruto'&&f.modeT>0&&f.mv.kind==='rasengan'){f.mv.reach=63;f.mv.R=33;}if(f.cid==='naruto'&&f.modeT>0&&['normal','charge'].includes(f.mv.kind))f.mv.reach+=20;if(f.cid==='tanjiro'&&['normal','charge'].includes(f.mv.kind))f.mv.reach+=20;}
+function animeRemoteMove(f){if(!isAnime(f)||!f.mv)return;if(f.cid==='naruto'&&f.form>0&&['normal','charge'].includes(f.mv.kind))f.mv.reach+=f.form===2?26:13;if(f.cid==='tanjiro'&&['normal','charge'].includes(f.mv.kind))f.mv.reach+=22;}
 
 function animeGlow(x,y,r,c,alpha=1){push();noStroke();const cc=color(c);for(let i=3;i>=1;i--){cc.setAlpha((i===1?220:i===2?65:22)*alpha);fill(cc);circle(x,y,r*(i===1?1:i===2?1.6:2.3));}fill(255,255,245,220*alpha);circle(x,y,r*.48);pop();}
 function animeLightning(x,y,w,h,t,col){push();noFill();stroke(col);strokeWeight(1.3);for(let j=0;j<3;j++){const phase=Math.floor(t/4)+j*3;beginShape();for(let i=0;i<6;i++){const xx=x+Math.sin(phase*2.1+i*4.3+j)*w*.35+(j-1)*w*.32;vertex(xx,y-h/2+i*h/5);}endShape();}pop();}
@@ -595,7 +657,7 @@ function animeAura(p,t){
   if(p.cid==='goku'&&g>=2)animeLightning(0,-40,w*1.5,h,t,'#b9eaff');
  }
  if(p.cid==='gojo'&&(p.infinityCd>7||p.sph>0)){push();noFill();stroke(125,189,255,80);strokeWeight(1);ellipse(0,-34,62,84);pop();}
- if(p.slowT>0){push();noFill();stroke(150,142,244,150);strokeWeight(1);for(let i=0;i<3;i++)ellipse(0,-15-i*20,53,10);pop();}
+ if(p.slowT>0||p.domainT>0){push();noFill();stroke(150,142,244,150);strokeWeight(1);for(let i=0;i<3;i++)ellipse(0,-15-i*20,53,10);pop();}
 }
 function animeHair(id,g,t,back=false){
  const gold=id==='goku'&&g>0,col=id==='gojo'?'#e8edf4':gold?'#ffdf70':id==='naruto'?'#e9b843':id==='tanjiro'?'#462129':'#161e2d';
@@ -739,11 +801,20 @@ function animePortrait(id,form=0,mode=false){
  if(id==='naruto'){hair='<path d="M39 22L30 13l9 1-3-12 11 8 5-12 5 12 13-7-5 13 10-2-10 14z" fill="#eec255"/>';head='<path d="M37 23h27v7H37z" fill="#293c55"/><path d="M42 24h18v5H42z" fill="#b7c7d2"/><path d="M48 27q6-5 6 0l-6 1" fill="none" stroke="#314758"/>';extra=`<path d="M33 34h35v15H33z" fill="${mode?'#4c3936':'#263b50'}"/><path d="M51 35v29" stroke="#d8cfab" stroke-width="2"/><path d="M39 23l-21 6 5 4" fill="none" stroke="#293c55" stroke-width="4"/>`;}
  return `<svg viewBox="0 0 100 82" aria-hidden="true"><circle cx="50" cy="40" r="35" fill="${c}" opacity=".12"/><ellipse cx="50" cy="78" rx="30" ry="3" fill="#050b1680"/><path d="M42 60l-8 17m24-17 9 17" stroke="${base}" stroke-width="10"/><path d="M31 77h9m23 0h9" stroke="#23364c" stroke-width="5"/><path d="M35 35h30l5 29H30z" fill="${base}" stroke="#19283a"/><path d="M35 40L22 51M65 40l13 9" fill="none" stroke="${id==='goku'?skin:base}" stroke-width="8" stroke-linecap="round"/><circle cx="20" cy="51" r="5" fill="${skin}"/><circle cx="80" cy="49" r="5" fill="${skin}"/>${extra}<circle cx="51" cy="24" r="12" fill="${skin}"/>${hair}${head}</svg>`;
 }
-function animeHud(p){if(!isAnime(p))return null;const m=p.modeT>0?p.modeT/6:p.energy||0;let label=p.cid==='goku'?['気','超サイヤ人','超サイヤ人2','超サイヤ人3'][p.form||0]:p.cid==='gojo'?'術式':p.cid==='tanjiro'?(p.modeT>0?'ヒノカミ神楽':'呼吸'):(p.modeT>0?'九尾チャクラ':'チャクラ');if(p.fatigue>0)label='スタミナ回復中';else if(p.energy>=100&&p.modeT<=0)label+=' MAX';return{m,label};}
+function animeHud(p){
+ if(!isAnime(p))return null;
+ const m=p.modeT>0&&p.cid==='tanjiro'?p.modeT/10.8:p.cid==='naruto'&&p.form===2?p.modeT/9:p.energy||0;
+ let label=p.cid==='goku'?['気：通常','気：超1','気：超2','気：超3'][p.form||0]:p.cid==='gojo'?'無下限 / 術式':p.cid==='tanjiro'?(p.modeT>0?'ヒノカミ神楽':'呼吸'):(['チャクラ','仙人モード','九尾モード'][p.form||0]);
+ if(p.fatigue>0)label='スタミナ回復中';else if(p.energy>=100&&!(p.cid==='naruto'&&p.form===2))label+=' MAX';return{m,label};
+}
 function animeControl(p){
  const h=document.getElementById('combat-hint');
- const instructions={goku:'特殊長押し：気溜め→離して発射 / MAX＋↓特殊：変身',gojo:'短押し：蒼 / 長押し：赫 / MAX＋↓特殊：茈・↑特殊：領域',tanjiro:'短押し：水の型 / 呼吸MAX＋長押し：ヒノカミ神楽',naruto:'短押し：分身 / 長押し：螺旋丸 / MAX＋↓特殊：九尾'};
- if(isAnime(p)){setTxt(h,netIssue||instructions[p.cid]);const b=document.getElementById('btn-g');b.classList.toggle('ready',p.energy>=100);setTxt(b.querySelector('small'),p.cid==='gojo'?'茈':p.cid==='tanjiro'?'神楽':'変身');setTxt(document.querySelector('#btn-s small'),p.cid==='goku'?'気溜め / 波':p.cid==='gojo'?'蒼 / 赫':p.cid==='tanjiro'?'水の呼吸':'分身 / 螺旋丸');}
+ const instructions={goku:'特殊：気弾／長押しかめはめ波　↓特殊：気溜め・変身　→特殊：安全な瞬間移動',gojo:'特殊：術式MAXで無量空処　→特殊：蒼・赫／長押し茈　↓特殊：回復　↑特殊：大ジャンプ',tanjiro:'特殊：水面斬り　→特殊：流流舞い　↑特殊：水車　↓特殊：神楽変身／幻日虹',naruto:'特殊：螺旋丸　→特殊：螺旋手裏剣　↑特殊：瞬身　↓特殊：仙人→九尾'};
+ if(isAnime(p)){
+  setTxt(h,netIssue||instructions[p.cid]);const b=document.getElementById('btn-g');b.classList.toggle('ready',p.energy>=100);
+  setTxt(b.querySelector('small'),p.cid==='gojo'?'反転術式':p.cid==='tanjiro'?(p.modeT>0?'幻日虹':'神楽'):p.cid==='goku'?'気溜め／変身':'仙人／九尾');
+  setTxt(document.querySelector('#btn-s small'),p.cid==='goku'?'気弾／かめはめ波':p.cid==='gojo'?'領域／横：術式':p.cid==='tanjiro'?'水面斬り／碧羅の天':'螺旋丸');
+ }
 }
 function rosterSections(container,choose){
  container.innerHTML='';container.classList.add('roster-sections');
@@ -1313,7 +1384,7 @@ function stateOf(f) {
     a: f.a, mk: f.mv ? f.mv.kind : '', ch: f.ch, ct: f.ct, cs: f.cs, stn: f.stn > 0 ? 1 : 0, dg: f.dg > 0 ? 1 : 0,
     iv: isInvuln(f) ? 1 : 0, kb: f.kb > 0 ? 1 : 0, w: f.w || '', sh: f.sh > 0 ? 1 : 0, sph: f.sph, ri: f.rise > 0 ? 1 : 0,
     am: f.arm > 0 ? 1 : 0, cid: f.cid,
-    ae:Math.round(f.energy||0),af:f.form||0,at:f.modeT||0,az:f.fatigue||0,an:f.cloneT||0,ai:f.infinityCd||0,asl:f.slowT||0,
+    ae:Math.round(f.energy||0),af:f.form||0,at:f.modeT||0,az:f.fatigue||0,an:f.cloneT||0,ai:f.infinityCd||0,asl:f.slowT||0,adom:f.domainT||0,aoc:f.orbColor||"blue",
     d: Math.round(f.d), s: f.s, o: f.out ? 1 : 0, ko: Math.round(f.ko), g: f.g ? 1 : 0,
     rg: Math.round(f.rage || 0), rt: Math.round(f.rageT || 0), sk: Math.round(f.senku || 0), sw: Math.round(f.senkuWind || 0),
     gr: f.gear || 1, gm: Math.round(f.gearM || 0), gt: Math.round(f.gearT || 0), td: f.tired > 0 ? 1 : 0,
@@ -1388,7 +1459,7 @@ function updateRemote() {
     Object.assign(f, { x, y, r, vx: s.vx, f: s.f, a: s.a, ch: s.ch, ct: s.ct, cs: s.cs, stn: s.stn, dg: s.dg,
       ivf: s.iv, kb: s.kb, w: s.w || null, sh: s.sh, sph: s.sph, rise: s.ri, arm: s.am || 0, cid: s.cid || f.cid,
       d: s.d, s: s.s, ko: s.ko, g: s.g, rage: s.rg || 0, rageT: s.rt || 0, senku: s.sk || 0, senkuWind: s.sw || 0,
-      energy:s.ae||0,form:s.af||0,modeT:s.at||0,fatigue:s.az||0,cloneT:s.an||0,infinityCd:s.ai||0,slowT:s.asl||0,
+      energy:s.ae||0,form:s.af||0,modeT:s.at||0,fatigue:s.az||0,cloneT:s.an||0,infinityCd:s.ai||0,slowT:s.asl||0,domainT:s.adom||0,orbColor:s.aoc||"blue",
       gear: s.gr || 1, gearM: s.gm || 0, gearT: s.gt || 0, tired: s.td ? 1 : 0,
       bowUp:!!s.bu, bullets: s.bl ?? f.bullets, reloadT: s.rl || 0, stats: s.stats || f.stats });
     f.mv = mkMv(s.mk, s.w);animeRemoteMove(f);
@@ -1845,6 +1916,7 @@ function stepFighter(p, inp) {
   const cp = inp.cc !== prev.cc, sp = inp.sc !== prev.sc, xp = inp.xc !== prev.xc;
   const dp = inp.dc !== prev.dc;
   for (const k of TIMERS) if (p[k] > 0) p[k]--;
+  if (p.domainT > 0) { p.domainT--; p.vx=0; p.vy=0; clearActs(p); return; }
   if (p.cid === 'boxer') gainKO(p, 100 / (18 * 60));
   if (p.cid === 'swordsman') gainSenku(p, SENKU_FILL);
   rubberTick(p);animeTick(p);
@@ -2056,7 +2128,7 @@ function meleeCheck(a) {
     if (touching) {
       a.hit[t.id] = true;
       const A = { id: a.id, x: Math.round(a.x), f: a.f, c: a.c,
-                  mv: { type: mv.type, kind: mv.kind, dm: Math.round(mv.dm * 10) / 10, k0: Math.round(mv.k0 * 10) / 10, ks: mv.ks, up: mv.up, ko: !!mv.ko, blockOnly: !!mv.blockOnly, ragePunch: !!mv.ragePunch } };
+                  mv: { type: mv.type, kind: mv.kind, dm: Math.round(mv.dm * 10) / 10, k0: Math.round(mv.k0 * 10) / 10, ks: mv.ks, up: mv.up, ko: !!mv.ko, blockOnly: !!mv.blockOnly, ragePunch: !!mv.ragePunch, pierce: !!mv.pierce, minKb:mv.minKb||0 } };
       if (isLocal(t)) resolveMelee(A, t);
       else {
         send({ k: 'mh', to: t.id, a: a.id, ax: A.x, f: a.f, c: a.c, mv: A.mv });
@@ -2081,9 +2153,9 @@ function resolveMelee(A, t) {
   if(animeInfinity(t,mv.type,A.id,mv.kind==='upper'))return;
   const front = fromFront(t, A.x) || CC(t.cid).back;
   if (mv.blockOnly && inCounter(t) && front) { emitFx({ res:'block', t:t.id, a:A.id, x:t.x, y:ty }); return; }
-  if (mv.type === 'heavy' && mv.kind !== 'upper' && !AXE_KINDS.includes(mv.kind) && inCounter(t) && front) { startCounter(A, t, mv); return; }
-  const h = { dm: mv.dm, k0: mv.k0, ks: mv.ks, up: mv.up, f: A.f, ko: !!mv.ko, ragePunch: !!mv.ragePunch };
-  const bk = mv.kind !== 'upper' && t.ct > 0 && (mv.type === 'normal' || !front || AXE_KINDS.includes(mv.kind));
+  if (!mv.pierce && !mv.ko && mv.type === 'heavy' && mv.kind !== 'upper' && !AXE_KINDS.includes(mv.kind) && inCounter(t) && front) { startCounter(A, t, mv); return; }
+  const h = { dm: mv.dm, k0: mv.k0, ks: mv.ks, up: mv.up, f: A.f, ko: !!mv.ko, ragePunch: !!mv.ragePunch, minKb:mv.minKb||0 };
+  const bk = !mv.pierce && !mv.ko && mv.kind !== 'upper' && t.ct > 0 && (mv.type === 'normal' || !front || AXE_KINDS.includes(mv.kind));
   if (!bk && mv.type === 'normal' && isArmored(t)) {
     armorHit(t, h, A.id);
     emitFx({ res: 'armor', t: t.id, a: A.id, x: t.x, y: ty, gain: 4 });
@@ -2097,7 +2169,11 @@ function resolveProj(Q, t) {
   const owner = byId(Q.o); if (owner && sameTeam(owner, t)) return;
   const ty = t.y - 34 * CC(t.cid).size;
   if (isInvuln(t)) { if (t.dg > 0) emitFx({ res: 'evade', t: t.id, a: Q.o, x: t.x, y: t.y - 110 }); return; }
+  if (t.projectileSlipT>0) { emitFx({res:'evade',t:t.id,a:Q.o,x:t.x,y:t.y-90}); return; }
+  if (t.cid==='yankee' && rageOn(t) && Q.animeKind==='ki') { emitFx({res:'block',t:t.id,a:Q.o,x:t.x,y:ty}); return; }
   if(animeInfinity(t,'projectile',Q.o,!!Q.bypassInfinity||!!Q.senku))return;
+  // 気弾は削り専用。%は増えるが一切のノックバック・のけぞりを与えない。
+  if (Q.animeKind==='ki') { const dm=armorCut(t,Q.dm);t.d+=dm;addDealt(Q.o,dm);gainRage(t,dm);emitFx({res:'armor',t:t.id,a:Q.o,x:t.x,y:ty,gain:1});return; }
   const front = fromFront(t, Q.x) || CC(t.cid).back;
   if ((Q.senku && inCounter(t)) || (inCounter(t) && front)) { emitFx({ res: 'block', t: t.id, a: Q.o, x: Q.x, y: ty }); return; }
   const h = { dm: Q.dm, k0: Q.k0, ks: Q.ks, up: Q.up, f: Q.dir || Math.sign(Q.vx) || 1 };
@@ -2127,6 +2203,7 @@ function applyHit(t, h, bk, attackerId) {
   gainKO(t, h.dm * 1.2); gainRage(t, dealt);
   let kb = (h.k0 + t.d * h.ks) * m * weightFactor(t);
   if (h.ragePunch) kb = Math.max(kb, RAGE_PUNCH_MIN_KB);
+  if (h.minKb) kb = Math.max(kb,h.minKb);
   if (h.ko) {
     // KOアッパー専用：重量補正を超えて確実に撃墜圏へ運ぶ最強吹っ飛ばし
     kb = Math.max(kb, 36);
@@ -4149,7 +4226,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_14_SECRET';
+const NET_PROTOCOL='SBO_NET_15_SECRET_COMMANDS';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
