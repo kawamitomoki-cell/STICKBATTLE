@@ -14,7 +14,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}html,body{width:100%;height:100%;height:100dvh;overflow:hidden;background:var(--bg);color:var(--paper);font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Noto Sans JP',system-ui,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}button,input{font:inherit}button{cursor:pointer;border:0;color:inherit}button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}button{transition:transform .12s,background .12s,box-shadow .12s}button:active{transform:translateY(2px) scale(.985)}input{user-select:text;-webkit-user-select:text}svg{display:block}button small{pointer-events:none}body{padding:env(safe-area-inset-top) max(8px,env(safe-area-inset-right)) env(safe-area-inset-bottom) max(8px,env(safe-area-inset-left))}
 .screen{position:fixed;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;justify-content:safe center;gap:20px;padding:64px 28px 28px;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;background:radial-gradient(ellipse at 90% 30%,#26334688,transparent 60%),repeating-linear-gradient(120deg,transparent 0 139px,#ffffff03 140px 141px),var(--bg)}.screen:before{content:'STICK BATTLE ONLINE';position:absolute;top:max(20px,env(safe-area-inset-top));left:28px;letter-spacing:3px;font-size:10px;font-weight:900;color:#c9d0dc}.screen>*{flex-shrink:0}.hd{width:min(1100px,100%);font-size:clamp(28px,5vw,50px);font-weight:950;font-style:italic;letter-spacing:-1px;line-height:1.1;border-left:7px solid var(--red);padding-left:16px}.hd small{display:block;color:var(--muted);font-size:11px;letter-spacing:3px;font-weight:500;font-style:normal;margin-top:8px}
 /* Title: a full-bleed versus illustration and oversized identity. */
-#sc-title{padding:30px;isolation:isolate;justify-content:center;background:radial-gradient(ellipse at 65% 25%,#293747,#0c1019 70%);cursor:pointer}#sc-title:before{content:'SECRET COMMANDS / 17 FIGHTERS';color:#aeb9ca}#sc-title:after{content:'スティックバトルオンライン';position:absolute;bottom:20px;left:28px;font-size:11px;letter-spacing:3px;color:#aeb9ca}.title-art{position:absolute;inset:0;z-index:-1;overflow:hidden}.title-art svg{height:100%;width:100%;object-fit:cover}.title-art:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#0c1019b0,transparent 70%)}.title-content{width:min(1100px,100%);position:relative}.title-kicker{color:var(--gold);letter-spacing:5px;font-size:11px;font-weight:900;margin-bottom:20px}.logo{font-family:Impact,'Arial Black',system-ui,sans-serif;font-weight:1000;font-style:italic;font-size:clamp(68px,12vw,154px);line-height:.83;letter-spacing:-4px;text-shadow:0 5px 0 #0005;transform:skew(-5deg);width:max-content}.logo em{display:block;color:var(--red);font-style:inherit}.logo small{display:block;letter-spacing:clamp(8px,2vw,22px);font-size:clamp(22px,4vw,40px);line-height:1.2;margin-top:12px;color:var(--paper);font-style:normal}.title-desc{font-size:12px;letter-spacing:3px;color:#b6c0d0;margin-top:25px}.tap{display:inline-flex;margin-top:34px;background:var(--paper);color:#131720;padding:17px 30px;font-size:14px;font-weight:900;letter-spacing:1px;clip-path:polygon(0 0,100% 0,calc(100% - 13px) 100%,0 100%);animation:breathe 2.5s ease-in-out infinite}.tap:after{content:'↗';margin-left:32px;font-size:18px}.version-label{color:#ffffff40;font-size:10px;position:absolute;bottom:20px;right:28px;letter-spacing:2px}@keyframes breathe{50%{box-shadow:0 0 32px #ff493f50;filter:brightness(.88)}}
+#sc-title{padding:30px;isolation:isolate;justify-content:center;background:radial-gradient(ellipse at 65% 25%,#293747,#0c1019 70%);cursor:pointer}#sc-title:before{content:'SPECIAL FIGHTERS / 17 FIGHTERS';color:#aeb9ca}#sc-title:after{content:'スティックバトルオンライン';position:absolute;bottom:20px;left:28px;font-size:11px;letter-spacing:3px;color:#aeb9ca}.title-art{position:absolute;inset:0;z-index:-1;overflow:hidden}.title-art svg{height:100%;width:100%;object-fit:cover}.title-art:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#0c1019b0,transparent 70%)}.title-content{width:min(1100px,100%);position:relative}.title-kicker{color:var(--gold);letter-spacing:5px;font-size:11px;font-weight:900;margin-bottom:20px}.logo{font-family:Impact,'Arial Black',system-ui,sans-serif;font-weight:1000;font-style:italic;font-size:clamp(68px,12vw,154px);line-height:.83;letter-spacing:-4px;text-shadow:0 5px 0 #0005;transform:skew(-5deg);width:max-content}.logo em{display:block;color:var(--red);font-style:inherit}.logo small{display:block;letter-spacing:clamp(8px,2vw,22px);font-size:clamp(22px,4vw,40px);line-height:1.2;margin-top:12px;color:var(--paper);font-style:normal}.title-desc{font-size:12px;letter-spacing:3px;color:#b6c0d0;margin-top:25px}.tap{display:inline-flex;margin-top:34px;background:var(--paper);color:#131720;padding:17px 30px;font-size:14px;font-weight:900;letter-spacing:1px;clip-path:polygon(0 0,100% 0,calc(100% - 13px) 100%,0 100%);animation:breathe 2.5s ease-in-out infinite}.tap:after{content:'↗';margin-left:32px;font-size:18px}.version-label{color:#ffffff40;font-size:10px;position:absolute;bottom:20px;right:28px;letter-spacing:2px}@keyframes breathe{50%{box-shadow:0 0 32px #ff493f50;filter:brightness(.88)}}
 /* Main navigation */
 .mode-grid{width:min(1100px,100%);display:grid;grid-template-columns:1.3fr 1fr;gap:16px}.big{position:relative;text-align:left;overflow:hidden;padding:28px;background:var(--paper);color:#161b25;font-weight:900;min-height:110px;width:min(560px,100%);display:flex;flex-direction:column;justify-content:flex-end;gap:9px;border-radius:3px;isolation:isolate}.big small{font-size:12px;font-weight:600;opacity:.75;line-height:1.5}.big b{font-size:clamp(24px,4vw,42px);font-style:italic;letter-spacing:-1px}.big .mode-no{position:absolute;top:20px;left:24px;font-size:11px;letter-spacing:3px;opacity:.7}.mode-grid .big{width:100%;min-height:230px}.mode-grid #go-cpu{background:var(--red);color:white;grid-row:span 2;min-height:390px}.mode-grid #go-online{background:var(--gold)}.mode-grid #go-howto{min-height:145px;background:#253044;color:#e9edf5}.mode-art{position:absolute;width:200px;height:200px;right:-15px;top:20px;opacity:.28;z-index:-1;transform:rotate(-12deg)}
 /* Fighter selection */
@@ -87,7 +87,7 @@ box-shadow:0 2px 7px #0008}
 <div id="sc-title" class="screen" style="display:flex">
  <div class="title-art"></div><div class="title-content"><div class="title-kicker">ONE ARENA. NO LIMITS.</div>
  <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">17人のファイター。勝負を決める、ただ一撃。</p>
- <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">SECRET FIGHTERS / VOICE & BALANCE</div>
+ <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">SPECIAL FIGHTERS / CPU POOL UPDATE</div>
 </div>
 <div id="sc-mode" class="screen">
  <div class="hd">CHOOSE YOUR BATTLE<small>モードを選択</small></div><div class="mode-grid">
@@ -115,7 +115,7 @@ box-shadow:0 2px 7px #0008}
  <div class="fighter-layout"><div class="fighter-left"><div class="fighter-preview" id="fighter-showcase"></div><div id="char-info" class="card"></div></div>
  <div class="fighter-right"><div id="char-grid" class="cgrid"></div>
  <div class="namebox"><label for="player-name">PLAYER NAME</label><input id="player-name" maxlength="12" autocomplete="off" placeholder="PLAYER"></div>
- <div id="cpu-opts" style="display:flex;flex-direction:column"><div class="optrow"><span>CPUの数</span><div class="seg" id="seg-cpun"></div></div><div class="optrow"><span>CPUの強さ</span><div class="seg" id="seg-cpulv"></div></div></div></div></div>
+ <div id="cpu-opts" style="display:flex;flex-direction:column"><div class="optrow"><span>CPUの数</span><div class="seg" id="seg-cpun"></div></div><div class="optrow"><span>CPUキャラ</span><div class="seg" id="seg-cpupool"></div></div><div class="optrow"><span>CPUの強さ</span><div class="seg" id="seg-cpulv"></div></div></div></div></div>
  <div class="nav"><button class="back" id="chars-back">もどる</button><button class="next" id="chars-next">ステージへ →</button></div>
 </div>
 
@@ -171,7 +171,7 @@ box-shadow:0 2px 7px #0008}
     ・攻撃を当てると相手の<b>ダメージ％</b>が増え、％が高いほど遠くへ吹っ飛ぶ。<br>
     ・画面の外へ吹っ飛ばすと<b>撃墜</b>。残機（1〜5）が0になったら脱落、最後の1人が勝ち。<br>
     ・<b>2〜8人</b>で対戦。CPU戦はCPU 1〜7体、オンラインは人＋CPUで最大8人。<br>
-    ・<b>隠し4人の技</b>は方向入力で変化。悟空は特殊長押しでかめはめ波、超3の上特殊で龍拳。五条は特殊で蒼／赫、長押しで茈、下特殊で無量空処。<br>
+    ・<b>スペシャルキャラの技</b>は方向入力で変化。悟空は特殊長押しでかめはめ波、超3の上特殊で龍拳。五条は特殊で蒼／赫、長押しで茈、下特殊で無量空処。<br>
      ・<b>チーム戦</b>ではRED／BLUEの2チームに分かれ、味方への攻撃・弾・爆発は当たらない。相手チームを全滅させれば勝利。<br>
     ・武器（剣・銃）は<b>初期設定でなし</b>。ステージ選択で「あり」にすると降ってくる。剣は5回ほど振ると壊れる。
     <h3>三すくみ</h3>
@@ -421,6 +421,8 @@ const CHARS = {
 // SECRET ROSTER — owner-authoritative combat, cosmetic events never stop the global simulation.
 const ANIME_IDS=['goku','gojo','tanjiro','naruto','jotaro'];
 const SECRET_IDS=['rubber',...ANIME_IDS];
+const SPECIAL_IDS=SECRET_IDS;
+
 const ANIME_COLORS={rubber:'#e8bb66',goku:'#ffb445',gojo:'#a48cff',tanjiro:'#5cdbc1',naruto:'#ffb558',jotaro:'#8b69c7'};
 const ANIME_COMMON={ctx:0,back:false,ctc:1,dgc:1,dgs:1,jumps:2,size:1};
 Object.assign(CHARS,{
@@ -431,6 +433,17 @@ Object.assign(CHARS,{
  jotaro:{...ANIME_COMMON,name:'空条承太郎',en:'JOTARO KUJO',mark:'星',spd:1.02,jump:1.02,wt:.90,pow:1.13,st:[4,4,4],sp:'特殊＝スタープラチナのオラオララッシュ。横特殊＝スターフィンガー',up:'上特殊：攻撃判定なしの大ジャンプ。下特殊：ゲージMAXで時を止める',ab:'時止めゲージは時間経過で蓄積。時止め中は承太郎だけが行動でき、止まった相手へのダメージと吹っ飛ばしは時が動き出した瞬間に反映される'}
 
 });
+
+const STANDARD_IDS=Object.keys(CHARS).filter(id=>!SPECIAL_IDS.includes(id));
+const CPU_POOL_LABEL={normal:'通常キャラ',special:'スペシャルキャラ',all:'全キャラ'};
+function cpuCharacterPool(mode='all'){
+  if(mode==='normal') return STANDARD_IDS.slice();
+  if(mode==='special') return SPECIAL_IDS.filter(id=>CHARS[id]);
+  return Object.keys(CHARS);
+}
+function cpuPoolIndex(mode){return mode==='normal'?0:mode==='special'?1:2;}
+function cpuPoolFromIndex(i){return i===0?'normal':i===1?'special':'all';}
+
 const ANIME_MOVES={
  gupper:{type:'normal',act0:3,act1:13,end:24,reach:8,R:27,yo:60,cd:8},
  gdragon:{type:'heavy',act0:4,act1:18,end:31,reach:27,R:43,yo:66,cd:14,glow:3},
@@ -463,13 +476,8 @@ function animeStats(p){
 function animeSlow(p){return p.slowT>0?.38:1;}
 function animeLocked(p){return isAnime(p)&&((p.cid==='goku'&&p.castStyle==='beamcast'&&p.a>0)||p.mv?.kind==='purplecast');}
 function animeNotice(p,txt,col=ANIME_COLORS[p.cid],size=18,life=46){popups.push({x:p.x,y:p.y-115,txt,life,max:life,size,c:col});}
-let animeVoiceStamp=0;
-function animeVoice(p,txt,rate=1.35,pitch=.9,vol=.7){
- if(!p||p.id!==myId||p.cpu||typeof speechSynthesis==='undefined'||typeof SpeechSynthesisUtterance==='undefined')return;
- const now=Date.now();if(now-animeVoiceStamp<180)return;animeVoiceStamp=now;
- try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang='ja-JP';u.rate=rate;u.pitch=pitch;u.volume=vol;speechSynthesis.speak(u);}catch(_){ }
-}
-function animeCall(p,txt,col=ANIME_COLORS[p.cid],voice=false,rate=1.35,pitch=.9){animeNotice(p,txt,col,18,42);if(voice)animeVoice(p,txt,rate,pitch);}
+function animeVoice(){ /* 音声合成は使用しない */ }
+function animeCall(p,txt,col=ANIME_COLORS[p.cid],voice=false,rate=1.35,pitch=.9){animeNotice(p,txt,col,18,42);}
 function animeSound(kind){
  if(kind==='charge'){tone(180,650,.18,.045,'triangle');return;}
  if(kind==='water'){noiseHit(.14,.17,3300,true);tone(620,230,.14,.07,'triangle');return;}
@@ -607,7 +615,7 @@ const GOJO_RED_HOLD=30,GOJO_PURPLE_HOLD=150;
 const GOJO_CD_BLUE=80,GOJO_CD_RED=112,GOJO_CD_PURPLE=230;
 function animeHold(p,inp){
  if(inp.s){p.sph=Math.min(190,p.sph+1);
-  if(p.cid==='goku'&&p.castStyle==='charge')animeGain(p,100/(7*60)); // 約7秒で100。
+  if(p.cid==='goku'&&p.castStyle==='charge')animeGain(p,100/(3*60)); // 約3秒で100。
   if(p.cid==='goku'&&p.castStyle==='ki'&&p.sph===85)animeNotice(p,'かめはめ波 MAX','#99eaff');
   if(p.cid==='gojo'&&p.castStyle==='orb'){
    if(p.sph>=GOJO_PURPLE_HOLD){if(p.orbColor!=='purple')animeNotice(p,'茈 READY','#d7aaff');p.orbColor='purple';}
@@ -791,15 +799,49 @@ function animeArm(x,y,hx,hy,c,w=5){noFill();stroke('#162131');strokeWeight(w+2);
 function drawStarPlatinum(p,t,mv,active){
  const show=(p.a>0&&mv&&['ora','starfinger'].includes(mv.kind))||p.timeStopSelfT>0;
  if(!show)return;
- push();translate(-p.f*10,-18);drawingContext.globalAlpha*=.68;
- noStroke();fill('#553c78');ellipse(-p.f*8,-48,30,34);fill('#6e4b99');quad(-24,-42,14,-44,22,-5,-20,-5);
- fill('#7f5aad');ellipse(-p.f*9,-60,22,24);fill('#d9c3ee');ellipse(-p.f*13,-62,4,3);ellipse(-p.f*5,-62,4,3);
- stroke('#29203e');strokeWeight(2);line(-p.f*18,-54,-p.f*26,-47);line(-p.f*1,-54,p.f*7,-47);
+ // drawAnimeActor側ですでにscale(p.f,1)済み。ここでは+Xを常に前方として扱う。
+ push();translate(-12,-18);drawingContext.globalAlpha*=.72;
+ noStroke();fill('#553c78');ellipse(-8,-48,30,34);fill('#6e4b99');quad(-24,-42,14,-44,22,-5,-20,-5);
+ fill('#7f5aad');ellipse(-9,-60,22,24);fill('#d9c3ee');ellipse(-13,-62,4,3);ellipse(-5,-62,4,3);
+ stroke('#29203e');strokeWeight(2);line(-18,-54,-26,-47);line(-1,-54,7,-47);
+
  if(mv&&mv.kind==='ora'&&p.a>0){
-  for(let i=0;i<8;i++){const ph=t*.7+i*1.17,x=p.f*(18+((i*19+t*8)%60)),y=-39+Math.sin(ph)*27;stroke(105,76,153,100);strokeWeight(7);line(p.f*5,-34,x,y);noStroke();fill(205,181,235,180);circle(x,y,11);}
+   const isActive=p.a>=mv.act0&&p.a<=mv.act1;
+   const finalFrame=isActive&&p.a>=mv.act1-1;
+   // Actual ORA hit center = reach 62 / y -38 / R 27.
+   // Fists now orbit that exact volume instead of extending independently of the hitbox.
+   const cx=62,cy=-38;
+   if(isActive){
+     for(let i=0;i<8;i++){
+       const ph=t*.78+i*1.31;
+       const x=cx-20+((i*13+Math.floor(t*7))%40);
+       const y=cy+Math.sin(ph)*20;
+       stroke(105,76,153,110);strokeWeight(7);line(7,-34,x,y);
+       noStroke();fill(205,181,235,195);circle(x,y,11);
+     }
+     noFill();stroke(205,181,235,55);strokeWeight(1.5);circle(cx,cy,54);
+     if(finalFrame){
+       stroke('#6d4b9a');strokeWeight(13);line(8,-35,cx,cy);
+       noStroke();fill('#f0e3ff');circle(cx,cy,24);
+       fill(255,255,255,120);circle(cx-4,cy-4,8);
+     }
+   }else{
+     stroke('#6d4b9a');strokeWeight(8);line(5,-34,25,-37);
+     noStroke();fill('#d9c3ee');circle(25,-37,12);
+   }
  }
- if(mv&&mv.kind==='starfinger'&&active){
-  const ext=Math.min(188,65+(p.a-mv.act0+1)*30);stroke('#6d4b9a');strokeWeight(9);line(p.f*12,-39,p.f*ext,-39);stroke('#d7c4ef');strokeWeight(3);line(p.f*12,-39,p.f*ext,-39);noStroke();fill('#eadfff');ellipse(p.f*ext,-39,14,8);
+
+ if(mv&&mv.kind==='starfinger'&&p.a>0){
+   // Actual collision is a horizontal line from the fighter to reach 188 at y -38.
+   // During the active frames the visible finger is also fully extended to that distance.
+   const wind=p.a<mv.act0;
+   const retract=p.a>mv.act1;
+   let ext=wind?16+(p.a/Math.max(1,mv.act0))*55:188;
+   if(retract)ext=188*Math.max(0,1-(p.a-mv.act1)/Math.max(1,mv.end-mv.act1));
+   stroke('#6d4b9a');strokeWeight(9);line(12,-38,ext,-38);
+   stroke('#d7c4ef');strokeWeight(3);line(12,-38,ext,-38);
+   noStroke();fill('#eadfff');ellipse(ext,-38,14,8);
+   if(active){noFill();stroke(220,199,243,55);strokeWeight(1.2);line(0,-38,188,-38);}
  }
  pop();
 }
@@ -846,13 +888,22 @@ function drawAnimeActor(p,t,ghost=false){
  if(p.w)drawWeapon(p.w,hx,hy,1,atk?'swing':'hold',false);
  if(p.stn>0){noStroke();fill('#ffe49f');textSize(12);textAlign(CENTER,CENTER);text('✦',-8,-83);text('✦',12,-79);}pop();
 }
+
+function drawAttackChargeBar(p,x,y,w=66){
+  if(!p||p.ch<=0)return;
+  const q=Math.max(0,Math.min(1,p.ch/CH_FULL)),h=6;
+  push();noStroke();fill('#07101bcc');rect(x-w/2,y,w,h,2);
+  fill(p.ch>=CH_WARN?'#ef4747':p.ch>=CH_FULL?'#ffd166':'#ffe078');rect(x-w/2,y,w*q,h,2);
+  stroke('#ffffff99');strokeWeight(.7);noFill();rect(x-w/2,y,w,h,2);pop();
+}
+
 function drawAnimeFighter(p){
  const t=visualFrame;
  if(p.cid==='naruto'&&(p.cloneT>0||p.sph>=15)&&!animeFx.some(e=>e.kind==='echo'&&e.id===p.id))drawAnimeActor({...p,x:p.x-p.f*35,y:p.y+2,a:0,mv:null,sph:p.sph>=15?p.sph:0},t-7,true);
  drawAnimeActor(p,t);
  push();textAlign(CENTER,CENTER);textStyle(BOLD);textSize(12);stroke('#0b1423');strokeWeight(3);fill(battleTeamMode?teamColor(p.team):p.c);const y=p.y-103*CC(p.cid).size;text((battleTeamMode?teamName(p.team)+' ':'')+p.label,p.x,y);
  if(p.id===myId){noStroke();triangle(p.x-5,y+10,p.x+5,y+10,p.x,y+16);drawCool(p.x+38,y,p.ctc,CT_COOL*CC(p.cid).ctc,'#75baff','C');}
- if(p.ch>0){const q=Math.min(1,p.ch/CH_FULL),bw=66,bh=6,by=y+21;noStroke();fill('#07101bcc');rect(p.x-bw/2,by,bw,bh,2);fill(p.ch>=CH_WARN?'#ef4747':p.ch>=CH_FULL?'#ffd166':'#ffe078');rect(p.x-bw/2,by,bw*q,bh,2);stroke('#ffffff99');strokeWeight(.7);noFill();rect(p.x-bw/2,by,bw,bh,2);}
+ drawAttackChargeBar(p,p.x,y+21,66);
  pop();paintSpecialDetails(p);
 }
 function drawAnimeProjectile(q){
@@ -977,7 +1028,7 @@ function rosterSections(container,choose){
  for(const secret of [false,true]){
   const section=document.createElement('section');
   section.className=secret?'roster-group secret-roster':'roster-group';
-  section.innerHTML=`<header><b>${secret?'SECRET FIGHTERS':'STANDARD FIGHTERS'}</b><span>${secret?'ルフィ・承太郎・悟空・五条・炭治郎・ナルト':'通常キャラクター'}</span></header><div class="roster-cards"></div>`;
+  section.innerHTML=`<header><b>${secret?'SPECIAL FIGHTERS':'STANDARD FIGHTERS'}</b><span>${secret?'ルフィ・承太郎・悟空・五条・炭治郎・ナルト':'通常キャラクター'}</span></header><div class="roster-cards"></div>`;
   const grid=section.lastElementChild;
   const ids=(secret?secretOrder:standardOrder).filter(id=>CHARS[id]);
 
@@ -988,7 +1039,7 @@ function rosterSections(container,choose){
    b.style.setProperty('--fighter-color',ANIME_COLORS[id]||fighterPalette[Object.keys(CHARS).indexOf(id)]||'#c7ad81');
    b.setAttribute('aria-label',C.name);
    b.setAttribute('aria-pressed',String(settings.cid===id));
-   b.innerHTML=`<span class="fighter-number">${secret?'SECRET / ':''}${C.mark}</span>${portrait(id)}<small>${C.name}</small>${id==='jotaro'?'<span class="new-fighter-badge">NEW</span>':''}`;
+   b.innerHTML=`<span class="fighter-number">${secret?'SPECIAL / ':''}${C.mark}</span>${portrait(id)}<small>${C.name}</small>${id==='jotaro'?'<span class="new-fighter-badge">NEW</span>':''}`;
    b.onclick=()=>choose(id);
    grid.appendChild(b);
   }
@@ -1092,7 +1143,7 @@ function mkMv(kind, w) {
 
 const myId = Math.random().toString(36).slice(2, 10);
 const urlRoom = new URLSearchParams(location.search).get('room');
-let settings = { cid: 'karate', cpuN: 1, cpuLv: 1, map: 'std', wpn: false, stocks: DEFAULT_STOCK, name: 'PLAYER', teamMode: false, team: 1 };
+let settings = { cid: 'karate', cpuN: 1, cpuLv: 1, cpuPool: 'all', map: 'std', wpn: false, stocks: DEFAULT_STOCK, name: 'PLAYER', teamMode: false, team: 1 };
 let scene = 'title', howtoFrom = 'sc-mode', charMode = 'cpu';
 let online = false, isHost = false, roomId = null, roomRef = null;
 let memCache = {}, gmCache = null, curRound = 0, skipRound = -1, gmFirst = true;
@@ -1273,7 +1324,7 @@ async function createRoom() {
   }
   if (!roomRef) { alert('部屋コードを作れませんでした。もう一度お試しください。'); return; }
   roomRef.onDisconnect().remove();
-  await roomRef.child('gm').set({ protocol:NET_PROTOCOL,hostId:myId,ph: 'lobby', round: 0, map: 'std', wpn: 0, stocks: settings.stocks, cpuN: 0, cpuLv: 1, teamMode: settings.teamMode ? 1 : 0, w: '', wt: 0 });
+  await roomRef.child('gm').set({ protocol:NET_PROTOCOL,hostId:myId,ph: 'lobby', round: 0, map: 'std', wpn: 0, stocks: settings.stocks, cpuN: 0, cpuLv: 1, cpuPool: settings.cpuPool || 'all', teamMode: settings.teamMode ? 1 : 0, w: '', wt: 0 });
   await joinCommon();
   netTimers.push(setInterval(hostTick, 200));
   netTimers.push(setInterval(hostSpawn, 1000));
@@ -1450,7 +1501,7 @@ function renderLobby() {
     html += `<div class="mrow"><div class="mk" style="background:${teamMode ? teamColor(tm) : COLORS[i % COLORS.length]}">${C.mark}</div>` +
             `<div>${esc(m.label)}　${C.name} ${badge} ${m.host ? '<span class="tag">HOST</span>' : ''} ${m.id === myId ? '<small>（あなた）</small>' : ''}</div></div>`;
   });
-  if (g.cpuN > 0) html += `<div class="mrow"><div class="mk" style="background:#5b7383">C</div><div>CPU ×${g.cpuN}（${LV_NAME[g.cpuLv || 0]}）${teamMode ? '　※開始時に人数が少ないチームへ自動配属' : ''}</div></div>`;
+  if (g.cpuN > 0) html += `<div class="mrow"><div class="mk" style="background:#5b7383">C</div><div>CPU ×${g.cpuN}（${LV_NAME[g.cpuLv || 0]}／${CPU_POOL_LABEL[g.cpuPool || 'all']}）${teamMode ? '　※開始時に人数が少ないチームへ自動配属' : ''}</div></div>`;
   if (skipRound === g.round && g.ph !== 'lobby') html += '<div class="wait">対戦中です。次のラウンドから参加できます</div>';
   document.getElementById('lb-mem').innerHTML = html;
 
@@ -1465,6 +1516,7 @@ function renderLobby() {
       '<div class="optrow" style="margin-top:8px"><span>武器</span><div class="seg" id="lb-wpn"></div></div>' +
       '<div class="optrow" style="margin-top:8px"><span>残機</span><div class="seg" id="lb-stock"></div></div>' +
       '<div class="optrow" style="margin-top:8px"><span>CPUを足す</span><div class="seg" id="lb-cpun"></div></div>' +
+      '<div class="optrow" style="margin-top:8px"><span>CPUキャラ</span><div class="seg" id="lb-cpupool"></div></div>' +
       '<div class="optrow" style="margin-top:8px"><span>CPUの強さ</span><div class="seg" id="lb-cpulv"></div></div>';
     renderStageGrid('lb-stage', g.map, id => roomRef.child('gm').update({ map: id }));
     seg('lb-team-mode', ['個人戦', 'チーム戦'], () => teamMode ? 1 : 0, i => roomRef.child('gm').update({ teamMode: i === 1 ? 1 : 0 }));
@@ -1473,6 +1525,7 @@ function renderLobby() {
     const maxCpu = Math.max(0, Math.min(7, MAX_PLAYERS - mem.length));
     const labels = []; for (let i = 0; i <= maxCpu; i++) labels.push(i === 0 ? 'なし' : i + '体');
     seg('lb-cpun', labels, () => Math.min(g.cpuN || 0, maxCpu), i => roomRef.child('gm').update({ cpuN: i }));
+    seg('lb-cpupool', ['通常キャラ', 'スペシャル', '全キャラ'], () => cpuPoolIndex(g.cpuPool || 'all'), i => roomRef.child('gm').update({ cpuPool: cpuPoolFromIndex(i) }));
     seg('lb-cpulv', LV_NAME, () => g.cpuLv || 0, i => roomRef.child('gm').update({ cpuLv: i }));
     startBtn.style.display = '';
     waitEl.style.display = 'none';
@@ -1480,7 +1533,7 @@ function renderLobby() {
     else { startBtn.className = 'startbig off'; startBtn.innerText = 'あと1人必要（CPUを足してもOK）'; }
   } else {
     setBox.innerHTML = '<div class="sh">④ ルール（ホストが決めます）</div>' +
-      `形式：<b>${teamMode ? 'チーム戦' : '個人戦'}</b>　ステージ：<b>${(MAPS[g.map] || MAPS.std).name}</b>　武器：<b>${g.wpn ? 'あり' : 'なし'}</b>　残機：<b>${clampInt(g.stocks,1,MAX_STOCK,DEFAULT_STOCK)}</b>　CPU：<b>${g.cpuN ? g.cpuN + '体' : 'なし'}</b>`;
+      `形式：<b>${teamMode ? 'チーム戦' : '個人戦'}</b>　ステージ：<b>${(MAPS[g.map] || MAPS.std).name}</b>　武器：<b>${g.wpn ? 'あり' : 'なし'}</b>　残機：<b>${clampInt(g.stocks,1,MAX_STOCK,DEFAULT_STOCK)}</b>　CPU：<b>${g.cpuN ? g.cpuN + '体（' + CPU_POOL_LABEL[g.cpuPool || 'all'] + '）' : 'なし'}</b>`;
     startBtn.style.display = 'none';
     waitEl.style.display = 'block';
     waitEl.innerText = 'ホストがバトルを始めるのを待っています…';
@@ -1496,7 +1549,7 @@ async function hostStart() {
   const teamMode = !!g.teamMode;
   const upd = {};
   for (const id in memCache) if (memCache[id].cpu) upd['mem/' + id] = null;
-  const keys = Object.keys(CHARS);
+  const keys = cpuCharacterPool(g.cpuPool || 'all');
   const counts = {1:0, 2:0};
   if (teamMode) for (const h of humans) counts[normTeam(h.team)]++;
 
@@ -1691,7 +1744,7 @@ function handleGameplayEvent(e) {
 // ========================================================
 function startBattleOffline() {
   online = false;
-  const keys = Object.keys(CHARS);
+  const keys = cpuCharacterPool(settings.cpuPool);
   const myTeam = settings.teamMode ? normTeam(settings.team) : 0;
   const list = [{ id: myId, cid: settings.cid, label: cleanName(settings.name), cpu: 0, owner: myId, team: myTeam }];
   for (let i = 0; i < settings.cpuN; i++) {
@@ -2218,7 +2271,7 @@ function stepFighter(p, inp) {
     if (p.a > 0 && p.mv) {
       const oldAttackFrame=Math.floor(p.a);p.a+=animeSlow(p);const crossedAttackFrame=Math.floor(p.a)!==oldAttackFrame;
       if (crossedAttackFrame && p.mv.multi && p.a > p.mv.act0 && p.a <= p.mv.act1 && (Math.floor(p.a) - p.mv.act0) % p.mv.multi === 0) p.hit = {};
-      if(crossedAttackFrame&&p.mv.kind==='ora'&&Math.floor(p.a)===p.mv.act1){p.hit={};animeNotice(p,'オラァ！！','#fff0b8',25,30);animeVoice(p,'オラァ！',1.55,.68,.9);animeSound('orafinish');}
+      if(crossedAttackFrame&&p.mv.kind==='ora'&&Math.floor(p.a)===p.mv.act1){p.hit={};animeNotice(p,'オラァ！！','#fff0b8',25,30);animeSound('orafinish');}
       if(p.cid==='berserker'&&['axeheavy','axeup'].includes(p.mv.kind)&&crossedAttackFrame&&Math.floor(p.a)===p.mv.act0){const e={k:'vfx',v:'axeSwing',id:p.id,x:p.x,y:p.y,up:p.mv.kind==='axeup'};vfx(e);send(e);}
       if (p.mv.lunge && crossedAttackFrame && Math.floor(p.a) === p.mv.act0) p.vx += p.f * p.mv.lunge;
       if (p.a > p.mv.end) { p.cd = p.mv.cd || 5; p.a = 0; p.mv = null; if (p.w === 'sword' && p.am <= 0) breakSword(p); }
@@ -3136,6 +3189,7 @@ function drawLuffy(p){
  if(p.stn>0){push();textAlign(CENTER,CENTER);textSize(12);noStroke();fill('#ffd166');for(let i=0;i<3;i++)text('★',p.x+Math.cos(t*.15+i*2.1)*17,p.y-83*sz+Math.sin(t*.15+i*2.1)*5);pop();}
  paintSpecialDetails(p);
  const top=p.y-(g===4?99:90)*sz;
+ drawAttackChargeBar(p,p.x,top+16,66);
  push();textAlign(CENTER,CENTER);textStyle(BOLD);stroke('#0d1418');strokeWeight(3);fill(battleTeamMode?teamColor(p.team):p.c);textSize(12);
  text((battleTeamMode?teamName(p.team)+' ':'')+p.label,p.x,top-5);
  if(p.id===myId){noStroke();fill(battleTeamMode?teamColor(p.team):p.c);triangle(p.x-5,top+6,p.x+5,top+6,p.x,top+12);drawCool(p.x+35,top-5,p.ctc,CT_COOL*C.ctc,'#3a86ff','C');}
@@ -3462,6 +3516,7 @@ function drawFighter(p) {
 
   paintSpecialDetails(p);
   const top = p.y - 74 * sz;
+  drawAttackChargeBar(p,p.x,top+18,66);
   textAlign(CENTER, CENTER); textStyle(BOLD);
   if (p.id === myId) {
     noStroke(); fill(battleTeamMode?teamColor(p.team):p.c); triangle(p.x - 7, top, p.x + 7, top, p.x, top + 8);
@@ -3729,6 +3784,7 @@ function buildMenus() {
   };
   renderChars();
   seg('seg-cpun', ['1体', '2体', '3体', '4体', '5体', '6体', '7体'], () => settings.cpuN - 1, i => settings.cpuN = i + 1);
+  seg('seg-cpupool', ['通常キャラ', 'スペシャル', '全キャラ'], () => cpuPoolIndex(settings.cpuPool), i => settings.cpuPool = cpuPoolFromIndex(i));
   seg('seg-cpulv', LV_NAME, () => settings.cpuLv, i => settings.cpuLv = i);
 
   const renderStages = () => renderStageGrid('stage-grid', settings.map, id => {
@@ -4407,7 +4463,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_17_SECRET_VOICE_BALANCE_V2';
+const NET_PROTOCOL='SBO_NET_17_SPECIAL_CPUPOOL_CHARGEBAR_JOTARO_V3';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
