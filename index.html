@@ -1,3 +1,343 @@
+
+過去のメッセージを読み込み中…
+いいね！あとはゲームのUIとか、操作説明とかのところを直感的にわかりやすくしてあげたい！
+特にルール説明！
+このゲーム複雑で全部説明すると大変だから、一回ルール説明のところもわかりやすく大事な情報だけわかるようにしてあげたい！
+
+修正点
+五条悟の特殊横の火力少し控えめで。
+ただしこくせんの時だけは超高火力
+
+こくせんは英語ではなく感じで！今は英語のカットインになってる。
+
+あと、こくせんはずしたとき、カットインは入らんけど、黒い丸は出てきちゃってる。
+
+あとこくせんは黒と赤い感じのイメージなんだけど、、、そこも調べて修正を
+
+あとは、領域展開ももっとカットイン入れてカッコよくしていいと思うよ
+
+あとは、もっと広いステージを増やしたいね！いまめっちゃ広いステージ一個しかないから
+
+
+りゅうけんもカッコよくなってるけど、なんか龍が遅くてそれだけ違和感。ニョロニョロの龍、早くするかなしで。
+あとはカットインのやつも龍拳って感じがいいな！いまは英語のカットインだから。
+…
+黒閃の演出について確認できました。アニメでは黒い衝撃と赤い閃光・稲妻が特徴で、制作側のインタビューでも「空間が歪む」表現へのこだわりが語られています。
+
+集英社 文芸ステーション
++1
+
+今回のゲームでは、黒閃が実際に命中した瞬間だけ、黒と深紅の爆発・稲妻・「黒閃」の漢字カットインが出るようにします。空振りした場合は普通のパンチ演出のままにします。
+
+今回の修正版ができました！ UI改善版をベースに、技の演出・バランス調整・大型ステージ追加まで反映しています。
+
+ゲーム最新版 HTML
+
+ZIP版（index.html入り）
+
+全文コード TXT
+
+主な修正点
+① 五条悟・横特殊
+
+通常の踏み込みパンチは火力を抑え、黒閃だけを超高火力にしました。黒閃の確率は約16.7%のままです。
+
+黒閃は命中した瞬間だけ発動する見た目に変更。専用エフェクトを黒＋深紅に統一し、カットインも英語の「BLACK FLASH」から**「黒閃」**へ変更しました。
+
+② 五条悟・領域展開
+
+無量空処に約0.9秒の試合停止カットインを追加しました。暗い虚空、情報が広がるような光、巨大な「無量空処」の文字を組み合わせています。領域の効果時間や行動不能の仕組みは維持しています。
+
+③ 悟空・龍拳
+
+ゆっくり蛇行する龍を廃止。黄金龍が約0.2秒で上へ駆け上がる演出に変更しました。命中時のKO演出も「DRAGON FIST」から**「龍拳」**へ変更しています。
+
+④ 大型ステージを3種類追加
+
+夕焼け大峡谷 — 左右に分かれた地形と中央の足場
+
+超巨大都市 — 横幅1,600の広大なステージ
+
+天空の浮遊遺跡 — 多段の浮遊足場で立体的に戦えるステージ
+
+ステージ数は7種類から10種類になりました。
+
+⑤ UI・ルール説明
+
+前回作った、勝ち方・攻撃の相性・端末別操作を中心とした初心者向け説明画面も引き継いでいます。細かな仕様を最初から全部読ませない構成です。
+
+JavaScriptの構文チェックに加えて、黒閃の抽選、領域カットイン、龍拳の描画処理、新ステージの足場配置のテストは通過しました。ただし、実ブラウザでの通しプレイ確認はできていません。
+
+今回は特に黒閃の空振りと命中時の演出の違いを見てみてほしいです。
+
+
+stick_battle_online.html
+HTML
+
+stick_battle_online.txt
+ドキュメント
+改善点あるかな？
+ある！ 最新版のコードも確認したけど、今の STICK BATTLE ONLINE は、キャラや必殺技を増やすより「対戦ゲームとしての完成度」を高める段階に入ってきたと思う。
+
+特に、初めて遊ぶ人と、何十回も遊ぶ人の両方が楽しめる設計にしていきたい。
+
+改善したいところ TOP 6
+1. 実際に操作できるチュートリアル
+
+最優先
+
+今は説明が読みやすくなったけど、複雑なゲームだから文章だけでは覚えにくい。
+
+CPUを相手に「移動→攻撃→溜め→カウンター→場外撃墜」を30〜60秒ほどで体験できるモードを作りたい。操作を覚える前に試合でボコボコにされる問題を減らせる。
+
+2. 大型ステージ用のカメラ
+
+これはコードを見て特に気になった。
+
+今はステージ全体を画面に収める方式なので、横幅1600の巨大ステージでは、800のステージと比べてキャラが約半分の表示サイズになる。
+
+プレイヤーを追従するカメラを入れ、複数人の距離に応じてズームを調整したい。スマホでの遊びやすさが大きく変わるはず。
+
+3. キャラバランスと対戦モードの整理
+
+超3の完全無敵、龍拳、黒閃、時止めなど、強力な技がゲームの魅力になっている。
+
+ただ、強さの差が大きいと通常キャラが選ばれなくなる可能性もある。
+
+そこで、性能を弱体化させるよりも、**「大乱闘モード（今の超火力）」と「バランスモード（競技向け）」**を分けるのも面白い。CPU戦は今の派手な強さを残したい。
+
+4. バトル中の情報表示を改善
+
+8人対戦ではHUDの情報量が多くなるので、自分の情報を一番目立たせたい。
+
+具体的には、特殊技のクールタイム、ゲージMAX、変身の残り時間、無敵状態を統一した色・アイコンで表示する。
+
+今のHUDにはキャラ固有のゲージがあるので、それを活かせる。
+
+5. オンライン対戦の安定化
+
+Firebaseを使った対戦で、特に優先して確認したいのが通信遅延、キャラのワープ、同時攻撃、ホスト退出への対応。
+
+あと、現行コードではオンラインでルール画面を開いても対戦が進み続ける仕様なので、**「オンライン中は試合が停止しません」**という案内を入れた方がいい。
+
+6. ルール・キャラ説明の最終チェック
+
+実際にコードで説明の食い違いが見つかった。
+
+五条悟には横特殊が実装されているのに、キャラ説明の一部に「横特殊はなし」と残っている。また、「残機＝復活回数」という説明も、残機1で撃墜される仕様とは少し違う。
+
+**「残機＝場外に飛ばされても戦える残り回数」**などへ直し、初心者の誤解をなくしたい。
+
+次に取り組むなら
+おすすめの開発順序
+
+01
+
+ルール・キャラ説明の矛盾修正
+
+小規模
+
+02
+
+大型ステージのカメラ改善
+
+重要
+
+03
+
+初めての対戦チュートリアル
+
+重要
+
+04
+
+バトルHUDの整理
+
+中規模
+
+05
+
+オンライン安定性の検証
+
+継続
+
+個人的には、次は大型ステージのカメラ改善とチュートリアルに力を入れたい。
+
+今は必殺技のクオリティが高くなってきた分、キャラが小さすぎたり、技の使い方が分からなかったりするのがもったいない。そこを改善できれば、ゲームの印象がかなり変わると思う。
+
+ただし、現時点の評価はコード上のレビューが中心。操作感や対戦バランスは実際にプレイして検証したい。
+
+こくせんの仕様が変わってません。
+あの黒い丸みたいなのなしでお願い！
+直せないならない方がいい。手についてる小さいのはいいよ。
+
+あと、カットインの文字英語のままだし。りゅうけんも。
+あとりゅうけんのダサいドラゴンなしで。もうエフェクトでカッコよくして。
+修正したよ！今回は黒閃の黒い球と、龍拳のドラゴンを描画コードから削除しました。
+
+修正版 HTML
+
+ZIP版（GitHub用）
+
+全文コード TXT
+
+今回の修正
+① 五条悟・黒閃
+
+大きな黒い球を完全削除
+
+黒い亀裂と赤い稲妻が炸裂する演出に変更
+
+手元の小さな呪力エフェクトは維持
+
+黒閃の専用演出は命中時のみ
+
+カットインを大きな漢字の**「黒閃」**に統一
+
+② 悟空・龍拳
+
+ドラゴンの頭・身体を完全削除
+
+黄金の光柱が高速で突き上がる演出に変更
+
+金色の稲妻、斬光、衝撃波を追加
+
+カットインを大きな漢字の**「龍拳」**に統一
+
+前回のコードにも日本語表記自体はありましたが、技の種類が正しく引き継がれない場合に通常の英語KO演出へ戻る可能性があったため、そこも修正しました。
+
+構文チェックと演出処理の個別テストは通過済みです。実ブラウザでの通しプレイまでは確認できていません。
+
+今回はタイトル画面に小さく 「EFFECT FIX V11」 と表示されます。GitHubへ反映するときは古い index.html を今回のものに置き換えてください。これで最新版を開けているか確認できます。
+
+
+stick_battle_online.html
+HTML
+
+stick_battle_online.txt
+ドキュメント
+ファイルのダウンロード二失敗する
+了解！ダウンロードできない問題に対応するため、ファイルを新しい名前で作り直しました。
+
+今回はZIPの中身も検証して、ファイルが壊れていないことを確認しています。
+
+ZIP版をダウンロード（おすすめ）
+
+HTML版をダウンロード
+
+全文コード TXT版
+
+まずZIP版を試してみて！ ダウンロード後に解凍すると、index.html が入っています。
+
+今回も黒閃・龍拳の修正版で、ゲーム内容は変えていません。
+
+それでも失敗する場合は、**「ダウンロードを押したときのエラー画面」**をスクショで送ってください。ファイルの問題なのか、ChatGPT側のダウンロードの問題なのかを切り分けます。
+
+
+sbo_game_fix11_20261027.html
+HTML
+
+sbo_game_fix11_20261027.txt
+ドキュメント
+承太郎の時止めもルフィーの演出っぽこく
+
+5m 10s考えました
+できたよ！承太郎の時止めをルフィのギアチェンジ風の専用カットインに変更しました！
+
+ゲーム最新版 ZIP
+
+ゲーム最新版 HTML
+
+全文コード TXT
+
+今回の演出
+時止め発動 — 対戦全体が約0.8秒停止。
+
+専用カットイン — 承太郎とスタープラチナが登場し、大きく「時よ止まれ！」と表示。
+
+時空の変化 — 紫と青緑の衝撃波が広がり、世界の色が変化。
+
+時止め開始 — カットイン終了後、承太郎だけが自由に行動できる。
+
+時止め解除 — 世界が元に戻り、停止中の攻撃結果が反映される。
+
+時止め中のゲージ増加禁止、専用MP3、従来の時止め性能も維持しています。
+
+構文チェックと時止め開始・終了の処理テストは通過済みです。実ブラウザでの通しプレイは未確認です。
+
+今回はタイトル画面に TIME STOP CUTIN V12 と表示されます。前のファイルと区別できるようにしてあります。
+
+
+sbo_timestop_cutin_v12.html
+HTML
+
+sbo_timestop_cutin_v12.txt
+ドキュメント
+領域展開もそんな感じで
+あと承太郎のnewも消そう
+
+あと前に話したこくせんとりゅうけんの修正ができてないよ
+
+5m 54s考えました
+了解。今回は最新版のコードを直接調べて、五条の領域展開をルフィ式のカットインに変更、承太郎の「NEW」を削除、黒閃と龍拳の未反映部分を修正するね。
+
+黒閃は大きな黒球なし・黒赤の命中演出、龍拳はドラゴンなし・光と衝撃波の演出に統一します。英語のカットインが残る原因も、表示文字だけでなく技の判定処理まで確認します。
+
+整理バグ原因と改善方針
+
+確認・調査し、KO演出とエフェクト判定を修正
+
+原因も見えてきたよ。黒閃・龍拳のカットインは、命中イベントから技名が正しく渡らないと、通常の英語KO演出へ戻る経路が残っています。ここを塞いで、命中時の攻撃種類をそのまま引き継ぐように直します。
+
+黒閃の大きな黒い球は描画だけでなく、命中時に発生する黒色パーティクルも撤去します。領域展開は承太郎の時止めと同じ、試合停止＋専用背景＋日本語タイトルの方式にします。
+
+検証方法を整備した
+
+実装パッチを作成し各種テストとブラウザ検証を実行
+
+修正できたよ！今回は、前回までの黒閃と龍拳の修正が反映されない問題も、命中判定からカットイン表示まで見直しました。
+
+最新版 ZIP（おすすめ）
+
+最新版 HTML
+
+全文コード TXT
+
+今回の変更点
+① 五条悟・領域展開
+
+ルフィのギアチェンジや承太郎の時止めと同じ、試合停止型の専用カットインに変更。
+
+発動 → 約1秒の試合停止 → 五条と情報が広がる虚空 → 大きく「無量空処」 → 戦闘再開
+
+カットイン中は領域の効果時間を消費しません。
+
+② 承太郎
+
+キャラ選択画面の「NEW」を削除しました。
+
+③ 五条悟・黒閃
+
+大きな黒い球を削除。手元の小さな呪力エフェクトは残し、命中時だけ黒い亀裂と赤い稲妻が炸裂します。
+
+カットインの文字は 「黒閃」。攻撃情報が途中で失われて通常の英語KO表示になる経路も修正しました。
+
+④ 悟空・龍拳
+
+ドラゴンの姿や蛇行する曲線を削除。黄金の光柱・高速の斬光・強烈な衝撃波を中心とした演出に統一しています。
+
+カットインも 「龍拳」 に固定しました。
+
+JavaScript構文チェックと、黒閃・龍拳・領域展開の描画処理テストは通過しています。実ブラウザでの通しプレイは未確認です。
+
+今回の最新版はタイトル画面に DOMAIN CUTIN V13 と表示されます。GitHub Pagesに反映した際は、この表示を確認してね。古い表示のままならキャッシュが残っている可能性があります。
+
+
+sbo_domain_kokusen_ryuken_v13.html
+HTML
+
+sbo_domain_kokusen_ryuken_v13.txt
+ドキュメント
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -76,9 +416,6 @@ input,textarea,select{touch-action:manipulation}.mu{width:100%;border-collapse:c
 @media(max-width:700px){.secret-roster .roster-cards,.roster-cards{grid-template-columns:repeat(3,minmax(0,1fr))}.roster-group header{align-items:flex-start;flex-direction:column;gap:3px}.secret-roster{padding:9px}.secret-roster .ci small{font-size:10px}.secret-roster .ci .fighter-number{font-size:7px}}
 
 
-.ci .new-fighter-badge{position:absolute;right:5px;bottom:24px;background:#ffd55e;color:#111827;
-padding:3px 6px;border-radius:2px;font-size:8px;font-weight:1000;letter-spacing:1px;z-index:3;
-box-shadow:0 2px 7px #0008}
 
 
 /* How To Play v2 — reveal essentials before advanced details. */
@@ -165,7 +502,7 @@ box-shadow:0 2px 7px #0008}
 <div id="sc-title" class="screen" style="display:flex">
  <div class="title-art"></div><div class="title-content"><div class="title-kicker">ONE ARENA. NO LIMITS.</div>
  <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">17人のファイター。勝負を決める、ただ一撃。</p>
- <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">TIME STOP CUTIN V12 / 承太郎</div>
+ <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">DOMAIN CUTIN V13 / 黒閃・龍拳</div>
 </div>
 <div id="sc-mode" class="screen">
  <div class="hd">CHOOSE YOUR BATTLE<small>モードを選択</small></div><div class="mode-grid">
@@ -811,7 +1148,7 @@ function animeDomain(p){
  // 効果発動後、全員が一瞬止まる領域専用シネマティックへ移行。
  beginDomainCutin({id:p.id,x:Math.round(p.x),y:Math.round(p.y-38)});
 }
-const DOMAIN_CUTIN_FREEZE=54;
+const DOMAIN_CUTIN_FREEZE=65;
 function beginDomainCutin(e){
  if(online&&!cinDispatching){requestCinematic('domain',e);return;}
  const p=byId(e.id);if(!p||p.cid!=='gojo')return;
@@ -950,7 +1287,7 @@ function animeTick(p){
 function animeWorldTick(){
  animeClock++;
  // 時止めの発動カットイン中は3.5秒の停止時間を消費しない。
- for(const e of animeFx){if(!(freezeT>0&&fzType==='timestopcin'&&e.kind==='timestop'))e.life--;}
+ for(const e of animeFx){if(!(freezeT>0&&((fzType==='timestopcin'&&e.kind==='timestop')||(fzType==='domain'&&e.kind==='domain'))))e.life--;}
  animeFx=animeFx.filter(e=>e.life>0);
 }
 function animeAI(p,I,A,adx){
@@ -1334,11 +1671,7 @@ function paintAnimeFx(){
     strokeWeight(i%4===0?4:2);
     line(xx-24,yy+18,xx+20,yy-27);
    }
-   for(let i=0;i<6;i++){
-    const yy=30-rush*240+i*17;
-    stroke(255,237,116,95*fade);strokeWeight(1.8);
-    arc(17,yy,62+i*11,16+i*3,PI*.1,PI*.9);
-   }
+   // 龍の輪郭に見える曲線は描かず、鋭い光線だけを残す。
   }else if(['gojopunch','blackflash'].includes(e.kind)){
    // 黒閃の予備エフェクトが来ても黒球は描かない。
    // 通常の横特殊は手元の小さな呪力のみ。
@@ -1487,7 +1820,7 @@ function rosterSections(container,choose){
    b.style.setProperty('--fighter-color',ANIME_COLORS[id]||fighterPalette[Object.keys(CHARS).indexOf(id)]||'#c7ad81');
    b.setAttribute('aria-label',C.name);
    b.setAttribute('aria-pressed',String(settings.cid===id));
-   b.innerHTML=`<span class="fighter-number">${secret?'SPECIAL / ':''}${C.mark}</span>${portrait(id)}<small>${C.name}</small>${id==='jotaro'?'<span class="new-fighter-badge">NEW</span>':''}`;
+   b.innerHTML=`<span class="fighter-number">${secret?'SPECIAL / ':''}${C.mark}</span>${portrait(id)}<small>${C.name}</small>`;
    b.onclick=()=>choose(id);
    grid.appendChild(b);
   }
@@ -2831,14 +3164,14 @@ function meleeCheck(a) {
       a.hit[t.id] = true;
       const oraFinish=mv.kind==='ora'&&a.a>=mv.act1-1;
       const A = { id: a.id, x: Math.round(a.x), f: a.f, c: a.c,
-                  mv: { type: oraFinish?'heavy':mv.type, kind: oraFinish?'orafinish':mv.kind, dm: Math.round((oraFinish?14.5:mv.dm) * 10) / 10, k0: Math.round((oraFinish?15.0:mv.k0) * 10) / 10, ks: oraFinish?.115:mv.ks, up: oraFinish?.48:mv.up, ko: !!mv.ko, blockOnly: !!mv.blockOnly, ragePunch: !!mv.ragePunch, pierce: !!mv.pierce, minKb:oraFinish?15.5:(mv.minKb||0) } };
+                  mv: { type: oraFinish?'heavy':mv.type, kind: oraFinish?'orafinish':mv.kind, style:mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':'', dm: Math.round((oraFinish?14.5:mv.dm) * 10) / 10, k0: Math.round((oraFinish?15.0:mv.k0) * 10) / 10, ks: oraFinish?.115:mv.ks, up: oraFinish?.48:mv.up, ko: !!mv.ko, blockOnly: !!mv.blockOnly, ragePunch: !!mv.ragePunch, pierce: !!mv.pierce, minKb:oraFinish?15.5:(mv.minKb||0) } };
       if (isLocal(t)) resolveMelee(A, t);
       else {
         send({ k: 'mh', to: t.id, a: a.id, ax: A.x, f: a.f, c: a.c, mv: A.mv });
         // 予測：返事を待たずに手応えを出す
         const front = fromFront(t, a.x) || CC(t.cid).back;
         const willCounter = mv.type === 'heavy' && mv.kind !== 'upper' && !AXE_KINDS.includes(mv.kind) && inCounter(t) && front;
-        if (mv.kind === 'upper' && !t.ivf) requestCinematic('ko', { x: Math.round(t.x), y: Math.round(t.y - 30 * tsz), a: a.id, t: t.id }); // Dragon/Black Flash only freeze on confirmed hit
+        if (mv.kind === 'upper' && !t.ivf) requestCinematic('ko', { x: Math.round(t.x), y: Math.round(t.y - 30 * tsz), a: a.id, t: t.id, style:'ko', moveKind:'upper' }); // Only boxer KO uses eager preview; named techniques require confirmed hits
         if (!willCounter && !t.ivf && mv.kind !== 'upper') {
           const est = (A.mv.k0 + (t.d + A.mv.dm) * A.mv.ks) * weightFactor(t);
           localHitFx(t.id, t.x, t.y - 30 * tsz, est);
@@ -2865,7 +3198,7 @@ function resolveMelee(A, t) {
     return;
   }
   const kb = applyHit(t, h, bk, A.id);
-  emitFx({ res: 'hit', t: t.id, a: A.id, x: t.x, y: ty, kb: Math.round(kb * 10) / 10, bk: bk ? 1 : 0, up: ['upper','gdragon','gblackflash'].includes(mv.kind) ? 1 : 0, style: mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':'', c: t.c, gain: 8, axe:mv.kind==='axeheavy'||mv.kind==='axeup' });
+  emitFx({ res: 'hit', t: t.id, a: A.id, x: t.x, y: ty, kb: Math.round(kb * 10) / 10, bk: bk ? 1 : 0, up: ['upper','gdragon','gblackflash'].includes(mv.kind) ? 1 : 0, style: mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), moveKind:mv.kind, c: t.c, gain: 8, axe:mv.kind==='axeheavy'||mv.kind==='axeup' });
 }
 
 function resolveProj(Q, t) {
@@ -2944,7 +3277,6 @@ function playFx(e, remote) {
     if(e.style==='blackflash'){
       // アニメの黒閃：黒い衝撃に深紅の稲妻と火花。命中時にだけ表示。
       // 大きな黒い塊は禁止。黒赤の細かな破片＋赤い閃光だけ。
-      burst(e.x,e.y,14,13,'#10080b',5);
       burst(e.x,e.y,43,19,'#ef2440',8);
       burst(e.x,e.y,22,13,'#ffb1a1',5);
       shake=Math.max(shake,15);
@@ -2961,10 +3293,10 @@ function playFx(e, remote) {
       flash[e.t] = 6;
       burst(e.x, e.y, n, kb * 0.9, '#ffffff', 8);
       burst(e.x, e.y, Math.floor(n / 2), kb * 0.7, e.c, 7);
-      ring(e.x, e.y, kb * 0.9, 12);
+      if(e.style!=='blackflash')ring(e.x, e.y, kb * 0.9, 12);
     }
     if (e.up) {
-      if(!online)startKOFreeze(e);else if(!remote)requestCinematic('ko',{x:e.x,y:e.y,a:e.a,t:e.t,style:e.style||''});
+      if(!online)startKOFreeze(e);else if(!remote)requestCinematic('ko',{x:e.x,y:e.y,a:e.a,t:e.t,style:e.style||'',moveKind:e.moveKind||''});
     } else {
       if (!pred) { shake = Math.max(shake, Math.min(kb * 0.35, 7)); if(a?.cid==='rubber'&&!a.w)sfxLuffyHit(a.gear||1);else sfxHit(kb); }
       if (e.bk) popups.push({ x: e.x, y: e.y - 30, txt: 'GUARD BREAK!', life: 42, max: 42, size: 32, c: '#ef4747' });
@@ -2999,7 +3331,8 @@ function startKOFreeze(e) {
   // ローカル・オンラインとも技固有の漢字カットインを必ず選ぶ。
   // 旧イベントにstyleが欠けていても、攻撃者の技情報から補完する。
   const attacker=byId(e.a);
-  const moveName=attacker?.mv?.kind||'';
+  const moveName=e.moveKind||attacker?.mv?.kind||'';
+  // 一撃必殺の技は必ず日本語専用カットイン。オンラインでもkindを直接伝える。
   const style=e.style==='dragon'||e.style==='blackflash'?e.style:
     moveName==='gdragon'?'dragon':moveName==='gblackflash'?'blackflash':'ko';
   fzType=style;
@@ -3048,7 +3381,6 @@ function endFreeze() {
     if (fz) {
       const ink=fzType==='blackflash',dragon=fzType==='dragon';
       if(ink){
-       burst(fz.x,fz.y,18,25,'#16070c',5);
        burst(fz.x,fz.y,85,25,'#fa263d',11);
        burst(fz.x,fz.y,46,16,'#ffad96',8);
       }else{
@@ -5010,18 +5342,28 @@ function paintImpactWorld(){
    if(el>=22&&el<28){noStroke();fill(206,250,241,110*(1-abs(el-25)/3));rect(-300,-300,stage.w+600,stage.h+600);}
  }
  if(fzType==='domain'){
-   // 無量空処：無数の情報と星が放射する深い虚空。
-   noStroke();fill(5,7,22,188);rect(-300,-300,stage.w+600,stage.h+600);
-   const pulse=1+Math.sin(el*.32)*.06;
-   noFill();stroke('#8bb9ff');strokeWeight(2);
-   for(let k=0;k<7;k++){const r=(90+k*62+el*3)*pulse;stroke(152,165,255,80-k*7);ellipse(fz.x,fz.y,r*2,r*.72);}
-   for(let i=0;i<115;i++){
-     const an=i*2.39996,rad=16+Math.sqrt(i)*37;
-     const x=fz.x+Math.cos(an)*rad,y=fz.y+Math.sin(an)*rad*.73;
-     fill(i%5===0?'#ffffff':i%2?'#b8bdff':'#89e8ff');noStroke();
-     circle(x,y,i%7===0?4:1.6);
-     if(i%9===0){stroke(161,191,255,80);line(x-12,y,x+12,y);line(x,y-12,x,y+12);}
+   // 無量空処：ルフィのギアチェンジと同じ停止世界カットイン。
+   // 五条を中心に「情報の無限」を、画面全体のレイヤーと粒子で描写する。
+   const q=Math.min(1,el/15),pulse=1+.07*sin(el*.22);
+   noStroke();fill(5,8,29,191);rect(-300,-300,stage.w+600,stage.h+600);
+   // 破れた空間の格子を奥行き方向へ伸ばす。円形の黒い塊は使わない。
+   for(let k=0;k<10;k++){
+     const r=(58+k*40+el*1.7)*pulse;
+     noFill();stroke(k%2?color(120,183,255,88-k*5):color(190,157,255,106-k*5));
+     strokeWeight(k%3===0?2:1);
+     push();translate(fz.x,fz.y);rotate(k*.105+sin(el*.025)*.028);
+     rect(-r,-r*.27,r*2,r*.54,7);pop();
    }
+   // 情報が空間全体に放出される。初期位置は決定的なので毎フレームちらつかない。
+   for(let i=0;i<160;i++){
+     const an=i*2.399963,rad=24+sqrt(i)*41;
+     const xx=fz.x+cos(an)*rad,yy=fz.y+sin(an)*rad*.68;
+     noStroke();fill(i%7===0?color(255,255,255,180):i%2?color(164,192,255,130):color(157,245,244,95));
+     circle(xx,yy,i%9===0?3.6:1.5);
+     if(i%11===0){stroke(164,208,255,64);strokeWeight(1);line(xx-12,yy,xx+12,yy);line(xx,yy-12,xx,yy+12);}
+   }
+   // 発動の瞬間に光のシートが広がる。後半は落ち着き、文字に視線が集まる。
+   if(el<15){noStroke();fill(182,225,255,48*(1-el/15));rect(-300,-300,stage.w+600,stage.h+600);}
  }
  if(fzType==='dragon'){
    // 龍拳カットイン：獣の形はゼロ。天空を裂く金の光柱＋拳の残光。
@@ -5038,9 +5380,7 @@ function paintImpactWorld(){
      strokeWeight(i%4===0?3.5:1.6);
      line(fz.x+off-18,y+24,fz.x+off+32,y-43);
    }
-   // 衝撃の同心弧はあくまで輪郭線（龍の頭などは作らない）。
-   stroke(255,241,148,105);strokeWeight(3);noFill();
-   for(let i=0;i<5;i++)arc(fz.x+24,fz.y-85,130+i*44,35+i*15,-PI*.78,PI*.74);
+   // 動物の輪郭に見える同心弧は使わず、天に伸びる斬光で統一。
  }
  if(fzType==='blackflash'){
    // 黒閃カットイン：黒い丸・球体を描かず、空間の裂け目と赤い雷のみ。
@@ -5066,24 +5406,41 @@ function paintImpactWorld(){
  if(a)drawFighter(a);if(c&&c!==a)drawFighter(c);pop();
 }
 function paintDomainCutin(){
- const el=freezeMax-freezeT;
- const q=Math.min(1,el/11),a=Math.min(q,Math.max(0,freezeT/11));
+ if(!fz)return;
+ const t=1-freezeT/Math.max(1,freezeMax);
+ const slide=1-pow(1-Math.min(1,t*5.2),3);
+ const vanish=Math.min(1,freezeT/12);
+ const alpha=Math.min(slide,vanish);
  push();
- // 画面の両端から黒紺の帯が閉じて虚空へ切り替わる。
- noStroke();fill(3,6,17,208*a);rect(0,WH*.50,W,WH*.40);
- stroke('#929eff');strokeWeight(1.5*a);
- for(let i=0;i<19;i++){
-  const x=i*W/18;
-  line(x,WH*.50,x+(x-W*.5)*.15,WH*.14);
+ // 上下のシネマスコープ帯と、ルフィ方式の斜めテロップ。
+ noStroke();fill('#040918');rect(0,0,W,25);rect(0,WH-25,W,25);
+ if(t>.16&&t<.24){fill(201,235,255,175*(1-abs(t-.20)/.04));rect(0,0,W,WH);}
+ const y=WH*.735;
+ fill(6,8,32,232*alpha);quad(0,y-62,W,y-94,W,y+52,0,y+77);
+ fill(92,121,220,185*alpha);quad(0,y-61,W*.77,y-86,W*.76,y-69,0,y-45);
+ fill(169,219,255,165*alpha);quad(0,y-39,W*.65,y-61,W*.65,y-54,0,y-32);
+ // 「無量」を象徴する情報の列。背景の輝きと競合しない透明度。
+ stroke(143,199,255,68*alpha);strokeWeight(1);
+ for(let i=0;i<29;i++){
+   const xx=(i+.5)*W/29;
+   const yy=WH*.29+(i%5)*11;
+   line(xx,yy,xx+(xx-W*.5)*.095,yy-80-(i%4)*19);
  }
- noFill();stroke(143,188,255,140*a);strokeWeight(2.5);
- ellipse(W*.72,WH*.32,150+el*5,45+el);
- ellipse(W*.72,WH*.32,250+el*8,75+el*2);
- textAlign(LEFT,CENTER);textStyle(BOLD);textSize(21);noStroke();fill('#9ab0ff');
- text('領域展開',32-(1-q)*180,WH*.63);
- textSize(67);fill('#f3f6ff');stroke('#1b2457');strokeWeight(6);
- text('無量空処',28-(1-q)*225,WH*.79);
- noStroke();fill('#b7c9f9');textSize(12);text('果てしない情報の海へ',34,WH*.89);
+ // 星のような情報片
+ noStroke();for(let i=0;i<41;i++){
+   const xx=(i*101.7+31)%W,yy=(i*i*29.4+40)%WH*.59;
+   fill(i%3?color(157,185,255,110*alpha):color(230,251,255,170*alpha));circle(xx,yy,i%7===0?3.2:1.3);
+ }
+ // 技名はラテン文字ではなく、日本語を最前面に大きく表示。
+ textAlign(LEFT,CENTER);textFont('sans-serif');textStyle(BOLD);
+ stroke('#0b1030');strokeWeight(8);fill('#f5f8ff');textSize(70);
+ text('無量空処',28-(1-slide)*W*.75,y+1);
+ noStroke();fill('#b3f0ff');textSize(21);
+ text('領域展開',32,y-63);
+ fill('#ccd9ff');textSize(13);
+ text('無限の情報が、世界を満たす',33,y+73);
+ fill('#b8b6fa');textSize(11);
+ text('五条 悟',33,y+94);
  pop();
 }
 function paintJotaroTimeStopCutin(){
@@ -5127,7 +5484,7 @@ function paintImpactText(){
  textAlign(LEFT,CENTER);
  // 漢字を斜体ラテン字体へ任せず、日本語対応フォントを明示。
  if(fzType==='dragon'||fzType==='blackflash'){
-  textFont('sans-serif');textStyle(BOLD);textSize(76);
+  textFont('sans-serif');textStyle(BOLD);textSize(80);
   stroke('#090a12');strokeWeight(9);fill('#fff9e9');
   text(theme[0],26-(1-q)*250,y-8);
   noStroke();fill(theme[2]);textSize(16);textStyle(BOLD);
@@ -5405,7 +5762,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_17_JOTARO_TIMESTOP_CUTIN_V12';
+const NET_PROTOCOL='SBO_NET_17_DOMAIN_KO_VISUAL_V13';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -5602,3 +5959,5 @@ function drawSumoArmor(p){
 </script>
 </body>
 </html>
+
+
