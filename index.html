@@ -476,58 +476,6 @@ function animeStats(p){
 function animeSlow(p){return p.slowT>0?.38:1;}
 function animeLocked(p){return isAnime(p)&&((p.cid==='goku'&&p.castStyle==='beamcast'&&p.a>0)||p.mv?.kind==='purplecast');}
 function animeNotice(p,txt,col=ANIME_COLORS[p.cid],size=18,life=46){popups.push({x:p.x,y:p.y-115,txt,life,max:life,size,c:col});}
-
-const JOTARO_TIMESTOP_BGM_SRC='./jotaro_timestop.mp3';
-let jotaroTimeStopBgm=null;
-
-function playJotaroTimeStopBgm(){
-  try{
-    if(!jotaroTimeStopBgm){
-      jotaroTimeStopBgm=new Audio(JOTARO_TIMESTOP_BGM_SRC);
-      jotaroTimeStopBgm.preload='auto';
-      jotaroTimeStopBgm.volume=.9;
-    }
-    jotaroTimeStopBgm.pause();
-    jotaroTimeStopBgm.currentTime=0;
-    try{jotaroTimeStopBgm.volume=(typeof prefs!=='undefined'?Math.max(0,Math.min(1,prefs.volume)):.9);}catch(_){jotaroTimeStopBgm.volume=.9;}
-    const pr=jotaroTimeStopBgm.play();
-    if(pr&&pr.catch)pr.catch(()=>{});
-  }catch(e){}
-}
-
-function stopJotaroTimeStopBgm(){
-  try{
-    if(!jotaroTimeStopBgm)return;
-    jotaroTimeStopBgm.pause();
-    jotaroTimeStopBgm.currentTime=0;
-  }catch(e){}
-}
-
-function unlockJotaroTimeStopBgm(){
-  try{
-    if(!jotaroTimeStopBgm){
-      jotaroTimeStopBgm=new Audio(JOTARO_TIMESTOP_BGM_SRC);
-      jotaroTimeStopBgm.preload='auto';
-    }
-    const oldVol=jotaroTimeStopBgm.volume;
-    jotaroTimeStopBgm.volume=0;
-    jotaroTimeStopBgm.currentTime=0;
-    const pr=jotaroTimeStopBgm.play();
-    if(pr&&pr.then){
-      pr.then(()=>{
-        jotaroTimeStopBgm.pause();
-        jotaroTimeStopBgm.currentTime=0;
-        jotaroTimeStopBgm.volume=oldVol||.9;
-      }).catch(()=>{});
-    }else{
-      jotaroTimeStopBgm.pause();
-      jotaroTimeStopBgm.currentTime=0;
-      jotaroTimeStopBgm.volume=oldVol||.9;
-    }
-  }catch(e){}
-}
-
-
 function animeVoice(){ /* 音声合成は使用しない */ }
 function animeCall(p,txt,col=ANIME_COLORS[p.cid],voice=false,rate=1.35,pitch=.9){animeNotice(p,txt,col,18,42);}
 function animeSound(kind){
@@ -551,7 +499,14 @@ function animeSound(kind){
  if(kind==='beam'||kind==='purple'){noiseHit(.4,.24,1800);tone(140,36,.42,.25,'sine');tone(780,190,.28,.09,'sawtooth');return;}
  tone(90,32,.3,.23,'sine');noiseHit(.17,.23,1500);tone(320,640,.22,.055,'triangle');
 }
-function animeVisual(e){if(animeFx.length>=80)animeFx.shift();animeFx.push({...e,life:e.life||36,max:e.life||36});if(e.kind!=='echo'&&e.kind!=='impact')animeSound(e.kind);}
+function animeVisual(e){
+ if(animeFx.length>=80)animeFx.shift();
+ animeFx.push({...e,life:e.life||36,max:e.life||36});
+ if(e.cid==='goku'&&e.kind==='transform')playGokuMp3('transform',{dedupe:220,volume:.92});
+ if(e.cid==='goku'&&e.kind==='instant'&&e.phase==='out')playGokuMp3('teleport',{dedupe:180,volume:.92});
+ const gokuMp3Fx=e.cid==='goku'&&(e.kind==='transform'||e.kind==='instant');
+ if(e.kind!=='echo'&&e.kind!=='impact'&&!gokuMp3Fx)animeSound(e.kind);
+}
 function animeEmit(p,kind,data={}){const e={k:'animefx',id:p.id,kind,x:Math.round(p.x),y:Math.round(p.y-34),f:p.f,cid:p.cid,form:p.form||0,boost:p.modeT>0,...data};animeVisual(e);send(e);}
 function animeMove(p,kind,dm,kb,extra={}){const s=animeStats(p);p.mv={...mkMv(kind),dm:dm*s.dm,k0:kb*s.kb,ks:.075,up:.6,...extra};p.a=1;p.hit={};p.sph=0;p.castFired=false;}
 function animeBasic(p,ch){return false;} // 隠しキャラも通常攻撃／溜め攻撃は共通。個性は火力・武器描画・形態補正で付ける。
@@ -582,7 +537,7 @@ function animeDown(p){
  if(p.cid==='goku'){
   if(p.form>=3){sfxNo();return;}
   if(p.energy>=100){p.form++;p.energy=p.form===3?100:0;p.castStyle='';p.spc=28;p.boostFlash=45;animeEmit(p,'transform',{title:['','SUPER SAIYAN','SUPER SAIYAN 2','SUPER SAIYAN 3'][p.form],life:48});}
-  else{p.castStyle='charge';p.sph=1;animeSound('charge');}
+  else{p.castStyle='charge';p.sph=1;}
  }else if(p.cid==='gojo'){
   animeDomain(p);
  }else if(p.cid==='tanjiro'){
@@ -619,7 +574,7 @@ function animeStarFinger(p){
 }
 function animeTimeStop(p){
  if(p.energy<100||p.timeStopSelfT>0){sfxNo();return;}
- p.energy=0;p.spc=24;p.timeStopSelfT=JOTARO_STOP_T;playJotaroTimeStopBgm();p.boostFlash=40;
+ p.energy=0;p.spc=24;p.timeStopSelfT=JOTARO_STOP_T;p.boostFlash=40;
  animeCall(p,'時よ止まれ！','#efe1ff',true,1.05,.70);
  const e={k:'animearea',id:p.id,kind:'timestop',x:p.x,y:p.y-34,f:p.f,range:9999,life:JOTARO_STOP_T};
  animeArea(e);send(e);animeEmit(p,'timestop',{life:JOTARO_STOP_T});
@@ -753,9 +708,9 @@ function animeProjStep(q){
 const NARUTO_PASSIVE_FILL=100/(14*60);
 function animeTick(p){
  for(const k of ['infinityCd','slowT','comboT','fatigue','boostFlash','teleportCd','projectileSlipT'])if(p[k]>0)p[k]--;
- const stopBefore=p.timeStopSelfT||0;if(p.timeStopSelfT>0)p.timeStopSelfT--;if(stopBefore===1&&p.cid==='jotaro'){stopJotaroTimeStopBgm();animeSound('timego');}
+ const stopBefore=p.timeStopSelfT||0;if(p.timeStopSelfT>0)p.timeStopSelfT--;if(stopBefore===1&&p.cid==='jotaro')animeSound('timego');
  if(!isAnime(p))return;
- if(p.cid==='goku'&&p.form===3){p.energy=Math.max(0,p.energy-100/900);if(p.energy<=.0001){p.form=0;p.energy=0;p.fatigue=60;animeNotice(p,'超サイヤ人3 終了');}}
+ if(p.cid==='goku'&&p.form===3){p.energy=Math.max(0,p.energy-100/900);if(p.energy<=.0001){p.form=0;p.energy=0;p.fatigue=60;if(isLocal(p))playGokuMp3('revert',{dedupe:250,volume:.9});animeNotice(p,'超サイヤ人3 終了');}}
  if(p.modeT>0&&--p.modeT===0){p.energy=0;if(p.cid==='tanjiro')p.fatigue=95;if(p.cid==='naruto'&&p.form===2)p.form=1;animeNotice(p,p.cid==='tanjiro'?'ヒノカミ神楽終了':'九尾チャクラ終了');}
  if(p.cid==='naruto'&&isLocal(p)&&!p.out&&p.fatigue<=0&&p.form<2)p.energy=Math.min(100,(p.energy||0)+NARUTO_PASSIVE_FILL);
  else if(p.cid==='jotaro'&&isLocal(p)&&!p.out&&p.timeStopSelfT<=0)p.energy=Math.min(100,(p.energy||0)+JOTARO_FILL);
@@ -1308,6 +1263,7 @@ function setup() {
 
 function simulateFrame() {
   tickNotices();readHuman();pumpCinematics();
+  syncGokuMp3();
   animeWorldTick();
   if (bt.phase === 'count') {
     if (bt.t === 200 || bt.t === 140 || bt.t === 80) sfxCount();
@@ -1481,7 +1437,6 @@ async function joinCommon() {
 }
 
 function leaveRoom() {
-  stopJotaroTimeStopBgm();
   clearNetTimers();
   try {
     if (roomRef) {
@@ -1822,7 +1777,6 @@ function startBattleOnline() {
 }
 
 function startBattleCommon(list, mapId, wpn, stocks, teamMode=false) {
-  stopJotaroTimeStopBgm();
   animeFx=[];animeClock=0;
   senkuQueue=[];senkuSeen.clear();senkuActive=null;senkuAfter=null;specialNotices=[];hudKey="";resetNetRound();
   resetTouch();
@@ -1891,7 +1845,6 @@ function checkEnd() {
 }
 
 function showResult() {
-  stopJotaroTimeStopBgm();
   const order = [];
   if (battleTeamMode && bt.winnerTeam) {
     const winners = fighters.filter(f => normTeam(f.team) === normTeam(bt.winnerTeam));
@@ -3778,6 +3731,7 @@ function show(id) {
   document.getElementById('game').style.display = id === 'battle' ? 'flex' : 'none';
   if (id !== 'battle') document.getElementById(id).style.display = 'flex';
   scene = id === 'battle' ? 'battle' : id;
+  if(scene!=='battle')stopGokuAudio();
 }
 
 function seg(elId, labels, getter, setter) {
@@ -3870,7 +3824,6 @@ function buildMenus() {
   lobbyName.addEventListener('blur', e => applyName(e.target.value));
 
   document.getElementById('sc-title').onclick = () => {
-    unlockJotaroTimeStopBgm();
     if (urlRoom && !online) joinRoom(urlRoom, true);   // QR/URLから来た人はそのまま部屋へ
     else show('sc-mode');
   };
@@ -3951,6 +3904,97 @@ function buildMenus() {
 // Presentation and accessibility settings: no physics or combat parameters are modified.
 const prefs = {volume:.55,music:false,shake:true,left:false,controls:'auto'};
 try { const saved=JSON.parse(localStorage.getItem('sbo.preferences')||'{}'); for(const k of Object.keys(prefs))if(typeof saved[k]===typeof prefs[k])prefs[k]=saved[k];prefs.volume=Math.max(0,Math.min(1,prefs.volume)); } catch(_) {}
+
+// ========================================================
+// 悟空専用 MP3
+// GitHub Pagesでは index.html と同じ階層に audio フォルダを置いてください。
+// 悟空BGM.mp3 は任意。後から追加すれば、設定の「バトルBGM」がONの時だけ流れます。
+// ========================================================
+const GOKU_AUDIO_PATHS = {
+  charge: './audio/気を溜める音.mp3',
+  transform: './audio/変身した時の音.mp3',
+  teleport: './audio/瞬間移動の音.mp3',
+  revert: './audio/変身解除の音.mp3',
+  bgm: './audio/悟空BGM.mp3'
+};
+const gokuAudio = {};
+for (const [key, path] of Object.entries(GOKU_AUDIO_PATHS)) {
+  const a = new Audio(path);
+  a.preload = key === 'bgm' ? 'metadata' : 'auto';
+  a.playsInline = true;
+  if (key === 'charge' || key === 'bgm') a.loop = true;
+  gokuAudio[key] = a;
+}
+let gokuBgmAvailable = true;
+let gokuBgmActive = false;
+let gokuAudioStamp = Object.create(null);
+gokuAudio.bgm.addEventListener('error', () => {
+  gokuBgmAvailable = false;
+  gokuBgmActive = false;
+});
+
+function setHtmlAudioVolume(a, mul=1) {
+  if (!a) return;
+  a.volume = Math.max(0, Math.min(1, (prefs.volume || 0) * mul));
+}
+
+function playGokuMp3(key, {restart=true, dedupe=80, volume=1}={}) {
+  const a = gokuAudio[key];
+  if (!a || document.hidden || prefs.volume <= 0) return;
+  const now = performance.now();
+  if (dedupe > 0 && now - (gokuAudioStamp[key] || 0) < dedupe) return;
+  gokuAudioStamp[key] = now;
+  setHtmlAudioVolume(a, volume);
+  if (restart) {
+    try { a.currentTime = 0; } catch (_) {}
+  }
+  const pr = a.play();
+  if (pr && pr.catch) pr.catch(() => {});
+}
+
+function stopGokuMp3(key, reset=true) {
+  const a = gokuAudio[key];
+  if (!a) return;
+  a.pause();
+  if (reset) {
+    try { a.currentTime = 0; } catch (_) {}
+  }
+  if (key === 'bgm') gokuBgmActive = false;
+}
+
+function stopGokuAudio() {
+  stopGokuMp3('charge');
+  stopGokuMp3('bgm');
+}
+
+function syncGokuMp3() {
+  const me = byId(myId);
+  const inBattle = scene === 'battle' && me && !me.out && me.cid === 'goku';
+
+  // 下特殊の「気を溜める」間だけループ。MAXになった瞬間にも停止。
+  const charging = !!(inBattle && me.castStyle === 'charge' && me.sph > 0 && (me.energy || 0) < 100);
+  if (charging) {
+    setHtmlAudioVolume(gokuAudio.charge, .82);
+    if (gokuAudio.charge.paused) playGokuMp3('charge', {restart:false, dedupe:0, volume:.82});
+  } else if (!gokuAudio.charge.paused) {
+    stopGokuMp3('charge');
+  }
+
+  // 悟空専用BGMは任意ファイル。存在すれば既存BGMの代わりに流れる。
+  const wantBgm = !!(inBattle && prefs.music && gokuBgmAvailable);
+  if (wantBgm) {
+    setHtmlAudioVolume(gokuAudio.bgm, .48);
+    if (gokuAudio.bgm.paused) {
+      const pr = gokuAudio.bgm.play();
+      if (pr && pr.then) pr.then(() => { gokuBgmActive = true; }).catch(() => { gokuBgmActive = false; });
+    } else {
+      gokuBgmActive = true;
+    }
+  } else if (!gokuAudio.bgm.paused || gokuBgmActive) {
+    stopGokuMp3('bgm');
+  }
+}
+
 let audioMaster=null,audioFX=null,audioMusic=null,musicStep=0,musicNext=0;
 function audioBus(){
   if(!actx)return;
@@ -3969,7 +4013,7 @@ function musicNote(freq,start,dur,vol,type){
   o.connect(g);g.connect(audioMusic);o.start(start);o.stop(start+dur+.03);
 }
 setInterval(()=>{
-  if(!actx||actx.state!=='running'||!prefs.music||document.hidden||scene!=='battle'){musicNext=0;return;}
+  if(!actx||actx.state!=='running'||!prefs.music||document.hidden||scene!=='battle'||gokuBgmActive){musicNext=0;return;}
   audioBus();if(musicNext<actx.currentTime)musicNext=actx.currentTime+.03;
   const bass=[55,55,65.406,49], arp=[0,7,12,15,12,7,19,7];
   while(musicNext<actx.currentTime+.15){const root=bass[Math.floor(musicStep/16)%4];
@@ -4519,7 +4563,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_17_ROOT_MP3_AUDIOFIX_V2';
+const NET_PROTOCOL='SBO_NET_17_GOKU_MP3_V1';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
