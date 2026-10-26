@@ -485,11 +485,11 @@ function playJotaroTimeStopBgm(){
     if(!jotaroTimeStopBgm){
       jotaroTimeStopBgm=new Audio(JOTARO_TIMESTOP_BGM_SRC);
       jotaroTimeStopBgm.preload='auto';
-      jotaroTimeStopBgm.volume=.9*(typeof prefs!=='undefined'?prefs.volume:1);
+      jotaroTimeStopBgm.volume=.9;
     }
-    jotaroTimeStopBgm.volume=.9*(typeof prefs!=='undefined'?prefs.volume:1);
     jotaroTimeStopBgm.pause();
     jotaroTimeStopBgm.currentTime=0;
+    try{jotaroTimeStopBgm.volume=(typeof prefs!=='undefined'?Math.max(0,Math.min(1,prefs.volume)):.9);}catch(_){jotaroTimeStopBgm.volume=.9;}
     const pr=jotaroTimeStopBgm.play();
     if(pr&&pr.catch)pr.catch(()=>{});
   }catch(e){}
@@ -503,9 +503,7 @@ function stopJotaroTimeStopBgm(){
   }catch(e){}
 }
 
-let jotaroMp3Unlocked=false;
-function unlockJotaroMp3(){
-  if(jotaroMp3Unlocked)return;
+function unlockJotaroTimeStopBgm(){
   try{
     if(!jotaroTimeStopBgm){
       jotaroTimeStopBgm=new Audio(JOTARO_TIMESTOP_BGM_SRC);
@@ -519,19 +517,16 @@ function unlockJotaroMp3(){
       pr.then(()=>{
         jotaroTimeStopBgm.pause();
         jotaroTimeStopBgm.currentTime=0;
-        jotaroTimeStopBgm.volume=.9;
-        jotaroMp3Unlocked=true;
-      }).catch(()=>{
         jotaroTimeStopBgm.volume=oldVol||.9;
-      });
+      }).catch(()=>{});
     }else{
       jotaroTimeStopBgm.pause();
       jotaroTimeStopBgm.currentTime=0;
-      jotaroTimeStopBgm.volume=.9;
-      jotaroMp3Unlocked=true;
+      jotaroTimeStopBgm.volume=oldVol||.9;
     }
   }catch(e){}
 }
+
 
 function animeVoice(){ /* 音声合成は使用しない */ }
 function animeCall(p,txt,col=ANIME_COLORS[p.cid],voice=false,rate=1.35,pitch=.9){animeNotice(p,txt,col,18,42);}
@@ -715,7 +710,6 @@ function animeArea(e){
  const a=byId(e.id);if(!a||a.out)return;
  if(e.kind==='domain'&&a.cid!=='gojo')return;
  if(e.kind==='timestop'&&a.cid!=='jotaro')return;
- if(e.kind==='timestop'&&!isLocal(a))playJotaroTimeStopBgm();
  for(const t of fighters){
   if(!isLocal(t)||t.id===a.id||t.out)continue;
   if(e.kind==='domain'){
@@ -1233,9 +1227,9 @@ function unlockAudio() {
     if (actx.state === 'suspended') actx.resume();
   } catch (e) {}
 }
-window.addEventListener('pointerdown',()=>{unlockAudio();unlockJotaroMp3();});
+window.addEventListener('pointerdown', unlockAudio);
 window.addEventListener('keydown', e => {
-  unlockAudio();unlockJotaroMp3();
+  unlockAudio();
   if (scene === 'battle' && !editingText(e.target) && !e.isComposing && [32, 37, 38, 39, 40].includes(e.keyCode)) e.preventDefault();
 });
 // Native focus is retained for typing, selection, and mobile keyboards.
@@ -3876,6 +3870,7 @@ function buildMenus() {
   lobbyName.addEventListener('blur', e => applyName(e.target.value));
 
   document.getElementById('sc-title').onclick = () => {
+    unlockJotaroTimeStopBgm();
     if (urlRoom && !online) joinRoom(urlRoom, true);   // QR/URLから来た人はそのまま部屋へ
     else show('sc-mode');
   };
@@ -4524,7 +4519,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_17_ROOT_MP3_TIMESTOP_FIX_V2';
+const NET_PROTOCOL='SBO_NET_17_ROOT_MP3_AUDIOFIX_V2';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
