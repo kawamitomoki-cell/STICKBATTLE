@@ -17,7 +17,8 @@ test('leaderboard uses only existing lv3 and never loads other levels',()=>{
  assert.ok(!modes.includes('renderRankTabs('));
 });
 test('ranking UI has no difficulty tabs',()=>{
- assert.ok(ui.includes('CPU最強固定'));
- assert.ok(ui.includes('最強CPU限定'));
+ assert.ok(ui.includes('全キャラのCPUが次々に登場'));
+ assert.ok(!ui.includes('最強CPU限定'));
+ assert.ok(!ui.includes('最強固定'));
  assert.ok(!ui.includes('id="rank-levels"'));
 });
