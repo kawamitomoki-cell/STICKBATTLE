@@ -30,7 +30,7 @@ function simulateFrame() {
     } else if (bt.phase === 'play') {
       if (online) updateRemote();
       for (const f of fighters) if (f.cpu && isLocal(f)) {
-        if(!online&&offlineMode==='training'&&trainingAiMode===0){f.ai.inp=blankInput();continue;}
+        if(!online&&offlineMode==='training'&&trainingAiMode===0&&!f.shadowClone){f.ai.inp=blankInput();continue;}
         const oldLv=aiLv;
         if(f.shadowClone)aiLv=3;
         else if(!online&&offlineMode==='training')aiLv=trainingAiMode===2?3:1;
