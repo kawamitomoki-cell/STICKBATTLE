@@ -511,6 +511,11 @@ function updateControlUI(){
  {const cv=Math.round(Math.min(100,p.ch/CH_FULL*100))+'%';if(attack._cv!==cv){attack._cv=cv;attack.style.setProperty('--charge',cv);}}
  let text=p.ch>=CH_WARN?'溜めすぎ注意！ 離して攻撃':p.ch>=CH_FULL?'CHARGE READY — 指を離して攻撃':'スティック↑でジャンプ ／ 攻撃：長押しで溜め';
  let ready=(p.cid==='rubber'&&p.gearM>=100&&p.gear<5&&!p.tired)||(p.cid==='boxer'&&p.ko>=100)||(p.cid==='yankee'&&p.rage>=100)||(p.cid==='swordsman'&&p.senku>=100);
+ if(p.cid==='naruto'){
+   ready=(p.energy||0)>=NARUTO_CLONE_COST&&!shadowCloneAlive(p.id)&&p.spc<=0;
+   const progress=p.castStyle==='shadow-charge'&&p.sph>0?Math.min(100,Math.round(p.sph/NARUTO_CLONE_HOLD*100)):0;
+   special.style.setProperty('--charge',progress+'%');
+ }else special.style.setProperty('--charge','0%');
  special.classList.toggle('ready',ready);
  const label=p.cid==='gunman'?(p.reloadT>0?'装填中':p.bullets+' / '+GUN_MAX):ready?'READY':p.cid==='archer'?(p.sph>=BOW_FULL?'5本 READY':p.spc>0?'準備中':'長押し：5本'):p.cid==='berserker'?'断頭斬':p.cid==='lancer'?'長押し→離す':p.cid==='bomber'?'長押し：地雷':p.cid==='rubber'?GEAR_JP[p.gear||1]:'キャラ固有';
  {const gb=document.getElementById('btn-g'),gl=p.cid==='rubber'?(ready?'GEAR!':'ギア'):'＝特殊';gb.classList.toggle('ready',p.cid==='rubber'&&ready);if(gb.querySelector('small').textContent!==gl)gb.querySelector('small').textContent=gl;}
