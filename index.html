@@ -6,7 +6,7 @@
 <title>STICK BATTLE ONLINE — スティックバトルオンライン</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10a.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <style>
 /* STICK BATTLE ONLINE / RE:IGNITE — complete interface, not a skin override. */
@@ -3827,22 +3827,97 @@ function incomingProj(p, R) {
 function aiTap(I, A) { I.a = true; I.ac++; A.hold = 2; }
 function aiSpecial(I, A, hold) { I.s = true; I.sc++; A.shold = hold; }
 
+// AI NAVIGATION V24 — 見た目の距離だけでなく、足場の高さと移動先を評価する。
+// 難易度は反応速度と戦術に影響。CPUだけに不自然な移動速度・攻撃力は与えない。
+function aiFloorY(){return Math.max(...stage.plats.map(pl=>pl.y));}
+function aiJumpRoute(p,t){
+  const rise=p.y-t.y;
+  if(rise<=165)return {x:t.x,y:t.y};
+  // 高すぎる相手には一気に飛ぼうとせず、中段の足場を経由。
+  const via=stage.plats.map(pl=>{
+    if(pl.y>=p.y-42||pl.y<p.y-168||pl.y<t.y-18)return null;
+    const x=Math.max(pl.x+24,Math.min(pl.x+pl.w-24,t.x));
+    const entry=Math.max(pl.x+24,Math.min(pl.x+pl.w-24,p.x));
+    const score=Math.abs(entry-p.x)*.8+Math.abs(x-t.x)*.35-(p.y-pl.y)*.30;
+    return {x:entry,y:pl.y,score};
+  }).filter(Boolean).sort((a,b)=>a.score-b.score);
+  return via[0]||{x:t.x,y:t.y};
+}
+function aiEdgeControl(p,I,goalX,shouldJump=false){
+  // 崖を横切るときは向こう側の足場へ跳ぶ。孤立した足場の場外へは歩かない。
+  if(!p.g||p.groundPl<0)return false;
+  const here=stage.plats[p.groundPl];if(!here)return false;
+  const dir=Math.sign(goalX-p.x);if(!dir)return false;
+  const edge=dir>0?here.x+here.w:here.x;
+  const dist=(edge-p.x)*dir;
+  if(dist>52)return false;
+  const candidates=stage.plats.filter((pl,i)=>i!==p.groundPl&&
+    pl.y>=p.y-140&&pl.y<=p.y+95&&
+    (dir>0?pl.x+pl.w>edge+12&&pl.x<edge+240:pl.x<edge-12&&pl.x+pl.w>edge-240));
+  if(candidates.length){
+    // 向こうに安全な着地先があるなら、足場の縁で跳ぶ。
+    if((dist<36||shouldJump)&&p.jn<jumpsOf(p)&&p.ai.jumpCd===0){
+      I.jc++;p.ai.jumpCd=17;
+    }
+    return false;
+  }
+  I.l=false;I.r=false; // 行き先がない崖では停止。
+  return true;
+}
+function aiVerticalPursuit(p,t,I,A,L){
+  const dy=t.y-p.y,dx=t.x-p.x,adx=Math.abs(dx);
+  const face=dx>=0?'r':'l';
+  if(dy>55){
+    // プレイヤーが自分より下: 横距離を詰めてから足場をすり抜ける。
+    const pl=p.groundPl>=0?stage.plats[p.groundPl]:null;
+    const canDrop=!!(p.g&&pl&&pl.y<aiFloorY()-18&&p.a===0&&p.kb===0&&p.stn===0&&p.sph===0&&p.ct===0&&p.ch===0);
+    if(canDrop){
+      // 相手が真下でなくても、足場の内側から最も近い降下地点へ移動。
+      const margin=Math.min(32,pl.w*.22);
+      const downX=Math.max(pl.x+margin,Math.min(pl.x+pl.w-margin,t.x));
+      if(Math.abs(p.x-downX)<42&&A.dropCd===0){
+        A.dropHold=(p.cid==='rubber'||isAnime(p))?12:3;
+        A.dropCd=40;
+        I.l=false;I.r=false;I.u=false;I.d=true;I.dc++;
+        A.t=1;return true;
+      }
+      if(Math.abs(p.x-downX)>22)I[downX>p.x?'r':'l']=true;
+      A.t=Math.max(2,Math.ceil(L.think*.55));return true;
+    }
+    if(adx>28){I[face]=true;aiEdgeControl(p,I,t.x);}
+    A.t=Math.max(2,Math.ceil(L.think*.55));
+    return true; // 高低差がある間は空振りの攻撃・必殺技をしない。
+  }
+  if(dy< -58){
+    const target=aiJumpRoute(p,t),goalX=target.x,off=goalX-p.x,dist=Math.abs(off);
+    if(dist>24)I[off>0?'r':'l']=true;
+    // 少し上の相手は普通のジャンプ。高い相手は経由する足場へ移動。
+    const verticallyNeeded=target.y-p.y< -45;
+    if(verticallyNeeded&&dist<155&&A.jumpCd===0&&p.jn<jumpsOf(p)&&
+        (p.g||(p.vy>=-3&&p.y-target.y>45))){
+      I.jc++;A.jumpCd=p.g?18:20;
+    }
+    aiEdgeControl(p,I,goalX,verticallyNeeded);
+    A.t=Math.max(2,Math.ceil(L.think*.5));
+    return true;
+  }
+  return false;
+}
+
 function aiStep(p) {
   const A = p.ai, I = A.inp, L = AI_LV[aiLv] || AI_LV[1];
-  // 「最強」でも内部性能を不正に強化せず、反応・安全な間合い・技判断を改善。
-  if(aiLv>=3&&p.stn===0&&p.kb===0){
-    const threat=nearestFoe(p);
-    if(threat){
-      const dx=threat.x-p.x,dist=Math.abs(dx),closeY=Math.abs(threat.y-p.y)<80;
-      if(closeY&&dist<95&&threat.mv&&threat.a>0&&threat.a<threat.mv.act1&&p.dgc===0&&p.a===0&&p.ch===0){
-        if(threat.mv.type==='normal'&&Math.random()<.8){A.inp.cc++;A.t=2;return;}
-        if(threat.mv.type==='heavy'&&Math.random()<.88){A.inp[dx>0?'l':'r']=true;A.inp[dx>0?'r':'l']=false;A.inp.cc++;A.t=2;return;}
-      }
-      if(closeY&&dist<45&&p.cd>5&&Math.random()<.48){A.inp[dx>0?'l':'r']=true;A.inp[dx>0?'r':'l']=false;}
-    }
-  }
+  A.jumpCd=Math.max(0,(A.jumpCd||0)-1);
+  A.dropCd=Math.max(0,(A.dropCd||0)-1);
   if (A.hold > 0) { A.hold--; if (A.hold === 0 && I.a) { I.a = false; I.rc++; } }
   if (A.shold > 0) { A.shold--; if (A.shold === 0) { I.s = false; I.u = false; I.gd = false; } }
+  // 変身キャラの足場すり抜けは下を約7フレーム押し続ける必要がある。
+  if((A.dropHold||0)>0){
+    I.d=true;I.u=false;I.l=false;I.r=false;
+    A.dropHold--;
+    if(A.dropHold===0)I.d=false;
+    A.t=1;return;
+  }
+  I.d=false;
   if (p.out) return;
   if (--A.t > 0) return;
   A.t = L.think + Math.floor(Math.random() * L.think);
@@ -3862,6 +3937,19 @@ function aiStep(p) {
   const t = nearestFoe(p);
   if (!t) return;
   const dx = t.x - p.x, dy = t.y - p.y, adx = Math.abs(dx);
+  // 先に高さ合わせ。旧版は横距離だけ見ており、真下の敵に何もしなかった。
+  if(aiVerticalPursuit(p,t,I,A,L))return;
+  // 端で立ち往生しても飛び出しを優先しない。安全な着地先のない崖を警戒。
+  if(adx>105&&aiEdgeControl(p,I,t.x)){A.t=4;return;}
+  // 「最強」の近距離読み合いは、同じ高さにいる場合だけ行う。
+  if(aiLv>=3&&p.stn===0&&p.kb===0&&p.a===0&&p.ch===0){
+    if(adx<95&&t.mv&&t.a>0&&t.a<t.mv.act1){
+      if(t.mv.type==='normal'&&p.ctc===0&&Math.random()<.83){I.cc++;A.t=2;return;}
+      if(t.mv.type==='heavy'&&p.dgc===0&&Math.random()<.76){
+        I[dx>0?'l':'r']=true;I.cc++;A.t=2;return;
+      }
+    }
+  }
   if(animeAI(p,I,A,adx))return;
   const face = dx > 0 ? 'r' : 'l', away = dx > 0 ? 'l' : 'r';
 
@@ -3914,6 +4002,7 @@ function aiStep(p) {
   else if (p.cid === 'sumo' && Math.abs(p.x - stageMid()) > 160 && adx > 120) I[p.x < stageMid() ? 'r' : 'l'] = true;
   else if (adx > (46 / P.aggression)) I[face] = true;
   if (dy < -70 && adx < 180 && Math.random() < 0.6) I.jc++;
+  if((I.l||I.r)&&adx>55)aiEdgeControl(p,I,t.x);
   if (adx < 64 && Math.abs(dy) < 50) {
     I[face] = true;
     const r = Math.random();
