@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>STICK BATTLE ONLINE — スティックバトルオンライン</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+{{STYLE_0}}
+
+{{STYLE_1}}
+{{STYLE_2}}
+</head>
+<body>
+
+<div id="sc-title" class="screen" style="display:flex">
+ <div class="title-art"></div><div class="title-content"><div class="title-kicker">ONE ARENA. NO LIMITS.</div>
+ <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">17人のファイター。勝負を決める、ただ一撃。</p>
+ <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">RANKING CONNECT V26</div>
+</div>
+<div id="sc-mode" class="screen">
+ <div class="hd">CHOOSE YOUR BATTLE<small>モードを選択</small></div><div class="mode-grid">
+ <button class="big" id="go-cpu"><span class="mode-no">01 / LOCAL BATTLE</span><span class="mode-art" data-portrait="karate"></span><b>SMASH THE CPU.</b><span>CPU対戦</span><small>1〜7体のライバルと。自分の限界を超えろ。</small></button>
+ <button class="big" id="go-online"><span class="mode-no">02 / ONLINE</span><b>BRING YOUR RIVALS.</b><span>オンライン対戦</span><small>部屋コード・QRで、友達と同じアリーナへ。</small></button>
+ <button class="big" id="go-howto"><span class="mode-no">03 / HOW TO PLAY</span><b>30秒でわかるルール</b><small>勝ち方と基本操作だけ。はじめての人はこちら！</small></button><button class="big" id="go-more"><span class="mode-no">04 / EXTRA MODES</span><b>ほかの遊び</b><span>トレーニング・組み手・トーナメント</span><small>いつもと違うルールでも戦おう！</small></button></div>
+</div>
+
+<div id="sc-extra" class="screen">
+ <div class="hd">EXTRA MODES<small>ほかの遊び</small></div>
+ <p class="mode-explain">練習したい、連勝したい、優勝したい。目的に合わせてモードを選ぼう！</p>
+ <div class="extra-choice">
+  <button class="big" id="extra-training"><span class="mode-no">01 / PRACTICE</span><b>トレーニング</b><small>何度でも復活。技の練習やコンボ研究に。</small><div class="mode-stripe"><span>ダメージリセット</span><span>CPU行動切替</span></div></button>
+  <button class="big" id="extra-kumite"><span class="mode-no">02 / SURVIVAL</span><b>組み手</b><small>次々に現れるCPUを倒して、何人抜けるか挑戦！</small><div class="mode-stripe"><span>連勝記録</span><span>だんだん強くなる</span></div></button>
+  <button class="big" id="extra-tournament"><span class="mode-no">03 / BRACKET</span><b>トーナメント</b><small>1対1の勝ち抜き戦。最後に優勝するのは誰だ？</small><div class="mode-stripe"><span>8人戦</span><span>オンライン対応</span></div></button>
+ </div>
+ <button class="big kumite-rank-launch" id="extra-ranking"><span class="mode-no">ONLINE LEADERBOARD</span><b>組み手ランキングを見る 🏆</b><small>かんたん・ふつう・つよい・最強　難易度別の記録</small></button>
+ <div class="nav"><button class="back" id="extra-back">メニューにもどる</button></div>
+</div>
+<div id="sc-tour-choice" class="screen">
+ <div class="hd">TOURNAMENT<small>トーナメントを始めよう</small></div>
+ <p class="mode-explain">勝った人が次の試合へ進む、1対1の勝ち抜き戦。対戦表も確認できるよ。</p>
+ <div class="tour-config">
+  <button class="big" id="tour-offline"><span class="mode-no">SOLO / VS CPU</span><b>1人で遊ぶ</b><small>8人トーナメント。ほかのCPU同士の試合は自動で進行するよ。</small></button>
+  <button class="big" id="tour-network"><span class="mode-no">ONLINE / VS FRIENDS</span><b>オンラインで遊ぶ</b><small>部屋コードで友達を招待。参加者とCPUで4〜8人の勝ち抜き戦。</small></button>
+ </div>
+ <div class="nav"><button class="back" id="tour-choice-back">ほかの遊びにもどる</button></div>
+</div>
+<div id="sc-tour-bracket" class="screen">
+ <div class="hd">TOURNAMENT BRACKET<small>参加キャラと対戦表を確認</small></div>
+ <p class="mode-explain">対戦カードを確認してから試合へ！ CPU同士の試合は自動判定し、試合結果に明記します。</p>
+ <div id="tour-preview" class="tour-board"></div>
+ <div class="nav"><button class="back" id="tour-preview-back">もどる</button><button class="next" id="tour-preview-start">対戦開始！</button></div>
+</div>
+<div id="sc-kumite-ranking" class="screen">
+ <div class="hd">SURVIVAL RANKING<small>組み手・オンラインランキング</small></div>
+ <p class="mode-explain">登録された組み手の勝ち抜き記録を難易度別に表示します。登録名・使用キャラ・マップ・勝ち抜き数は公開されます。</p>
+ <div id="rank-levels" aria-label="CPUの強さごとのランキング"></div>
+ <div id="rank-status" role="status"></div>
+ <div id="rank-table"></div>
+ <div class="nav"><button class="back" id="rank-back">もどる</button><button class="next" id="rank-refresh">更新する</button></div>
+</div>
+<div id="sc-champion" class="screen">
+ <div class="hd">TOURNAMENT FINISHED<small>トーナメント最終結果</small></div>
+ <div id="champion-name" style="font-size:clamp(30px,6vw,62px);font-weight:1000;color:#ffdb7b;text-align:center"></div>
+ <div id="champion-board" class="tour-board"></div>
+ <button class="startbig" id="champion-next">メニューにもどる</button>
+</div>
+
+<div id="sc-online" class="screen">
+  <div class="hd">ONLINE</div>
+  <button class="big" id="online-create">部屋を作る<small>QR・URL・部屋コードで友達を招待</small></button>
+  <div class="roomjoin">
+    <div class="sh" style="margin:0;text-align:center">部屋コードで参加</div>
+    <div class="room-code-row">
+      <input id="room-code-input" type="text" inputmode="text" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABC123" aria-label="6文字の部屋コード">
+      <button class="joinbtn" id="online-join">参加</button>
+    </div>
+    <div class="hint">ホスト画面に表示されている6文字のコードを入力</div>
+  </div>
+  <div class="nav"><button class="back" id="online-back">もどる</button></div>
+</div>
+
+<div id="sc-chars" class="screen" style="z-index:8">
+ <div class="hd">CHOOSE YOUR FIGHTER<small>プレイスタイルで選べ。個性で勝て。</small></div>
+ <div class="fighter-layout"><div class="fighter-left"><div class="fighter-preview" id="fighter-showcase"></div><div id="char-info" class="card"></div><p class="char-select-tip">技が分からなくてもOK！「上必殺技・キャラ特性を見る」で詳しく確認できます。</p></div>
+ <div class="fighter-right"><div id="char-grid" class="cgrid"></div>
+ <div class="namebox"><label for="player-name">PLAYER NAME</label><input id="player-name" maxlength="12" autocomplete="off" placeholder="PLAYER"></div>
+ <div id="cpu-opts" style="display:flex;flex-direction:column"><div class="optrow"><span>CPUの数</span><div class="seg" id="seg-cpun"></div></div><div class="optrow"><span>CPUキャラ</span><div class="seg" id="seg-cpupool"></div></div><div class="optrow"><span>CPUの強さ</span><div class="seg" id="seg-cpulv"></div></div></div></div></div>
+ <div class="nav"><button class="back" id="chars-back">もどる</button><button class="next" id="chars-next">ステージへ →</button></div>
+</div>
+
+<div id="sc-stage" class="screen">
+  <div class="hd">SELECT YOUR ARENA<small>勝負の舞台を選択</small></div>
+  <div class="stage-grid" id="stage-grid" style="width:min(560px,100%)"></div>
+  <div class="optrow" style="width:min(560px,100%)"><span>対戦形式</span><div class="seg" id="seg-team-mode"></div></div>
+  <div class="optrow" id="team-side-row" style="width:min(560px,100%);display:none"><span>自分のチーム</span><div class="seg" id="seg-team-side"></div></div>
+  <div class="optrow" style="width:min(560px,100%)"><span>武器</span><div class="seg" id="seg-wpn"></div></div>
+  <div class="optrow" style="width:min(560px,100%)"><span>残機</span><div class="seg" id="seg-stock"></div></div>
+  <p class="stage-help-tip">残機＝場外へ飛ばされても復活できる回数。迷ったら設定はそのままでOK！</p><div class="nav"><button class="back" id="stage-back">もどる</button><button class="next" id="stage-next">バトル開始！</button></div>
+</div>
+
+<div id="sc-lobby" class="screen">
+  <div class="hd">ONLINE ROOM</div>
+  <div class="card" style="text-align:center">
+    <div class="sh" id="lb-step1">① 友達を呼ぶ</div>
+    <div id="lb-hostinv" style="display:none">
+      <div id="lb-qr"></div>
+      <div style="font-weight:700">スマホのカメラでQRを読み取ると参加できます</div>
+      <div>部屋コード <b id="lb-code" style="font-size:22px;letter-spacing:3px"></b></div>
+      <button class="chip" id="lb-copy" style="padding:4px 12px;margin-top:4px">参加URLをコピー</button>
+    </div>
+    <div id="lb-guestinv" style="display:none;font-weight:900">ルーム <span id="lb-code2"></span> に参加中！</div>
+  </div>
+  <div class="card">
+    <div class="sh">② あなたのキャラ（タップで変更）</div>
+    <div id="lb-chars" class="cgrid"></div>
+    <div id="lb-chardesc" style="margin-top:6px"></div>
+    <div id="lb-team-pick" class="optrow" style="display:none;margin-top:12px;width:100%"><span>チーム</span><div class="seg"><button id="lb-team-red">RED</button><button id="lb-team-blue">BLUE</button></div></div>
+  </div>
+  <div class="namebox"><label for="lb-name">あなたの名前</label><input id="lb-name" maxlength="12" autocomplete="off" placeholder="PLAYER"></div>
+  <div class="card" id="lb-mem"></div>
+  <div class="card" id="lb-set"></div><div id="lb-tourney-board" class="tour-board" style="display:none"></div>
+  <button class="startbig" id="lb-start">バトル開始！</button>
+  <div id="lb-wait" class="wait" style="display:none"></div>
+  <div class="nav"><button class="back" id="lb-leave">退出する</button></div>
+</div>
+
+<div id="sc-result" class="screen">
+  <div class="hd">BATTLE RESULT<small>THE FIGHT IS OVER.</small></div><div id="winner-art"></div>
+  <div id="res-win"></div>
+  <div id="res-list"></div><div id="tour-result" class="tour-board"></div><div id="kumite-submit-state"></div><button id="kumite-submit-retry" type="button" style="display:none;background:#2a6956;color:#fff;padding:11px 18px;border-radius:5px;font-weight:900">記録の保存を再試行</button><button id="res-rank">🏆 組み手ランキングを見る</button>
+  <div id="res-wait" class="wait" style="display:none">ホストの操作を待っています…</div>
+  <div class="nav" id="res-nav1"><button class="next" id="res-again">もう一度</button></div>
+  <div class="nav" id="res-nav2"><button class="next" id="res-pick">キャラを変える</button><button class="back" id="res-chars">キャラ選択へ</button><button class="back" id="res-title">タイトルへ</button></div>
+</div>
+
+<div id="sc-howto" class="screen" style="z-index:8">
+  <div class="hd">HOW TO PLAY<small>基本だけ分かれば、すぐ戦える。</small></div>
+  <main class="howto-layout" aria-label="はじめての遊び方">
+    <section class="howto-hero" aria-labelledby="howto-goal">
+      <div class="howto-eyebrow">01 <span>THE OBJECTIVE</span> / まずはこれだけ</div>
+      <h2 id="howto-goal">相手を<span>場外へ吹っ飛ばそう！</span></h2>
+      <p>攻撃してダメージ％を上げるほど、相手は遠くへ飛ぶ。<b>相手の残機を0にすれば勝ち！</b></p>
+      <div class="howto-flow" aria-label="勝利までの3ステップ">
+        <div class="howto-flow-card"><span class="howto-flow-no">1</span><strong>攻撃を当てる</strong><small>パンチや必殺技でヒット！</small><div class="howto-mini-icon" aria-hidden="true">✦</div></div>
+        <div class="howto-flow-arrow" aria-hidden="true">›</div>
+        <div class="howto-flow-card"><span class="howto-flow-no">2</span><strong>ダメージ％が増える</strong><small>％が高いほど遠くへ飛ぶ</small><div class="howto-percent" aria-hidden="true">0% <span>→</span> 120%</div></div>
+        <div class="howto-flow-arrow" aria-hidden="true">›</div>
+        <div class="howto-flow-card"><span class="howto-flow-no">3</span><strong>場外に飛ばして撃墜</strong><small>残機が0で脱落</small><div class="howto-stock-demo" aria-hidden="true">♥ ♥ <span>♡</span></div></div>
+      </div>
+    </section>
+
+    <section class="howto-section" aria-labelledby="howto-matchup">
+      <div class="howto-section-head"><span class="howto-eyebrow">02 / FIGHT SMART</span><h3 id="howto-matchup">攻撃には「得意・苦手」がある</h3></div>
+      <div class="howto-matchups" aria-label="攻撃の三すくみ">
+        <div class="howto-matchup"><b class="howto-type basic">通常攻撃</b><span class="howto-wins">に強い →</span><b class="howto-type counter">カウンター</b></div>
+        <div class="howto-matchup"><b class="howto-type counter">カウンター</b><span class="howto-wins">に強い →</span><b class="howto-type charge">溜め攻撃</b></div>
+        <div class="howto-matchup"><b class="howto-type charge">溜め攻撃</b><span class="howto-wins">に強い →</span><b class="howto-type basic">通常攻撃</b></div>
+      </div>
+      <p class="howto-note">左の攻撃が右の攻撃に強い！ まずは<b>通常攻撃・溜め攻撃・カウンター</b>を覚えよう。<span>※ 一部の必殺技は例外</span></p>
+    </section>
+
+    <section class="howto-section" id="howto-controls-section" aria-labelledby="howto-controls-title">
+      <div class="howto-section-head"><span class="howto-eyebrow">03 / CONTROLS</span><h3 id="howto-controls-title">操作を確認</h3></div>
+      <div class="howto-tabs" role="tablist" aria-label="操作する端末">
+        <button type="button" class="howto-tab" data-howto-device="touch" id="howto-tab-touch" role="tab" aria-controls="howto-panel-touch" aria-selected="false">スマホ・iPad</button>
+        <button type="button" class="howto-tab" data-howto-device="pc" id="howto-tab-pc" role="tab" aria-controls="howto-panel-pc" aria-selected="false">PC</button>
+        <button type="button" class="howto-tab" data-howto-device="pad" id="howto-tab-pad" role="tab" aria-controls="howto-panel-pad" aria-selected="false">コントローラー</button>
+      </div>
+      <div class="howto-device-panel" id="howto-panel-touch" role="tabpanel" aria-labelledby="howto-tab-touch" hidden>
+        <div class="howto-control-grid">
+          <div class="howto-control-item"><span class="howto-control-key">左スティック</span><div><b>移動</b><small>下に倒すと足場から降りる</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key">跳ぶ</span><div><b>ジャンプ</b><small>空中でもう1回ジャンプできる</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-attack">攻撃</span><div><b>通常攻撃 ／ 溜め攻撃</b><small>タップで攻撃、長押しして離すと強攻撃</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-special">特殊・上下技</span><div><b>キャラ固有の技</b><small>↑上技・↓下技のボタンで技が変わる</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-defense">カウンター</span><div><b>防御 ／ 回避</b><small>そのまま押すとカウンター、移動しながら押すと回避</small></div></div>
+        </div>
+      </div>
+      <div class="howto-device-panel" id="howto-panel-pc" role="tabpanel" aria-labelledby="howto-tab-pc" hidden>
+        <div class="howto-control-grid">
+          <div class="howto-control-item"><span class="howto-control-key">A / D</span><div><b>左右に移動</b><small>← / → キーでもOK。S / ↓ で足場から降りる</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key">SPACE</span><div><b>ジャンプ</b><small>W / ↑ でもOK。空中ジャンプも可能</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-attack">J / Z</span><div><b>通常攻撃 ／ 溜め攻撃</b><small>長押しして離すと強攻撃</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-special">K / X</span><div><b>特殊技</b><small>方向キー＋特殊で「横技・上技・下技」</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-defense">L / C</span><div><b>カウンター ／ 回避</b><small>移動キー＋カウンターで回避</small></div></div>
+        </div>
+      </div>
+      <div class="howto-device-panel" id="howto-panel-pad" role="tabpanel" aria-labelledby="howto-tab-pad" hidden>
+        <div class="howto-control-grid">
+          <div class="howto-control-item"><span class="howto-control-key">左スティック</span><div><b>移動</b><small>十字キーでもOK。下入力で足場から降りる</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key">Y / X</span><div><b>ジャンプ</b><small>L / ZL でもジャンプ</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-attack">A</span><div><b>通常攻撃 ／ 溜め攻撃</b><small>長押しして離すと強攻撃</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-special">B</span><div><b>特殊技</b><small>方向＋Bで「横技・上技・下技」</small></div></div>
+          <div class="howto-control-item"><span class="howto-control-key key-defense">R / ZR</span><div><b>カウンター ／ 回避</b><small>移動しながら押すと回避</small></div></div>
+        </div>
+      </div>
+      <p class="howto-note">必殺技の効果はキャラごとに違う！ <b>キャラ選択画面の「特殊技・特性」</b>でチェックできます。</p>
+    </section>
+
+    <details class="howto-extra">
+      <summary>もう少し詳しく知る <span>＋</span></summary>
+      <div class="howto-extra-body">
+        <div><b>溜めすぎには注意</b><p>攻撃ボタンを長押しすると強力になる。ただし、溜めすぎるとオーバーヒートする。</p></div>
+        <div><b>吹っ飛ばされたら復帰しよう</b><p>ジャンプや上必殺技でステージへ戻ろう。上必殺技の動き方はキャラによって違う。</p></div>
+        <div><b>チーム戦もできる</b><p>RED / BLUE に分かれて相手チームを全滅させれば勝ち。味方には攻撃が当たらない。</p></div>
+        <div><b>武器はオプション</b><p>ステージ選択で武器を「あり」にすると、剣や銃が登場する。</p></div>
+        <div><b>カウンターにも例外あり</b><p>飛び道具を防げることもあるが、爆発・KOアッパーなどの一部の大技は返せない。</p></div>
+        <div><b>人数と残機</b><p>2〜8人で対戦。残機は1〜5から選べる。ステージは好みでOK。</p></div>
+      </div>
+    </details>
+  </main>
+  <div class="howto-footer"><button class="next" type="button" id="howto-back">わかった！ 対戦へ</button></div>
+</div>
+
+<div id="game">
+  <div id="bar">
+    <div id="title">STICK BATTLE<small>ONLINE</small></div>
+    <div class="barbtns"><div id="training-actions"><button id="train-reset">位置とダメージを戻す</button><button id="train-gauge">ゲージMAX</button><button id="train-ai">CPU：停止</button></div><button class="barbtn" id="b-bracket">対戦表</button><button class="barbtn" id="b-settings">設定</button>
+      <button class="barbtn" id="b-char">キャラ</button>
+      <button class="barbtn" id="b-help" aria-label="操作・ルールを確認">操作・ルール</button>
+      <button class="barbtn" id="b-quit">やめる</button>
+    </div>
+  </div>
+  <div id="arena-shell"><div id="mode-hud"></div><div id="match-info"><b id="match-label">LOCAL BATTLE</b><span id="match-stage"></span></div><div id="wrap"></div><div id="battle-roster" aria-label="ダメージと残機"></div></div>
+  <div id="pad">
+    <div id="stick-zone"><div id="stick"><div id="knob"></div></div></div>
+    <div id="acts">
+      <button id="btn-h">↔ 横技<small>向いている方向へ</small></button>
+      <button id="btn-v">↑ 上技<small>上必殺技</small></button>
+      <button id="btn-c">カウンター<br>／回避</button>
+      <button id="btn-a">攻撃<small>長押しで溜め → 離す</small></button>
+      <button id="btn-s">特殊<small>キャラ固有</small></button>
+      <button id="btn-j">跳ぶ<small>JUMP</small></button>
+      <button id="btn-g">↓ 下技<small>＝特殊</small></button>
+    </div>
+  </div>
+  <div id="keyboard-guide"><span><kbd>A</kbd><kbd>D</kbd> 移動</span><span><kbd>SPACE</kbd> ジャンプ</span><span><kbd>J</kbd> 攻撃・長押し溜め</span><span><kbd>K</kbd> 特殊</span><span><kbd>W</kbd>＋<kbd>K</kbd> 上技</span><span><kbd>S</kbd>＋<kbd>K</kbd> 下技</span><span><kbd>L</kbd> カウンター</span></div>
+<div id="combat-hint">移動：左エリア・↑でジャンプ ／ 攻撃：長押しで溜め</div>
+</div>
+
+<dialog id="settings-dialog"><h2>AUDIO & CONTROLS</h2>
+<label class="setting-row">操作画面<select id="pref-controls"><option value="auto">自動判定</option><option value="keyboard">PC：キーボード</option><option value="touch">スマホ：タッチ</option></select></label>
+<label class="setting-row">全体音量<input id="pref-volume" type="range" min="0" max="1" step=".05"></label>
+<label class="setting-row">バトルBGM<input id="pref-music" type="checkbox"></label>
+<label class="setting-row">画面の揺れ<input id="pref-shake" type="checkbox"></label>
+<label class="setting-row">左右の操作を入れ替え<input id="pref-left" type="checkbox"></label>
+<p>移動エリアは触れた場所が中心になります。上技ボタンで「上＋特殊」を入力。弓使いと狂戦士の上技は上昇しません。<br>オンライン対戦中は設定を開いてもバトルが進行します。</p>
+<button id="settings-close">閉じる</button></dialog>
+
+<dialog id="bracket-dialog" aria-label="トーナメント表">
+ <div class="sh">🏆 トーナメントの対戦表・試合履歴</div>
+ <p style="font-size:10px;color:#b4c5d9;margin:7px 0">1人プレイ中は一時停止。オンラインでは対戦が進行します。</p>
+ <div id="battle-bracket" class="tour-board"></div>
+ <button id="bracket-close" class="startbig" style="margin-top:12px">バトルへ戻る</button>
+</dialog>
+{{GAME_SCRIPT}}
+</body>
+</html>

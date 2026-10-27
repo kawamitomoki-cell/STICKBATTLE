@@ -1,0 +1,10 @@
+{
+  "name": "stick-battle-online",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
