@@ -8,6 +8,7 @@
   "scripts": [
     "src/game/00-firebase.js",
     "src/game/01-game-data.js",
+    "src/game/01b-naruto-shadow-clone.js",
     "src/game/02-sfx.js",
     "src/game/03-main-loop.js",
     "src/game/04-network-lobby.js",

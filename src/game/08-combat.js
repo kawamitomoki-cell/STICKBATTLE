@@ -50,6 +50,7 @@ function meleeCheck(a) {
 function resolveMelee(A, t) {
   const attacker = byId(A.id); if (attacker && sameTeam(attacker, t)) return;
   const mv = A.mv, ty = t.y - 30 * CC(t.cid).size;
+ if(t.shadowClone){shadowClonePop(t);return;}
   if (isInvuln(t)) { if (t.dg > 0) emitFx({ res: 'evade', t: t.id, a: A.id, x: t.x, y: t.y - 110 }); return; }
   if(animeInfinity(t,mv.type,A.id,mv.kind==='upper'))return;
   const front = fromFront(t, A.x) || CC(t.cid).back;
@@ -69,6 +70,7 @@ function resolveMelee(A, t) {
 function resolveProj(Q, t) {
   const owner = byId(Q.o); if (owner && sameTeam(owner, t)) return;
   const ty = t.y - 34 * CC(t.cid).size;
+ if(t.shadowClone){shadowClonePop(t);return;}
   if (isInvuln(t)) { if (t.dg > 0) emitFx({ res: 'evade', t: t.id, a: Q.o, x: t.x, y: t.y - 110 }); return; }
   if (t.projectileSlipT>0) { emitFx({res:'evade',t:t.id,a:Q.o,x:t.x,y:t.y-90}); return; }
   if (t.cid==='yankee' && rageOn(t) && Q.animeKind==='ki') { emitFx({res:'block',t:t.id,a:Q.o,x:t.x,y:ty}); return; }
@@ -97,6 +99,7 @@ function armorHit(t, h, attackerId) {
 }
 
 function applyHit(t, h, bk, attackerId) {
+ if(t.shadowClone){const a=byId(attackerId);if(!a||!sameTeam(a,t))shadowClonePop(t);return 0;}
  if(t.timeStopT>0&&!t.releasingStop){const q=t.stoppedHits||(t.stoppedHits=[]);if(q.length<128)q.push({h:{...h},bk,attackerId});return (h.k0+t.d*h.ks)*weightFactor(t);}
   const attacker = byId(attackerId); if (attacker && sameTeam(attacker, t)) return 0;
   const m = bk ? 1.4 : 1;

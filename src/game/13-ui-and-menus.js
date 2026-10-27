@@ -673,12 +673,12 @@ function fighterInfo(C){return `<div class="ability-line"><b>特殊技</b>　${C
 let hudKey='';
 function setTxt(el,v){if(el&&el.textContent!==v)el.textContent=v;}
 function setVar(el,k,v){if(el&&el['_'+k]!==v){el['_'+k]=v;el.style.setProperty(k,v);}}
-function drawHUD(){
- const roster=document.getElementById('battle-roster');const key=(battleTeamMode?'T':'F')+'|'+fighters.map(p=>p.id+':'+p.cid+':'+p.c+':'+p.team+':'+(p.cid==='rubber'?p.gear:isAnime(p)?(p.form||0)+':'+(p.modeT>0):0)).join('|');
- if(key!==hudKey){hudKey=key;roster.style.setProperty('--columns',Math.min(4,fighters.length));
-  roster.innerHTML=fighters.map(p=>`<div class="hud-card ${p.id===myId?'me ':''}${fighters.length>4?'crowded':''}" style="--team:${battleTeamMode?teamColor(p.team):p.c}"><div class="hud-portrait">${portrait(p.cid,p.gear,p.form,p.modeT>0)}</div><div class="hud-info"><div class="hud-name"></div><div class="hud-damage"></div></div><div class="hud-stocks"></div><div class="hud-skill"></div><div class="hud-meter"></div></div>`).join('');
+function drawHUD(){const rosterFighters=fighters.filter(f=>!f.shadowClone);
+ const roster=document.getElementById('battle-roster');const key=(battleTeamMode?'T':'F')+'|'+rosterFighters.map(p=>p.id+':'+p.cid+':'+p.c+':'+p.team+':'+(p.cid==='rubber'?p.gear:isAnime(p)?(p.form||0)+':'+(p.modeT>0):0)).join('|');
+ if(key!==hudKey){hudKey=key;roster.style.setProperty('--columns',Math.min(4,rosterFighters.length));
+  roster.innerHTML=rosterFighters.map(p=>`<div class="hud-card ${p.id===myId?'me ':''}${rosterFighters.length>4?'crowded':''}" style="--team:${battleTeamMode?teamColor(p.team):p.c}"><div class="hud-portrait">${portrait(p.cid,p.gear,p.form,p.modeT>0)}</div><div class="hud-info"><div class="hud-name"></div><div class="hud-damage"></div></div><div class="hud-stocks"></div><div class="hud-skill"></div><div class="hud-meter"></div></div>`).join('');
  }
- fighters.forEach((p,i)=>{const el=roster.children[i];if(!el)return;el.classList.toggle('out',p.out);setTxt(el.querySelector('.hud-name'),(battleTeamMode?teamName(p.team)+' / ':'')+(p.id===myId?'P1 / ':p.cpu?'CPU / ':'')+p.label);
+ rosterFighters.forEach((p,i)=>{const el=roster.children[i];if(!el)return;el.classList.toggle('out',p.out);setTxt(el.querySelector('.hud-name'),(battleTeamMode?teamName(p.team)+' / ':'')+(p.id===myId?'P1 / ':p.cpu?'CPU / ':'')+p.label);
  const d=el.querySelector('.hud-damage');setTxt(d,Math.round(p.d)+'%');d._c=d._c||'';const dc=p.d<60?'#fff9e9':p.d<110?'#ffc363':'#ff6453';if(d._c!==dc){d._c=dc;d.style.color=dc;}
  const stock=el.querySelector('.hud-stocks');if(stock.childElementCount!==Math.max(0,p.s))stock.innerHTML='<i></i>'.repeat(Math.max(0,p.s));
  let m=0,label='';if(p.cid==='boxer'){m=p.ko;label=m>=100?'KO READY':'KO';}if(p.cid==='swordsman'){m=p.senku;label=m>=100?'旋空 READY':'旋空';}if(p.cid==='yankee'){m=p.rageT>0?p.rageT/RAGE_T*100:p.rage;label=p.rageT>0?'RAGE!':m>=100?'RAGE READY':'RAGE';}if(p.cid==='gunman'){m=p.bullets/GUN_MAX*100;label=p.reloadT>0?'RELOAD':p.bullets+' / '+GUN_MAX;}
@@ -690,7 +690,7 @@ function drawHUD(){
  el.classList.toggle('ko-armed',p.cid==='boxer'&&p.ko>=100&&!p.out);el.classList.toggle('rage-active',rageOn(p)&&!p.out);
  setVar(el,'--meter',Math.round(Math.max(0,Math.min(100,m)))+'%');setTxt(el.querySelector('.hud-skill'),label);
  });
- setVar(roster,'--pc-columns',String(Math.max(1,fighters.length)));
+ setVar(roster,'--pc-columns',String(Math.max(1,rosterFighters.length)));
  setTxt(document.getElementById('match-label'),battleTeamMode?(online?'ONLINE TEAM BATTLE':'TEAM BATTLE'):(online?'ONLINE MATCH':'LOCAL BATTLE'));
  if(!online){setTxt(document.getElementById('match-stage'),stage.name);}
  else if(performance.now()-netDiagAt>650){
@@ -1224,7 +1224,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_SMART_AI_V27';
+const NET_PROTOCOL='SBO_NET_SHADOW_CLONE_V29';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -1510,7 +1510,9 @@ function sendLocalPolished(){
  }
 }
 function onPPolished(s){
- const f=byId(s.key);if(!f||!f.remote)return;const v=s.val();
+ let f=byId(s.key);const v=s.val();
+ if(!f&&v?.sc===1&&v.rd===curRound)f=shadowCloneReceiveSnapshot(s.key,v);
+ if(!f||!f.remote)return;
  if(!v||v.rd!==curRound||!['x','y','vx','r','d','s','ts'].every(k=>Number.isFinite(v[k])))return;
  if(Number.isFinite(v.sq)){if(v.sq<=(f.netLastSeq??-1))return;f.netLastSeq=v.sq;}
  else if(f.buf.length&&v.ts<=f.buf[f.buf.length-1].ts)return;
@@ -1675,7 +1677,7 @@ function premiumDragonImpact(){
 }
 
 function animeBody(p,t,ghost=false){const r=baseAnimeBody(p,t,ghost);polishCostume(p,t);return r;}
-function drawFighter(p){const old=visualFrame;if(p.timeStopT>0){if(p.stopPoseFrame===undefined)p.stopPoseFrame=old;visualFrame=p.stopPoseFrame;}else delete p.stopPoseFrame;try{baseDrawFighter(p);}finally{visualFrame=old;}}
+function drawFighter(p){const old=visualFrame;if(p.shadowClone){push();drawingContext.globalAlpha*=.78;}if(p.timeStopT>0){if(p.stopPoseFrame===undefined)p.stopPoseFrame=old;visualFrame=p.stopPoseFrame;}else delete p.stopPoseFrame;try{baseDrawFighter(p);if(p.shadowClone&&!p.out){push();noFill();stroke(160,222,252,95);strokeWeight(2);ellipse(p.x,p.y-32,44,70);noStroke();fill(205,239,255,230);textAlign(CENTER);textSize(10);text('影分身',p.x,p.y-84);pop();}}finally{visualFrame=old;if(p.shadowClone)pop();}}
 function pausedObject(owner){const ts=activeTimeStopFx();return !!ts&&ts.id!==owner;}
 function cancelControl(key){press[key]=false;const p=byId(myId);if(p){if(key==='a')p.ch=0;if(['s','h','v','g'].includes(key))p.sph=0;}}
 function releaseStoppedHits(p){const hits=p.stoppedHits||[];p.stoppedHits=[];if(!hits.length||p.out)return;p.releasingStop=true;let peak=0,vel=null;try{for(const e of hits){const k=applyHit(p,e.h,e.bk,e.attackerId);if(k>=peak){peak=k;vel={vx:p.vx,vy:p.vy,kb:p.kb};}}if(vel)Object.assign(p,vel);}finally{p.releasingStop=false;}burst(p.x,p.y-30,24,12,'#e4d4ff',8);ring(p.x,p.y-30,12,14);sfxBlock();shake=Math.max(shake,9);}

@@ -32,7 +32,8 @@ function simulateFrame() {
       for (const f of fighters) if (f.cpu && isLocal(f)) {
         if(!online&&offlineMode==='training'&&trainingAiMode===0){f.ai.inp=blankInput();continue;}
         const oldLv=aiLv;
-        if(!online&&offlineMode==='training')aiLv=trainingAiMode===2?3:1;
+        if(f.shadowClone)aiLv=3;
+        else if(!online&&offlineMode==='training')aiLv=trainingAiMode===2?3:1;
         aiStep(f);aiLv=oldLv;
       }
       for (const f of fighters) if (isLocal(f)) {
@@ -40,7 +41,7 @@ function simulateFrame() {
         if (freezeT>0) return;
       }
       for (const f of fighters) {meleeCheck(f);if(freezeT>0)return;}
-      stepItems();stepProjs();if(freezeT>0)return;stepBombs();stepMines();
+      shadowClonePrune();stepItems();stepProjs();if(freezeT>0)return;stepBombs();stepMines();
       if (!online) { spawnItems(); checkEnd(); }
     } else {
       bt.t--;

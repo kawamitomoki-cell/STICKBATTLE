@@ -179,7 +179,7 @@ Object.assign(CHARS,{
  goku:{...ANIME_COMMON,name:'孫悟空',en:'SON GOKU',mark:'悟',spd:1.08,jump:1.05,wt:.94,pow:1.14,st:[4,4,3],sp:'特殊：気弾。長押しして離すとかめはめ波（移動しながらチャージ可能）。下特殊：気を溜め、MAXでもう一度押すと超サイヤ人→2→3',up:'通常～超2は攻撃判定なしの大ジャンプ。超3のみ龍拳',ab:'SS1は総合強化。SS2は火力特化＋溜め攻撃貫通。SS3は15秒限定の完全無敵・超火力ボス性能。横特殊は足場から落ちない瞬間移動。気弾には吹っ飛ばしなし'},
  gojo:{...ANIME_COMMON,name:'五条悟',en:'SATORU GOJO',mark:'無',spd:1.04,jump:1.05,wt:.98,pow:1.05,st:[3,5,3],sp:'特殊：即離し＝蒼／少し溜め＝赫／長押し＝茈。横特殊は踏み込み強打で約1/6の確率で黒閃',up:'上特殊：攻撃判定のない大ジャンプ。下特殊：術式ゲージMAXで領域展開「無量空処」',ab:'無下限により飛び道具を常時無効。横特殊は踏み込み打撃、稀に黒閃。無量空処は範囲内の敵を行動不能にするが、被弾・吹っ飛び・撃墜は通常どおり発生'},
  tanjiro:{...ANIME_COMMON,name:'竈門炭治郎',en:'TANJIRO',mark:'水',spd:1.08,jump:1.02,wt:.98,pow:1.12,st:[4,4,3],sp:'通常攻撃は日輪刀。特殊＝壱ノ型 水面斬り／横特殊＝参ノ型 流流舞い／上特殊＝弐ノ型 水車',up:'下特殊で呼吸ゲージMAX時にヒノカミ神楽へ。神楽中：特殊＝碧羅の天、横＝烈日紅鏡、上＝飛輪陽炎、下＝幻日虹',ab:'水の呼吸は高火力の剣技。ヒノカミ神楽は18秒、火力と吹っ飛ばしが大幅強化。幻日虹は残像を残して攻撃を回避'},
- naruto:{...ANIME_COMMON,name:'うずまきナルト',en:'NARUTO',mark:'忍',spd:1.13,jump:1.08,wt:.96,pow:1.05,st:[5,3,3],sp:'特殊＝風遁・螺旋手裏剣（長距離投射）、横特殊＝螺旋丸、下特殊＝チャクラ解放・2段変身',up:'上特殊：一瞬で上へ移動する高速瞬身（攻撃判定なし）',ab:'チャクラゲージは技や攻撃では消費・増加せず、時間経過だけで蓄積。MAXで仙人モード→再び時間でMAXにして九尾チャクラモード'},
+ naruto:{...ANIME_COMMON,name:'うずまきナルト',en:'NARUTO',mark:'忍',spd:1.13,jump:1.08,wt:.96,pow:1.05,st:[5,3,3],sp:'特殊短押し＝螺旋手裏剣、長押し約0.5秒＝影分身（チャクラ60消費・同時1体・被弾で消滅）。横特殊＝螺旋丸、下特殊＝チャクラ解放・2段変身',up:'上特殊：一瞬で上へ移動する高速瞬身（攻撃判定なし）',ab:'チャクラは時間経過で蓄積。特殊長押しで60消費し、最強級AIの影分身を召喚。分身は敵の一撃で煙になり消える。MAXで仙人モード→九尾チャクラモード'},
  jotaro:{...ANIME_COMMON,name:'空条承太郎',en:'JOTARO KUJO',mark:'星',spd:1.02,jump:1.02,wt:.90,pow:1.13,st:[4,4,4],sp:'特殊＝スタープラチナのオラオララッシュ。横特殊＝スターフィンガー',up:'上特殊：スタープラチナと共に大ジャンプ（攻撃判定なし）。下特殊：ゲージMAXで時を止める',ab:'時止め中は時間経過・攻撃ヒットのどちらでもゲージが増えない。承太郎だけが行動でき、止まった相手へのダメージと吹っ飛ばしは時が動き出した瞬間に反映される'}
 
 });
@@ -329,7 +329,7 @@ function animeStart(p,inp,up=false){
  if(p.cid==='goku'){p.castStyle='ki';p.sph=1;animeSound('charge');}
  else if(p.cid==='gojo'){p.castStyle='orb';p.sph=1;p.orbColor='blue';animeSound('charge');}
  else if(p.cid==='tanjiro'){animeTanjiroMove(p,false);}
- else if(p.cid==='naruto'){animeRasenShuriken(p);}
+ else if(p.cid==='naruto'){p.castStyle='shadow-charge';p.sph=1;}
  else if(p.cid==='jotaro'){animeOra(p);}
 }
 function animeDown(p){
@@ -474,6 +474,7 @@ function animeHold(p,inp){
  if(inp.s){p.sph=Math.min(190,p.sph+1);
   if(p.cid==='goku'&&p.castStyle==='charge')animeGain(p,100/(3*60)); // 約3秒で100。
   if(p.cid==='goku'&&p.castStyle==='ki'&&p.sph===85)animeNotice(p,'かめはめ波 MAX','#99eaff');
+   if(p.cid==='naruto'&&p.castStyle==='shadow-charge'&&p.sph===NARUTO_CLONE_HOLD&&!p.shadowClone)animeNotice(p,p.energy>=NARUTO_CLONE_COST?'影分身 READY':'チャクラ 60 必要','#ffdf8f');
   if(p.cid==='gojo'&&p.castStyle==='orb'){
    if(p.sph>=GOJO_PURPLE_HOLD){if(p.orbColor!=='purple')animeNotice(p,'茈 READY','#d7aaff');p.orbColor='purple';}
    else if(p.sph>=GOJO_RED_HOLD)p.orbColor='red';
@@ -490,7 +491,10 @@ function animeHold(p,inp){
    animeProjectile(p,'kamehameha',{range:1050+(p.form||0)*75,r:22+charge*13,dm:(12+9*charge)*st.dm,k0:(9+4*charge)*st.kb,ks:.085,life:24,beam:true});
    animeCall(p,'かめはめ波！','#aeefff',true,1.24,.92);animeEmit(p,'beam',{title:'かめはめ波',life:31});
   }else{animeProjectile(p,'ki',{vx:p.f*13,r:10+(p.form||0)*2,dm:9*st.dm,k0:0,ks:0,up:0,life:65});p.sh=12;p.spc=15;animeSound('red');}
- }else if(p.cid==='gojo'&&style==='orb'){
+ }else if(p.cid==='naruto'&&style==='shadow-charge'){
+   if(held>=NARUTO_CLONE_HOLD&&!p.shadowClone)shadowCloneSummon(p);
+   else animeRasenShuriken(p);
+  }else if(p.cid==='gojo'&&style==='orb'){
   const purple=held>=GOJO_PURPLE_HOLD,red=!purple&&held>=GOJO_RED_HOLD;
   const kind=purple?'purple':red?'red':'blue';
   // Purple keeps its existing power; blue/red retain the nerfed power but have longer cooldowns.
@@ -567,7 +571,7 @@ function animeTick(p){
  if(p.cid==='goku'&&p.form===3){p.energy=Math.max(0,p.energy-100/900);if(p.energy<=.0001){p.form=0;p.energy=0;p.fatigue=60;if(isLocal(p))playGokuMp3('revert',{dedupe:250,volume:.9});animeNotice(p,'超サイヤ人3 終了');}}
  if(p.modeT>0&&--p.modeT===0){p.energy=0;if(p.cid==='tanjiro')p.fatigue=95;if(p.cid==='naruto'&&p.form===2)p.form=1;animeNotice(p,p.cid==='tanjiro'?'ヒノカミ神楽終了':'九尾チャクラ終了');}
  if(p.cid==='goku'&&isLocal(p)&&!p.out&&p.fatigue<=0&&p.form<3&&!animeTimeStopActive())p.energy=Math.min(100,(p.energy||0)+GOKU_PASSIVE_KI);
- else if(p.cid==='naruto'&&isLocal(p)&&!p.out&&p.fatigue<=0&&p.form<2)p.energy=Math.min(100,(p.energy||0)+NARUTO_PASSIVE_FILL);
+ else if(p.cid==='naruto'&&!p.shadowClone&&isLocal(p)&&!p.out&&p.fatigue<=0&&p.form<2)p.energy=Math.min(100,(p.energy||0)+NARUTO_PASSIVE_FILL);
  else if(p.cid==='jotaro'&&isLocal(p)&&!p.out&&p.timeStopSelfT<=0&&!animeTimeStopActive())p.energy=Math.min(100,(p.energy||0)+JOTARO_FILL);
  else animeGain(p,p.cid==='gojo'?.055:p.cid==='tanjiro'?.070:0);
 }
@@ -1149,11 +1153,14 @@ function normTeam(v) { return Number(v) === 2 ? 2 : 1; }
 function teamColor(v) { return TEAM_COLORS[normTeam(v)]; }
 function teamName(v) { return TEAM_NAMES[normTeam(v)]; }
 function sameTeam(a, b) {
-  return !!battleTeamMode && !!a && !!b && a.id !== b.id && normTeam(a.team) === normTeam(b.team);
+ if(!a||!b||a.id===b.id)return false;
+ if(a.shadowOwner===b.id||b.shadowOwner===a.id)return true;
+ if(a.shadowOwner&&b.shadowOwner&&a.shadowOwner===b.shadowOwner)return true;
+ return !!battleTeamMode&&normTeam(a.team)===normTeam(b.team);
 }
 function enemyOf(a, b) { return !sameTeam(a, b); }
 function aliveTeams() {
-  return [...new Set(fighters.filter(f => !f.out).map(f => normTeam(f.team)))];
+  return [...new Set(fighters.filter(f => !f.out&&!f.shadowClone).map(f => normTeam(f.team)))];
 }
 function clearNetTimers() { while (netTimers.length) clearInterval(netTimers.pop()); }
 

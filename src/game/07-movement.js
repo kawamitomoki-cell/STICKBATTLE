@@ -408,6 +408,7 @@ function stepFighter(p, inp) {
 }
 
 function koFighter(p) {
+ if(p.shadowClone){shadowClonePop(p);return;}
   if(!online&&offlineMode==='training'){
     p.stats.deaths++;koFx({x:Math.round(constrain(p.x,0,stage.w)),y:Math.round(constrain(p.y,0,stage.h)),c:p.c});
     p.s=3;p.out=false;respawn(p);p.inv=70;return;
@@ -428,6 +429,7 @@ function koFx(e) {
 }
 
 function respawn(p) {
+ shadowCloneClearOwner(p.id);
   animeInit(p);
   p.x = stage.w / 2; p.y = 40; p.vx = 0; p.vy = 0; p.d = 0; p.kb = 0; p.r = 0;
   clearActs(p); p.stn = 0; p.inv = 100; p.w = null; p.am = 0; p.rec = false; p.jn = 0;

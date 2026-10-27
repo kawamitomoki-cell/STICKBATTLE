@@ -319,12 +319,12 @@ async function hostStartTournament(){
 function hostTick() {
   if (!isHost || !battleSessionActive() || bt.phase !== 'play' || !gmCache) return;
   if (Date.now() - battleStartAt < 4500 || fighters.length < 2) return;
-  const alive = fighters.filter(f => !f.out);
+  const alive = fighters.filter(f => !f.out&&!f.shadowClone);
   if (battleTeamMode) {
     const teams = aliveTeams();
     if (teams.length <= 1) roomRef.child('gm').update({ ph: 'end', w: '', wt: teams[0] || 0 });
   } else if (alive.length <= 1) {
-    roomRef.child('gm').update({ ph: 'end', w: alive[0] ? alive[0].id : '', wt: 0,matchDetail:gmCache?.mode==='tournament'?{method:'場外撃墜',durationSec:Math.max(0,Math.round((Date.now()-battleStartAt)/1000)-3),winnerDamage:alive[0]?Math.round(alive[0].d):null,loserDamage:fighters.find(f=>f.id!==alive[0]?.id)?Math.round(fighters.find(f=>f.id!==alive[0]?.id).d):null,map:gmCache.map}:null });
+    roomRef.child('gm').update({ ph: 'end', w: alive[0] ? alive[0].id : '', wt: 0,matchDetail:gmCache?.mode==='tournament'?{method:'場外撃墜',durationSec:Math.max(0,Math.round((Date.now()-battleStartAt)/1000)-3),winnerDamage:alive[0]?Math.round(alive[0].d):null,loserDamage:fighters.find(f=>!f.shadowClone&&f.id!==alive[0]?.id)?Math.round(fighters.find(f=>!f.shadowClone&&f.id!==alive[0]?.id).d):null,map:gmCache.map}:null });
   }
 }
 
