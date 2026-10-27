@@ -1,0 +1,23 @@
+{
+  "styles": [
+    "src/styles/base.css",
+    "src/styles/tournament.css",
+    "src/styles/overrides.css"
+  ],
+  "scripts": [
+    "src/game/00-firebase.js",
+    "src/game/01-game-data.js",
+    "src/game/02-sfx.js",
+    "src/game/03-main-loop.js",
+    "src/game/04-network-lobby.js",
+    "src/game/05-network-sync.js",
+    "src/game/06-game-modes.js",
+    "src/game/07-movement.js",
+    "src/game/08-combat.js",
+    "src/game/09-projectiles.js",
+    "src/game/10-cpu-ai.js",
+    "src/game/11-render.js",
+    "src/game/12-input.js",
+    "src/game/13-ui-and-menus.js"
+  ]
+}

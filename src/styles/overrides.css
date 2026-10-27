@@ -1,0 +1,7 @@
+
+.tour-board{width:min(1040px,100%);max-height:65vh}
+.tour-cols{min-width:670px;gap:17px}
+.tour-col{min-width:195px;gap:10px}
+.tour-pair{padding:8px;min-height:102px}
+#tour-preview{max-height:65vh}
+@media(max-width:650px){.tour-cols{min-width:620px}.tour-col{min-width:180px}}

@@ -1,0 +1,4 @@
+
+html,body{touch-action:pan-y}#wrap,#pad,#acts{touch-action:none;-webkit-touch-callout:none}.screen{overscroll-behavior:contain;touch-action:pan-y}
+#acts{grid-template-rows:51px 58px 44px;grid-template-areas:'v s h' 'c a g' 'j a g';gap:7px}#btn-h{grid-area:h;background:#435d85!important;font-size:12px!important}#acts button{min-height:44px}#acts button small{font-size:8px}#pad{grid-template-columns:minmax(100px,1fr) minmax(220px,1.65fr);gap:8px}
+@media(orientation:landscape) and (max-height:560px){#acts{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:44px 44px 50px 44px;grid-template-areas:'v h' 's g' 'a a' 'c j';gap:5px}#pad{display:contents}}
