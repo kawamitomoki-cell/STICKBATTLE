@@ -253,7 +253,7 @@ html,body{touch-action:pan-y}#wrap,#pad,#acts{touch-action:none;-webkit-touch-ca
 <div id="sc-title" class="screen" style="display:flex">
  <div class="title-art"></div><div class="title-content"><div class="title-kicker">ONE ARENA. NO LIMITS.</div>
  <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">17人のファイター。勝負を決める、ただ一撃。</p>
- <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">TOURNAMENT + RANKING V23</div>
+ <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">RANKING CONNECT V26</div>
 </div>
 <div id="sc-mode" class="screen">
  <div class="hd">CHOOSE YOUR BATTLE<small>モードを選択</small></div><div class="mode-grid">
@@ -365,7 +365,7 @@ html,body{touch-action:pan-y}#wrap,#pad,#acts{touch-action:none;-webkit-touch-ca
 <div id="sc-result" class="screen">
   <div class="hd">BATTLE RESULT<small>THE FIGHT IS OVER.</small></div><div id="winner-art"></div>
   <div id="res-win"></div>
-  <div id="res-list"></div><div id="tour-result" class="tour-board"></div><div id="kumite-submit-state"></div><button id="res-rank">🏆 組み手ランキングを見る</button>
+  <div id="res-list"></div><div id="tour-result" class="tour-board"></div><div id="kumite-submit-state"></div><button id="kumite-submit-retry" type="button" style="display:none;background:#2a6956;color:#fff;padding:11px 18px;border-radius:5px;font-weight:900">記録の保存を再試行</button><button id="res-rank">🏆 組み手ランキングを見る</button>
   <div id="res-wait" class="wait" style="display:none">ホストの操作を待っています…</div>
   <div class="nav" id="res-nav1"><button class="next" id="res-again">もう一度</button></div>
   <div class="nav" id="res-nav2"><button class="next" id="res-pick">キャラを変える</button><button class="back" id="res-chars">キャラ選択へ</button><button class="back" id="res-title">タイトルへ</button></div>
@@ -504,10 +504,70 @@ const firebaseConfig = {
   appId: "1:464565244587:web:1c671b1e1bf47888ebddee"
 };
 let db = null;
-function initFirebase() {
-  if (db) return true;
-  try { firebase.initializeApp(firebaseConfig); db = firebase.database(); return true; }
-  catch (e) { alert('通信の準備に失敗しました：' + e.message); return false; }
+let firebaseInitPromise = null;
+let firebaseLastError = '';
+// FirebaseのCDNが一時的に利用できない場合にも、別の正規配信元から再試行する。
+// 既存のRealtime Database・部屋・ランキングのデータ形式は変えない。
+const FIREBASE_SDK_VERSION = '10.12.2';
+const FIREBASE_CDN_MIRRORS = [
+  'https://cdnjs.cloudflare.com/ajax/libs/firebase/'+FIREBASE_SDK_VERSION+'/',
+  'https://cdn.jsdelivr.net/npm/firebase@'+FIREBASE_SDK_VERSION+'/',
+  'https://www.gstatic.com/firebasejs/'+FIREBASE_SDK_VERSION+'/'
+];
+function firebaseSDKReady(){
+  return !!(window.firebase && typeof window.firebase.initializeApp==='function' && typeof window.firebase.database==='function');
+}
+function loadFirebaseScript(url,ready){
+  if(ready())return Promise.resolve();
+  return new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    script.async=true;script.src=url;
+    let completed=false;
+    const finish=(error)=>{
+      if(completed)return;completed=true;
+      clearTimeout(timer);
+      script.onload=null;script.onerror=null;
+      if(error){script.remove();reject(error);}else resolve();
+    };
+    const timer=setTimeout(()=>finish(new Error('CDN応答タイムアウト')),6500);
+    script.onload=()=>finish(ready()?null:new Error('Firebaseライブラリが未初期化'));
+    script.onerror=()=>finish(new Error('CDNに接続できません'));
+    document.head.appendChild(script);
+  });
+}
+async function ensureFirebaseSDK(){
+  if(firebaseSDKReady())return;
+  const hasApp=()=>!!(window.firebase&&typeof window.firebase.initializeApp==='function');
+  const hasDatabase=()=>!!(window.firebase&&typeof window.firebase.database==='function');
+  let lastFailure=null;
+  for(const base of FIREBASE_CDN_MIRRORS){
+    try{
+      if(!hasApp())await loadFirebaseScript(base+'firebase-app-compat'+(base.includes('cdnjs')?'.min':'')+'.js',hasApp);
+      if(!hasDatabase())await loadFirebaseScript(base+'firebase-database-compat'+(base.includes('cdnjs')?'.min':'')+'.js',hasDatabase);
+      if(firebaseSDKReady())return;
+    }catch(err){lastFailure=err;console.warn('Firebase SDKの読み込み元を切り替えます:',base,err?.message||err);}
+  }
+  throw new Error('Firebaseのプログラムを読み込めませんでした。ネット接続・広告ブロッカー・学校や職場のネットワーク制限をご確認ください。'+(lastFailure?'（'+lastFailure.message+'）':''));
+}
+async function initFirebase(){
+  if(db)return true;
+  if(firebaseInitPromise)return firebaseInitPromise;
+  firebaseInitPromise=(async()=>{
+    try{
+      await ensureFirebaseSDK();
+      // 同じページですでにFirebaseが初期化されていても二重初期化しない。
+      const app=window.firebase.apps?.length?window.firebase.app():window.firebase.initializeApp(firebaseConfig);
+      db=app.database();
+      firebaseLastError='';
+      return true;
+    }catch(e){
+      firebaseLastError=e?.message||String(e);
+      console.error('Firebaseの初期化に失敗:',e);
+      return false;
+    }
+  })();
+  try{return await firebaseInitPromise;}
+  finally{firebaseInitPromise=null;}
 }
 
 // ========================================================
@@ -1936,7 +1996,7 @@ function newRoomCode() {
   return Array.from(a, n => chars[n % chars.length]).join('');
 }
 async function createRoom() {
-  if (!initFirebase()) return;
+  if (!await initFirebase()) {alert('オンライン対戦に接続できません。\n'+firebaseLastError);return;}
   online = true; isHost = true;
   clearNetTimers();
   for (let tries = 0; tries < 8; tries++) {
@@ -1959,7 +2019,7 @@ function normalizeRoomCode(v) {
 }
 
 async function joinRoom(code = urlRoom, fromUrl = !!urlRoom) {
-  if (!initFirebase()) return false;
+  if (!await initFirebase()) {alert('オンライン対戦に接続できません。\n'+firebaseLastError);return false;}
   const normalized = normalizeRoomCode(code);
   if (normalized.length !== 6) {
     alert('部屋コードは6文字で入力してください。');
@@ -2409,7 +2469,7 @@ function handleGameplayEvent(e) {
 // ⑦ バトルの開始と終了
 // ========================================================
 // Ranked kumite records are categorized by the CPU difficulty selected at match start.
-let kumiteSubmitted=false,rankingReturnScene='sc-extra',rankingLevel=1,rankFetchToken=0;
+let kumiteSubmitted=false,kumiteSubmissionBusy=false,kumiteRecordRef=null,kumitePendingRun=null,rankingReturnScene='sc-extra',rankingLevel=1,rankFetchToken=0;
 const KUMITE_RANK_PATH='kumite_rankings_v1';
 function configureOfflineStageOptions(){
  const normal=offlineMode==='normal';
@@ -2421,6 +2481,16 @@ function configureOfflineStageOptions(){
  if(note)note.textContent=offlineMode==='kumite'?'組み手は個人戦固定・難易度固定。プレイヤー名・使用キャラ・マップ・勝ち抜き数が公開ランキングに登録されます。':offlineMode==='tournament'?'1対1の勝ち抜き戦。開始前にキャラ付きのトーナメント表を表示します。':'残機＝残りの戦える回数。迷ったら設定はそのままでOK！';
 }
 function rankingLevelName(lv){return LV_NAME[Math.max(0,Math.min(3,lv))]||'ふつう';}
+// ランキングは Firebase Realtime Database の /kumite_rankings_v1 を利用。
+// .read/.write はFirebase Consoleのルール側で許可が必要（index.htmlだけでは権限は変更できない）。
+function rankingFirebaseError(err,op){
+ const msg=String(err?.code||err?.message||err||'').toLowerCase();
+ if(msg.includes('permission_denied')||msg.includes('permission denied'))
+  return 'Firebaseのアクセスが拒否されました。Realtime Databaseの「ルール」で kumite_rankings_v1 の '+(op==='read'?'.read':'.write')+' を許可して「公開」してください。';
+ if(msg.includes('disconnected')||msg.includes('network')||msg.includes('timeout')||msg.includes('unavailable'))
+  return '通信に失敗しました。インターネット接続を確認して「更新する」または「保存を再試行」を押してください。';
+ return 'Firebaseとの通信に失敗しました。'+(err?.code?'（'+err.code+'）':String(err?.message||''));
+}
 function rankAvatar(cid){return CHARS[cid]?portrait(cid):'';}
 function openKumiteRanking(fromScene=scene,lv=settings.cpuLv){
  rankingReturnScene=fromScene;rankingLevel=Math.max(0,Math.min(3,Number(lv)||0));
@@ -2434,34 +2504,49 @@ function renderRankTabs(){
 async function loadKumiteRanking(){
  const token=++rankFetchToken,status=document.getElementById('rank-status'),table=document.getElementById('rank-table');
  status.textContent=rankingLevelName(rankingLevel)+' のランキングを取得中…';table.innerHTML='';
- if(!initFirebase()){status.textContent='Firebaseへの接続を確認してください。';return;}
+ if(!await initFirebase()){status.textContent='ランキングを読み込めませんでした。'+firebaseLastError;return;}
  try{
   const snap=await db.ref(KUMITE_RANK_PATH+'/lv'+rankingLevel).orderByChild('wins').limitToLast(100).once('value');
   if(token!==rankFetchToken||scene!=='sc-kumite-ranking')return;
   const arr=Object.entries(snap.val()||{}).map(([key,v])=>({...v,key})).filter(r=>r&&Number.isFinite(r.wins)&&r.wins>=0&&CHARS[r.cid]&&MAPS[r.map]&&typeof r.name==='string');
   arr.sort((a,b)=>b.wins-a.wins||(a.at||0)-(b.at||0));
-  status.textContent=rankingLevelName(rankingLevel)+' ／ 上位 '+arr.length+' 件'+(arr.length===100?'（100件まで表示）':'');
+  status.textContent='Firebase接続OK ／ '+rankingLevelName(rankingLevel)+' ／ 上位 '+arr.length+' 件'+(arr.length===100?'（100件まで表示）':'');
   if(!arr.length){table.innerHTML='<div class="card">まだ記録がありません。最初の記録を目指そう！</div>';return;}
   table.innerHTML='<div class="rank-row rank-head"><span>順位</span><span>プレイヤー</span><span>使用キャラ</span><span>使用マップ</span><span>記録</span></div>'+arr.map((r,i)=>'<div class="rank-row '+(i<3?'top3':'')+'"><b>'+(i+1)+'</b><div class="rank-player">'+esc(r.name)+'</div><div class="rank-character">'+rankAvatar(r.cid)+'<span>'+esc(CHARS[r.cid]?.name||'')+'</span></div><div class="rank-map">'+esc(MAPS[r.map]?.name||'')+'</div><div class="rank-wins">'+Math.floor(r.wins)+'<small style="font-size:10px"> 人</small></div></div>').join('');
  }catch(err){
   if(token!==rankFetchToken)return;
-  status.textContent='ランキングを読み込めませんでした。Firebaseの読み取り権限・ネット接続を確認してください。'+(err?.code?' ('+err.code+')':'');
+  status.textContent=rankingFirebaseError(err,'read');
   table.innerHTML='';
  }
 }
+function resetKumiteRankingSubmission(){
+ kumiteSubmitted=false;kumiteSubmissionBusy=false;kumiteRecordRef=null;kumitePendingRun=null;
+ const retry=document.getElementById('kumite-submit-retry');if(retry)retry.style.display='none';
+}
 async function submitKumiteResult(){
- if(kumiteSubmitted||online||offlineMode!=='kumite')return;
- kumiteSubmitted=true;
- const el=document.getElementById('kumite-submit-state');
+ if(kumiteSubmitted||kumiteSubmissionBusy||online||offlineMode!=='kumite')return;
+ const el=document.getElementById('kumite-submit-state'),retry=document.getElementById('kumite-submit-retry');
+ retry.style.display='none';
  if(kumiteCount<1){el.textContent='0人抜き：1人以上倒すとオンラインランキングへ登録できます。';return;}
- const run={name:cleanName(settings.name).slice(0,12),cid:settings.cid,map:settings.map,wins:kumiteCount,lv:settings.cpuLv};
+ // 保存失敗後も同じ試合の記録とFirebaseキーを保持し、二重登録を防ぐ。
+ if(!kumitePendingRun)kumitePendingRun={name:cleanName(settings.name).slice(0,12),cid:settings.cid,map:settings.map,wins:Math.min(10000,Math.floor(kumiteCount)),lv:Math.max(0,Math.min(3,Math.floor(settings.cpuLv)))};
+ const run=kumitePendingRun;
  if(!run.name||run.name.toUpperCase()==='PLAYER'){el.textContent='プレイヤー名が未入力のため、ランキング登録は行いませんでした。';return;}
- el.textContent='ランキングへ記録を送信中…';
- if(!initFirebase()){el.textContent='ランキングに接続できませんでした。';return;}
+ kumiteSubmissionBusy=true;
  try{
-  await db.ref(KUMITE_RANK_PATH+'/lv'+run.lv).push({...run,at:firebase.database.ServerValue.TIMESTAMP});
+  el.textContent='ランキングへの接続・保存を確認中…';
+  if(!await initFirebase())throw new Error(firebaseLastError||'Firebase SDKの読み込みに失敗しました');
+  if(!kumiteRecordRef)kumiteRecordRef=db.ref(KUMITE_RANK_PATH+'/lv'+run.lv).push();
+  const ref=kumiteRecordRef;
+  // 既に保存できていた場合（レスポンスだけ届かなかった場合）は二重登録しない。
+  const old=await ref.once('value');
+  if(!old.exists())await ref.set({...run,at:window.firebase.database.ServerValue.TIMESTAMP});
+  kumiteSubmitted=true;
   el.textContent='🏆 '+run.wins+'人抜きの記録を '+rankingLevelName(run.lv)+' ランキングへ登録しました！';
- }catch(err){el.textContent='ランキングの保存に失敗しました。Firebaseの書き込み権限を確認してください。'+(err?.code?' ('+err.code+')':'');}
+ }catch(err){
+  el.textContent=rankingFirebaseError(err,'write');
+  retry.style.display='';
+ }finally{kumiteSubmissionBusy=false;}
 }
 // Extra mode state. Tournament result is only finalized once, when a battle reaches its result screen.
 function modeLabel(){
@@ -2769,6 +2854,7 @@ function showResult() {
   const tourBox=document.getElementById('tour-result');tourBox.style.display='none';
   document.getElementById('res-rank').style.display=(!online&&offlineMode==='kumite')?'block':'none';
   document.getElementById('kumite-submit-state').textContent='';
+  document.getElementById('kumite-submit-retry').style.display='none';
   if(!online&&offlineMode==='tournament'&&offlineTour){
    // 勝敗が確定した試合のみトーナメント表に記録する。
    const winner=bt.winner||fighters.slice().sort((a,b)=>b.s-a.s||a.d-b.d)[0]?.id;
@@ -4998,6 +5084,7 @@ function buildMenus() {
   document.getElementById('extra-ranking').onclick=()=>openKumiteRanking('sc-extra',settings.cpuLv);
   document.getElementById('rank-back').onclick=()=>{rankFetchToken++;show(rankingReturnScene);};
   document.getElementById('rank-refresh').onclick=()=>loadKumiteRanking();
+  document.getElementById('kumite-submit-retry').onclick=()=>{void submitKumiteResult();};
   document.getElementById('res-rank').onclick=()=>openKumiteRanking('sc-result',settings.cpuLv);
   document.getElementById('extra-tournament').onclick=()=>show('sc-tour-choice');
   document.getElementById('tour-choice-back').onclick=()=>show('sc-extra');
@@ -5057,7 +5144,7 @@ function buildMenus() {
       document.getElementById('tour-preview').innerHTML=tourBoardHTML(offlineTour);
       show('sc-tour-bracket');return;
     }
-    if(offlineMode==='kumite'){kumiteCount=0;kumiteSubmitted=false;}
+    if(offlineMode==='kumite'){kumiteCount=0;resetKumiteRankingSubmission();}
     startBattleOffline();
   };
 
@@ -5068,7 +5155,7 @@ function buildMenus() {
   document.getElementById('res-again').onclick = () => {
     if(!online){
       if(offlineMode==='tournament'&&offlineTour?.champion)showSoloChampion();
-      else{if(offlineMode==='kumite'){kumiteCount=0;kumiteSubmitted=false;}startBattleOffline();}
+      else{if(offlineMode==='kumite'){kumiteCount=0;resetKumiteRankingSubmission();}startBattleOffline();}
     }else if (isHost) hostStart();
   };
   document.getElementById('res-chars').onclick = () => {
