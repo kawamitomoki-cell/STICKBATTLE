@@ -10,7 +10,7 @@ function stateOf(f) {
   return { x: Math.round(f.x), y: Math.round(f.y), vx: f.timeStopT>0?0:Math.round(f.vx * 10) / 10, f: f.f, r: Math.round(f.r * 100) / 100,
     a: f.a, mk: f.mv ? f.mv.kind : '', ch: f.ch, ct: f.ct, cs: f.cs, stn: f.stn > 0 ? 1 : 0, dg: f.dg > 0 ? 1 : 0,
     iv: isInvuln(f) ? 1 : 0, kb: f.kb > 0 ? 1 : 0, w: f.w || '', sh: f.sh > 0 ? 1 : 0, sph: f.sph, acs: f.cid==='goku'&&f.castStyle==='charge'&&f.sph>0?'charge':'', ri: f.rise > 0 ? 1 : 0,
-    am: f.arm > 0 ? 1 : 0, cid: f.cid,
+    am: f.arm > 0 ? 1 : 0, cid: f.cid, sc:f.shadowClone?1:0,so:f.shadowOwner||'',
     ae:Math.round(f.energy||0),af:f.form||0,at:f.modeT||0,az:f.fatigue||0,an:f.cloneT||0,ai:f.infinityCd||0,asl:f.slowT||0,adom:f.domainT||0,ats:f.timeStopT||0,atsf:f.timeStopSelfT||0,aoc:f.orbColor||"blue",
     d: Math.round(f.d), s: f.s, o: f.out ? 1 : 0, ko: Math.round(f.ko), g: f.g ? 1 : 0,
     rg: Math.round(f.rage || 0), rt: Math.round(f.rageT || 0), sk: Math.round(f.senku || 0), sw: Math.round(f.senkuWind || 0),
@@ -98,6 +98,7 @@ function legacy_updateRemote() {
 
 function onEvent(e){receiveNetEvent(e);}
 function handleGameplayEvent(e) {
+ if(e.k==='shadow-pop'){shadowCloneReceivePop(e);return;}
   if(e.k==='animefx'||e.k==='animearea'){
     const actor=byId(e.id);if(!actor||!isAnime(actor)||e.by&&e.by!==actor.owner||!Number.isFinite(e.x)||!Number.isFinite(e.y))return;
     if(e.k==='animefx'){if(!['transform','merge','purple','beam','blue','red','infinity','clone','rasengan','rise','starjump','blink','instant','domain','dragon','echo','stepclone','ora','starfinger','timestop'].includes(e.kind))return;animeVisual({...e,life:Math.max(1,Math.min(240,e.life||36))});}

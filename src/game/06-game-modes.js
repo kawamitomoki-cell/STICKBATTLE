@@ -273,7 +273,7 @@ function chooseSpawnPoints(arena,n,team=false,roster=[]){
 }
 
 function startBattleCommon(list, mapId, wpn, stocks, teamMode=false) {
-  animeFx=[];animeClock=0;
+  animeFx=[];animeClock=0;shadowCloneReset();
   senkuQueue=[];senkuSeen.clear();senkuActive=null;senkuAfter=null;specialNotices=[];hudKey="";resetNetRound();
   resetTouch();
   stage = MAPS[mapId] || MAPS.std;
@@ -319,7 +319,7 @@ function makeFighter(m, i) {
 function checkEnd() {
   if (fighters.length < 2) return;
   if(!online&&offlineMode==='training'){
-   if(fighters.some(f=>f.out))trainingReset(false);
+   if(fighters.some(f=>f.out&&!f.shadowClone))trainingReset(false);
    return;
   }
   if(!online&&offlineMode==='kumite'){
@@ -328,7 +328,7 @@ function checkEnd() {
    if(enemy?.out){
     kumiteCount++;const main=stage.plats[0],keys=cpuCharacterPool('all');
     const cid=keys[Math.floor(Math.random()*keys.length)];
-    fighters=fighters.filter(f=>!f.cpu);
+    fighters=fighters.filter(f=>!f.cpu||f.shadowClone);
     const nxt=makeFighter({id:'cpu'+(++kumiteOpponentSeed),cid,label:'対戦相手 '+(kumiteCount+1),cpu:1,owner:myId},1);
     nxt.s=1;nxt.x=main.x+main.w*.75;nxt.y=main.y;nxt.inv=60;fighters.push(nxt);
     me.d=Math.max(0,me.d-22);me.inv=Math.max(me.inv,45);
@@ -337,7 +337,7 @@ function checkEnd() {
    }
    return;
   }
-  const alive = fighters.filter(f => !f.out);
+  const alive = fighters.filter(f => !f.out&&!f.shadowClone);
   if (battleTeamMode) {
     const teams = aliveTeams();
     if (teams.length <= 1) {
@@ -350,18 +350,19 @@ function checkEnd() {
   }
 }
 
-function showResult() {
+function showResult(){
+  const mainFighters=fighters.filter(f=>!f.shadowClone);
   const order = [];
   if (battleTeamMode && bt.winnerTeam) {
-    const winners = fighters.filter(f => normTeam(f.team) === normTeam(bt.winnerTeam));
-    const losers = fighters.filter(f => normTeam(f.team) !== normTeam(bt.winnerTeam));
+    const winners = mainFighters.filter(f => normTeam(f.team) === normTeam(bt.winnerTeam));
+    const losers = mainFighters.filter(f => normTeam(f.team) !== normTeam(bt.winnerTeam));
     winners.sort((a,b)=>(b.s-a.s)||(a.stats.deaths-b.stats.deaths));
     losers.sort((a,b)=>(b.s-a.s)||(a.stats.deaths-b.stats.deaths));
     order.push(...winners,...losers);
   } else {
     if (bt.winner && byId(bt.winner)) order.push(byId(bt.winner));
     for (let i = elim.length - 1; i >= 0; i--) { const f = byId(elim[i]); if (f && !order.includes(f)) order.push(f); }
-    for (const f of fighters) if (!order.includes(f)) order.push(f);
+    for (const f of mainFighters) if (!order.includes(f)) order.push(f);
   }
 
   const win = bt.winner ? byId(bt.winner) : null;
@@ -370,7 +371,7 @@ function showResult() {
     const wt = bt.winnerTeam || 0;
     rw.innerText = wt ? `${teamName(wt)} TEAM WIN!` : 'DRAW';
     rw.style.color = wt ? teamColor(wt) : '#ffffff';
-    const hero = fighters.find(f => wt && normTeam(f.team) === normTeam(wt) && !f.out) || fighters.find(f => wt && normTeam(f.team) === normTeam(wt));
+    const hero = mainFighters.find(f => wt && normTeam(f.team) === normTeam(wt) && !f.out) || mainFighters.find(f => wt && normTeam(f.team) === normTeam(wt));
     document.getElementById('winner-art').innerHTML = hero ? '<div class="winner-art">'+portrait(hero.cid)+'</div>' : '';
   } else {
     rw.innerText = !win ? 'DRAW' : (win.id === myId ? 'YOU WIN!' : cleanName(win.label) + ' WIN');
@@ -390,7 +391,7 @@ function showResult() {
   document.getElementById('kumite-submit-retry').style.display='none';
   if(!online&&offlineMode==='tournament'&&offlineTour){
    // 勝敗が確定した試合のみトーナメント表に記録する。
-   const winner=bt.winner||fighters.slice().sort((a,b)=>b.s-a.s||a.d-b.d)[0]?.id;
+   const winner=bt.winner||mainFighters.slice().sort((a,b)=>b.s-a.s||a.d-b.d)[0]?.id;
    if(winner)progressTournament(offlineTour,winner,matchDetailFor(winner));
    tourBox.style.display='block';tourBox.innerHTML=tourBoardHTML(offlineTour);
   }else if(online&&gmCache?.mode==='tournament'&&gmCache.tour){tourBox.style.display='block';tourBox.innerHTML=tourBoardHTML(gmCache.tour);}

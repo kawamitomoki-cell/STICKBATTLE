@@ -922,7 +922,7 @@ Object.assign(CHARS,{
  goku:{...ANIME_COMMON,name:'孫悟空',en:'SON GOKU',mark:'悟',spd:1.08,jump:1.05,wt:.94,pow:1.14,st:[4,4,3],sp:'特殊：気弾。長押しして離すとかめはめ波（移動しながらチャージ可能）。下特殊：気を溜め、MAXでもう一度押すと超サイヤ人→2→3',up:'通常～超2は攻撃判定なしの大ジャンプ。超3のみ龍拳',ab:'SS1は総合強化。SS2は火力特化＋溜め攻撃貫通。SS3は15秒限定の完全無敵・超火力ボス性能。横特殊は足場から落ちない瞬間移動。気弾には吹っ飛ばしなし'},
  gojo:{...ANIME_COMMON,name:'五条悟',en:'SATORU GOJO',mark:'無',spd:1.04,jump:1.05,wt:.98,pow:1.05,st:[3,5,3],sp:'特殊：即離し＝蒼／少し溜め＝赫／長押し＝茈。横特殊は踏み込み強打で約1/6の確率で黒閃',up:'上特殊：攻撃判定のない大ジャンプ。下特殊：術式ゲージMAXで領域展開「無量空処」',ab:'無下限により飛び道具を常時無効。横特殊は踏み込み打撃、稀に黒閃。無量空処は範囲内の敵を行動不能にするが、被弾・吹っ飛び・撃墜は通常どおり発生'},
  tanjiro:{...ANIME_COMMON,name:'竈門炭治郎',en:'TANJIRO',mark:'水',spd:1.08,jump:1.02,wt:.98,pow:1.12,st:[4,4,3],sp:'通常攻撃は日輪刀。特殊＝壱ノ型 水面斬り／横特殊＝参ノ型 流流舞い／上特殊＝弐ノ型 水車',up:'下特殊で呼吸ゲージMAX時にヒノカミ神楽へ。神楽中：特殊＝碧羅の天、横＝烈日紅鏡、上＝飛輪陽炎、下＝幻日虹',ab:'水の呼吸は高火力の剣技。ヒノカミ神楽は18秒、火力と吹っ飛ばしが大幅強化。幻日虹は残像を残して攻撃を回避'},
- naruto:{...ANIME_COMMON,name:'うずまきナルト',en:'NARUTO',mark:'忍',spd:1.13,jump:1.08,wt:.96,pow:1.05,st:[5,3,3],sp:'特殊＝風遁・螺旋手裏剣（長距離投射）、横特殊＝螺旋丸、下特殊＝チャクラ解放・2段変身',up:'上特殊：一瞬で上へ移動する高速瞬身（攻撃判定なし）',ab:'チャクラゲージは技や攻撃では消費・増加せず、時間経過だけで蓄積。MAXで仙人モード→再び時間でMAXにして九尾チャクラモード'},
+ naruto:{...ANIME_COMMON,name:'うずまきナルト',en:'NARUTO',mark:'忍',spd:1.13,jump:1.08,wt:.96,pow:1.05,st:[5,3,3],sp:'特殊短押し＝螺旋手裏剣、長押し約0.5秒＝影分身（チャクラ60消費・同時1体・被弾で消滅）。横特殊＝螺旋丸、下特殊＝チャクラ解放・2段変身',up:'上特殊：一瞬で上へ移動する高速瞬身（攻撃判定なし）',ab:'チャクラは時間経過で蓄積。特殊長押しで60消費し、最強級AIの影分身を召喚。分身は敵の一撃で煙になり消える。MAXで仙人モード→九尾チャクラモード'},
  jotaro:{...ANIME_COMMON,name:'空条承太郎',en:'JOTARO KUJO',mark:'星',spd:1.02,jump:1.02,wt:.90,pow:1.13,st:[4,4,4],sp:'特殊＝スタープラチナのオラオララッシュ。横特殊＝スターフィンガー',up:'上特殊：スタープラチナと共に大ジャンプ（攻撃判定なし）。下特殊：ゲージMAXで時を止める',ab:'時止め中は時間経過・攻撃ヒットのどちらでもゲージが増えない。承太郎だけが行動でき、止まった相手へのダメージと吹っ飛ばしは時が動き出した瞬間に反映される'}
 
 });
@@ -1072,7 +1072,7 @@ function animeStart(p,inp,up=false){
  if(p.cid==='goku'){p.castStyle='ki';p.sph=1;animeSound('charge');}
  else if(p.cid==='gojo'){p.castStyle='orb';p.sph=1;p.orbColor='blue';animeSound('charge');}
  else if(p.cid==='tanjiro'){animeTanjiroMove(p,false);}
- else if(p.cid==='naruto'){animeRasenShuriken(p);}
+ else if(p.cid==='naruto'){p.castStyle='shadow-charge';p.sph=1;}
  else if(p.cid==='jotaro'){animeOra(p);}
 }
 function animeDown(p){
@@ -1217,6 +1217,7 @@ function animeHold(p,inp){
  if(inp.s){p.sph=Math.min(190,p.sph+1);
   if(p.cid==='goku'&&p.castStyle==='charge')animeGain(p,100/(3*60)); // 約3秒で100。
   if(p.cid==='goku'&&p.castStyle==='ki'&&p.sph===85)animeNotice(p,'かめはめ波 MAX','#99eaff');
+   if(p.cid==='naruto'&&p.castStyle==='shadow-charge'&&p.sph===NARUTO_CLONE_HOLD&&!p.shadowClone)animeNotice(p,p.energy>=NARUTO_CLONE_COST?'影分身 READY':'チャクラ 60 必要','#ffdf8f');
   if(p.cid==='gojo'&&p.castStyle==='orb'){
    if(p.sph>=GOJO_PURPLE_HOLD){if(p.orbColor!=='purple')animeNotice(p,'茈 READY','#d7aaff');p.orbColor='purple';}
    else if(p.sph>=GOJO_RED_HOLD)p.orbColor='red';
@@ -1233,7 +1234,10 @@ function animeHold(p,inp){
    animeProjectile(p,'kamehameha',{range:1050+(p.form||0)*75,r:22+charge*13,dm:(12+9*charge)*st.dm,k0:(9+4*charge)*st.kb,ks:.085,life:24,beam:true});
    animeCall(p,'かめはめ波！','#aeefff',true,1.24,.92);animeEmit(p,'beam',{title:'かめはめ波',life:31});
   }else{animeProjectile(p,'ki',{vx:p.f*13,r:10+(p.form||0)*2,dm:9*st.dm,k0:0,ks:0,up:0,life:65});p.sh=12;p.spc=15;animeSound('red');}
- }else if(p.cid==='gojo'&&style==='orb'){
+ }else if(p.cid==='naruto'&&style==='shadow-charge'){
+   if(held>=NARUTO_CLONE_HOLD&&!p.shadowClone)shadowCloneSummon(p);
+   else animeRasenShuriken(p);
+  }else if(p.cid==='gojo'&&style==='orb'){
   const purple=held>=GOJO_PURPLE_HOLD,red=!purple&&held>=GOJO_RED_HOLD;
   const kind=purple?'purple':red?'red':'blue';
   // Purple keeps its existing power; blue/red retain the nerfed power but have longer cooldowns.
@@ -1310,7 +1314,7 @@ function animeTick(p){
  if(p.cid==='goku'&&p.form===3){p.energy=Math.max(0,p.energy-100/900);if(p.energy<=.0001){p.form=0;p.energy=0;p.fatigue=60;if(isLocal(p))playGokuMp3('revert',{dedupe:250,volume:.9});animeNotice(p,'超サイヤ人3 終了');}}
  if(p.modeT>0&&--p.modeT===0){p.energy=0;if(p.cid==='tanjiro')p.fatigue=95;if(p.cid==='naruto'&&p.form===2)p.form=1;animeNotice(p,p.cid==='tanjiro'?'ヒノカミ神楽終了':'九尾チャクラ終了');}
  if(p.cid==='goku'&&isLocal(p)&&!p.out&&p.fatigue<=0&&p.form<3&&!animeTimeStopActive())p.energy=Math.min(100,(p.energy||0)+GOKU_PASSIVE_KI);
- else if(p.cid==='naruto'&&isLocal(p)&&!p.out&&p.fatigue<=0&&p.form<2)p.energy=Math.min(100,(p.energy||0)+NARUTO_PASSIVE_FILL);
+ else if(p.cid==='naruto'&&!p.shadowClone&&isLocal(p)&&!p.out&&p.fatigue<=0&&p.form<2)p.energy=Math.min(100,(p.energy||0)+NARUTO_PASSIVE_FILL);
  else if(p.cid==='jotaro'&&isLocal(p)&&!p.out&&p.timeStopSelfT<=0&&!animeTimeStopActive())p.energy=Math.min(100,(p.energy||0)+JOTARO_FILL);
  else animeGain(p,p.cid==='gojo'?.055:p.cid==='tanjiro'?.070:0);
 }
@@ -1892,11 +1896,14 @@ function normTeam(v) { return Number(v) === 2 ? 2 : 1; }
 function teamColor(v) { return TEAM_COLORS[normTeam(v)]; }
 function teamName(v) { return TEAM_NAMES[normTeam(v)]; }
 function sameTeam(a, b) {
-  return !!battleTeamMode && !!a && !!b && a.id !== b.id && normTeam(a.team) === normTeam(b.team);
+ if(!a||!b||a.id===b.id)return false;
+ if(a.shadowOwner===b.id||b.shadowOwner===a.id)return true;
+ if(a.shadowOwner&&b.shadowOwner&&a.shadowOwner===b.shadowOwner)return true;
+ return !!battleTeamMode&&normTeam(a.team)===normTeam(b.team);
 }
 function enemyOf(a, b) { return !sameTeam(a, b); }
 function aliveTeams() {
-  return [...new Set(fighters.filter(f => !f.out).map(f => normTeam(f.team)))];
+  return [...new Set(fighters.filter(f => !f.out&&!f.shadowClone).map(f => normTeam(f.team)))];
 }
 function clearNetTimers() { while (netTimers.length) clearInterval(netTimers.pop()); }
 
@@ -2121,7 +2128,8 @@ function simulateFrame() {
       for (const f of fighters) if (f.cpu && isLocal(f)) {
         if(!online&&offlineMode==='training'&&trainingAiMode===0){f.ai.inp=blankInput();continue;}
         const oldLv=aiLv;
-        if(!online&&offlineMode==='training')aiLv=trainingAiMode===2?3:1;
+        if(f.shadowClone)aiLv=3;
+        else if(!online&&offlineMode==='training')aiLv=trainingAiMode===2?3:1;
         aiStep(f);aiLv=oldLv;
       }
       for (const f of fighters) if (isLocal(f)) {
@@ -2129,7 +2137,7 @@ function simulateFrame() {
         if (freezeT>0) return;
       }
       for (const f of fighters) {meleeCheck(f);if(freezeT>0)return;}
-      stepItems();stepProjs();if(freezeT>0)return;stepBombs();stepMines();
+      shadowClonePrune();stepItems();stepProjs();if(freezeT>0)return;stepBombs();stepMines();
       if (!online) { spawnItems(); checkEnd(); }
     } else {
       bt.t--;
@@ -2268,7 +2276,81 @@ async function joinCommon() {
     document.getElementById('lb-hostinv').style.display = 'block';
     document.getElementById('lb-code').innerText = roomId;
     document.getElementById('lb-qr').textContent='';
-    if(typeof QRCode!=='undefined')new QRCode(document.getElementById('lb-qr'), { text: url, width: 170, height: 170 });
+    if(typeof QRCode!=='
+// Naruto: autonomous shadow clone companion.
+// Real CPU fighter, excluded from stock/score; 60 chakra and one-hit life.
+const NARUTO_CLONE_HOLD=32,NARUTO_CLONE_COST=60,NARUTO_CLONE_COOLDOWN=100;
+let shadowCloneSerial=0;
+const shadowCloneGone=new Set();
+function shadowCloneReset(){shadowCloneSerial=0;shadowCloneGone.clear();}
+function shadowCloneAlive(ownerId){return fighters.find(f=>f.shadowClone&&f.shadowOwner===ownerId&&!f.out)||null;}
+function shadowCloneSummon(p){
+ if(!p||p.cid!=='naruto'||p.shadowClone||!isLocal(p)||p.out)return false;
+ if(shadowCloneAlive(p.id)){animeNotice(p,'影分身は既に出現中','#ffda95');sfxNo();p.spc=24;return false;}
+ if((p.energy||0)<NARUTO_CLONE_COST){animeNotice(p,'チャクラ不足','#ffda95');sfxNo();p.spc=24;return false;}
+ p.energy-=NARUTO_CLONE_COST;p.spc=NARUTO_CLONE_COOLDOWN;
+ const x=Math.max(28,Math.min(stage.w-28,p.x-p.f*55));
+ const id='sclone_'+p.id+'_'+(++shadowCloneSerial);
+ const f=makeFighter({id,cid:'naruto',label:'影分身',cpu:1,owner:p.owner,team:p.team},fighters.length);
+ f.shadowClone=true;f.shadowOwner=p.id;f.x=x;f.y=p.y;f.f=p.f;f.vx=0;f.vy=0;f.g=p.g;f.groundPl=p.groundPl;
+ f.form=p.form;f.modeT=p.modeT;f.energy=0;f.inv=0;f.s=1;f.spc=30;f.ai.t=1;f.c='#9bd6ff';
+ fighters.push(f);hudKey='';
+ animeEmit(p,'clone',{title:'影分身の術！',life:31});
+ popups.push({x:f.x,y:f.y-95,txt:'SHADOW CLONE',life:48,max:48,size:17,c:'#d8f2ff'});
+ return true;
+}
+function shadowCloneReceiveSnapshot(id,s){
+ if(!online||shadowCloneGone.has(id)||!s||s.sc!==1||s.rd!==curRound||s.o||typeof id!=='string')return null;
+ if(typeof s.so!=='string'||!id.startsWith('sclone_'+s.so+'_'))return null;
+ const owner=byId(s.so);
+ if(!owner||owner.cid!=='naruto'||owner.owner===myId)return null;
+ const active=shadowCloneAlive(owner.id);
+ if(active)return active.id===id?active:null;
+ const f=makeFighter({id,cid:'naruto',label:'影分身',cpu:1,owner:owner.owner,team:owner.team},fighters.length);
+ f.shadowClone=true;f.shadowOwner=owner.id;f.x=s.x;f.y=s.y;f.f=s.f||1;f.form=s.af||0;f.modeT=s.at||0;f.energy=0;
+ f.inv=0;f.s=1;f.spc=0;f.c='#9bd6ff';fighters.push(f);hudKey='';
+ return f;
+}
+function shadowCloneSmoke(x,y){
+ burst(x,y-30,22,6,'#e3edf8',7);ring(x,y-30,30,17);animeSound('clone');
+ popups.push({x,y:y-83,txt:'POOF!',life:30,max:30,size:18,c:'#e0f5ff'});
+}
+function shadowClonePop(f,broadcast=true){
+ if(!f||!f.shadowClone||f.out)return false;
+ const x=f.x,y=f.y;f.out=true;f.s=0;f.shadowGoneAt=Date.now();shadowCloneGone.add(f.id);
+ clearActs(f);f.w=null;f.hit={};shadowCloneSmoke(x,y);
+ if(broadcast&&isLocal(f))send({k:'shadow-pop',id:f.id,owner:f.shadowOwner,x:Math.round(x),y:Math.round(y)});
+ return true;
+}
+function shadowCloneReceivePop(e){
+ if(!e||typeof e.id!=='string'||typeof e.owner!=='string')return;
+ const owner=byId(e.owner);
+ if(!owner||owner.cid!=='naruto'||owner.owner!==e.by||!e.id.startsWith('sclone_'+e.owner+'_'))return;
+ shadowCloneGone.add(e.id);
+ const f=byId(e.id);
+ if(f&&f.shadowClone)shadowClonePop(f,false);
+ else if(Number.isFinite(e.x)&&Number.isFinite(e.y))shadowCloneSmoke(e.x,e.y);
+}
+function shadowCloneClearOwner(ownerId){
+ for(const f of fighters)if(f.shadowClone&&f.shadowOwner===ownerId&&!f.out&&isLocal(f))shadowClonePop(f);
+}
+function shadowClonePrune(){
+ const now=Date.now();
+ for(const f of fighters){
+  if(!f.shadowClone||f.out)continue;
+  const owner=byId(f.shadowOwner);
+  if(!owner||owner.out){
+   if(isLocal(f))shadowClonePop(f);
+   else{f.out=true;f.shadowGoneAt=now;shadowCloneGone.add(f.id);}
+  }
+ }
+ for(let i=fighters.length-1;i>=0;i--){
+  const f=fighters[i];if(!f.shadowClone||!f.out||!f.shadowGoneAt||now-f.shadowGoneAt<800)continue;
+  fighters.splice(i,1);hudKey='';
+  if(online&&isLocal(f)&&roomRef)roomRef.child('p/'+f.id).remove().catch(networkError);
+ }
+}
+undefined')new QRCode(document.getElementById('lb-qr'), { text: url, width: 170, height: 170 });
     document.getElementById('lb-copy').onclick = () => {
       if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => alert('参加URLをコピーしました'));
       else prompt('このURLを送ってください', url);
@@ -2477,12 +2559,12 @@ async function hostStartTournament(){
 function hostTick() {
   if (!isHost || !battleSessionActive() || bt.phase !== 'play' || !gmCache) return;
   if (Date.now() - battleStartAt < 4500 || fighters.length < 2) return;
-  const alive = fighters.filter(f => !f.out);
+  const alive = fighters.filter(f => !f.out&&!f.shadowClone);
   if (battleTeamMode) {
     const teams = aliveTeams();
     if (teams.length <= 1) roomRef.child('gm').update({ ph: 'end', w: '', wt: teams[0] || 0 });
   } else if (alive.length <= 1) {
-    roomRef.child('gm').update({ ph: 'end', w: alive[0] ? alive[0].id : '', wt: 0,matchDetail:gmCache?.mode==='tournament'?{method:'場外撃墜',durationSec:Math.max(0,Math.round((Date.now()-battleStartAt)/1000)-3),winnerDamage:alive[0]?Math.round(alive[0].d):null,loserDamage:fighters.find(f=>f.id!==alive[0]?.id)?Math.round(fighters.find(f=>f.id!==alive[0]?.id).d):null,map:gmCache.map}:null });
+    roomRef.child('gm').update({ ph: 'end', w: alive[0] ? alive[0].id : '', wt: 0,matchDetail:gmCache?.mode==='tournament'?{method:'場外撃墜',durationSec:Math.max(0,Math.round((Date.now()-battleStartAt)/1000)-3),winnerDamage:alive[0]?Math.round(alive[0].d):null,loserDamage:fighters.find(f=>!f.shadowClone&&f.id!==alive[0]?.id)?Math.round(fighters.find(f=>!f.shadowClone&&f.id!==alive[0]?.id).d):null,map:gmCache.map}:null });
   }
 }
 
@@ -2506,7 +2588,7 @@ function stateOf(f) {
   return { x: Math.round(f.x), y: Math.round(f.y), vx: f.timeStopT>0?0:Math.round(f.vx * 10) / 10, f: f.f, r: Math.round(f.r * 100) / 100,
     a: f.a, mk: f.mv ? f.mv.kind : '', ch: f.ch, ct: f.ct, cs: f.cs, stn: f.stn > 0 ? 1 : 0, dg: f.dg > 0 ? 1 : 0,
     iv: isInvuln(f) ? 1 : 0, kb: f.kb > 0 ? 1 : 0, w: f.w || '', sh: f.sh > 0 ? 1 : 0, sph: f.sph, acs: f.cid==='goku'&&f.castStyle==='charge'&&f.sph>0?'charge':'', ri: f.rise > 0 ? 1 : 0,
-    am: f.arm > 0 ? 1 : 0, cid: f.cid,
+    am: f.arm > 0 ? 1 : 0, cid: f.cid, sc:f.shadowClone?1:0,so:f.shadowOwner||'',
     ae:Math.round(f.energy||0),af:f.form||0,at:f.modeT||0,az:f.fatigue||0,an:f.cloneT||0,ai:f.infinityCd||0,asl:f.slowT||0,adom:f.domainT||0,ats:f.timeStopT||0,atsf:f.timeStopSelfT||0,aoc:f.orbColor||"blue",
     d: Math.round(f.d), s: f.s, o: f.out ? 1 : 0, ko: Math.round(f.ko), g: f.g ? 1 : 0,
     rg: Math.round(f.rage || 0), rt: Math.round(f.rageT || 0), sk: Math.round(f.senku || 0), sw: Math.round(f.senkuWind || 0),
@@ -2594,6 +2676,7 @@ function legacy_updateRemote() {
 
 function onEvent(e){receiveNetEvent(e);}
 function handleGameplayEvent(e) {
+ if(e.k==='shadow-pop'){shadowCloneReceivePop(e);return;}
   if(e.k==='animefx'||e.k==='animearea'){
     const actor=byId(e.id);if(!actor||!isAnime(actor)||e.by&&e.by!==actor.owner||!Number.isFinite(e.x)||!Number.isFinite(e.y))return;
     if(e.k==='animefx'){if(!['transform','merge','purple','beam','blue','red','infinity','clone','rasengan','rise','starjump','blink','instant','domain','dragon','echo','stepclone','ora','starfinger','timestop'].includes(e.kind))return;animeVisual({...e,life:Math.max(1,Math.min(240,e.life||36))});}
@@ -2911,7 +2994,7 @@ function chooseSpawnPoints(arena,n,team=false,roster=[]){
 }
 
 function startBattleCommon(list, mapId, wpn, stocks, teamMode=false) {
-  animeFx=[];animeClock=0;
+  animeFx=[];animeClock=0;shadowCloneReset();
   senkuQueue=[];senkuSeen.clear();senkuActive=null;senkuAfter=null;specialNotices=[];hudKey="";resetNetRound();
   resetTouch();
   stage = MAPS[mapId] || MAPS.std;
@@ -2957,7 +3040,7 @@ function makeFighter(m, i) {
 function checkEnd() {
   if (fighters.length < 2) return;
   if(!online&&offlineMode==='training'){
-   if(fighters.some(f=>f.out))trainingReset(false);
+   if(fighters.some(f=>f.out&&!f.shadowClone))trainingReset(false);
    return;
   }
   if(!online&&offlineMode==='kumite'){
@@ -2966,7 +3049,7 @@ function checkEnd() {
    if(enemy?.out){
     kumiteCount++;const main=stage.plats[0],keys=cpuCharacterPool('all');
     const cid=keys[Math.floor(Math.random()*keys.length)];
-    fighters=fighters.filter(f=>!f.cpu);
+    fighters=fighters.filter(f=>!f.cpu||f.shadowClone);
     const nxt=makeFighter({id:'cpu'+(++kumiteOpponentSeed),cid,label:'対戦相手 '+(kumiteCount+1),cpu:1,owner:myId},1);
     nxt.s=1;nxt.x=main.x+main.w*.75;nxt.y=main.y;nxt.inv=60;fighters.push(nxt);
     me.d=Math.max(0,me.d-22);me.inv=Math.max(me.inv,45);
@@ -2975,7 +3058,7 @@ function checkEnd() {
    }
    return;
   }
-  const alive = fighters.filter(f => !f.out);
+  const alive = fighters.filter(f => !f.out&&!f.shadowClone);
   if (battleTeamMode) {
     const teams = aliveTeams();
     if (teams.length <= 1) {
@@ -2988,18 +3071,19 @@ function checkEnd() {
   }
 }
 
-function showResult() {
+function showResult(){
+  const mainFighters=fighters.filter(f=>!f.shadowClone);
   const order = [];
   if (battleTeamMode && bt.winnerTeam) {
-    const winners = fighters.filter(f => normTeam(f.team) === normTeam(bt.winnerTeam));
-    const losers = fighters.filter(f => normTeam(f.team) !== normTeam(bt.winnerTeam));
+    const winners = mainFighters.filter(f => normTeam(f.team) === normTeam(bt.winnerTeam));
+    const losers = mainFighters.filter(f => normTeam(f.team) !== normTeam(bt.winnerTeam));
     winners.sort((a,b)=>(b.s-a.s)||(a.stats.deaths-b.stats.deaths));
     losers.sort((a,b)=>(b.s-a.s)||(a.stats.deaths-b.stats.deaths));
     order.push(...winners,...losers);
   } else {
     if (bt.winner && byId(bt.winner)) order.push(byId(bt.winner));
     for (let i = elim.length - 1; i >= 0; i--) { const f = byId(elim[i]); if (f && !order.includes(f)) order.push(f); }
-    for (const f of fighters) if (!order.includes(f)) order.push(f);
+    for (const f of mainFighters) if (!order.includes(f)) order.push(f);
   }
 
   const win = bt.winner ? byId(bt.winner) : null;
@@ -3008,7 +3092,7 @@ function showResult() {
     const wt = bt.winnerTeam || 0;
     rw.innerText = wt ? `${teamName(wt)} TEAM WIN!` : 'DRAW';
     rw.style.color = wt ? teamColor(wt) : '#ffffff';
-    const hero = fighters.find(f => wt && normTeam(f.team) === normTeam(wt) && !f.out) || fighters.find(f => wt && normTeam(f.team) === normTeam(wt));
+    const hero = mainFighters.find(f => wt && normTeam(f.team) === normTeam(wt) && !f.out) || mainFighters.find(f => wt && normTeam(f.team) === normTeam(wt));
     document.getElementById('winner-art').innerHTML = hero ? '<div class="winner-art">'+portrait(hero.cid)+'</div>' : '';
   } else {
     rw.innerText = !win ? 'DRAW' : (win.id === myId ? 'YOU WIN!' : cleanName(win.label) + ' WIN');
@@ -3028,7 +3112,7 @@ function showResult() {
   document.getElementById('kumite-submit-retry').style.display='none';
   if(!online&&offlineMode==='tournament'&&offlineTour){
    // 勝敗が確定した試合のみトーナメント表に記録する。
-   const winner=bt.winner||fighters.slice().sort((a,b)=>b.s-a.s||a.d-b.d)[0]?.id;
+   const winner=bt.winner||mainFighters.slice().sort((a,b)=>b.s-a.s||a.d-b.d)[0]?.id;
    if(winner)progressTournament(offlineTour,winner,matchDetailFor(winner));
    tourBox.style.display='block';tourBox.innerHTML=tourBoardHTML(offlineTour);
   }else if(online&&gmCache?.mode==='tournament'&&gmCache.tour){tourBox.style.display='block';tourBox.innerHTML=tourBoardHTML(gmCache.tour);}
@@ -3551,6 +3635,7 @@ function stepFighter(p, inp) {
 }
 
 function koFighter(p) {
+ if(p.shadowClone){shadowClonePop(p);return;}
   if(!online&&offlineMode==='training'){
     p.stats.deaths++;koFx({x:Math.round(constrain(p.x,0,stage.w)),y:Math.round(constrain(p.y,0,stage.h)),c:p.c});
     p.s=3;p.out=false;respawn(p);p.inv=70;return;
@@ -3571,6 +3656,7 @@ function koFx(e) {
 }
 
 function respawn(p) {
+ shadowCloneClearOwner(p.id);
   animeInit(p);
   p.x = stage.w / 2; p.y = 40; p.vx = 0; p.vy = 0; p.d = 0; p.kb = 0; p.r = 0;
   clearActs(p); p.stn = 0; p.inv = 100; p.w = null; p.am = 0; p.rec = false; p.jn = 0;
@@ -3633,6 +3719,7 @@ function meleeCheck(a) {
 function resolveMelee(A, t) {
   const attacker = byId(A.id); if (attacker && sameTeam(attacker, t)) return;
   const mv = A.mv, ty = t.y - 30 * CC(t.cid).size;
+ if(t.shadowClone){shadowClonePop(t);return;}
   if (isInvuln(t)) { if (t.dg > 0) emitFx({ res: 'evade', t: t.id, a: A.id, x: t.x, y: t.y - 110 }); return; }
   if(animeInfinity(t,mv.type,A.id,mv.kind==='upper'))return;
   const front = fromFront(t, A.x) || CC(t.cid).back;
@@ -3652,6 +3739,7 @@ function resolveMelee(A, t) {
 function resolveProj(Q, t) {
   const owner = byId(Q.o); if (owner && sameTeam(owner, t)) return;
   const ty = t.y - 34 * CC(t.cid).size;
+ if(t.shadowClone){shadowClonePop(t);return;}
   if (isInvuln(t)) { if (t.dg > 0) emitFx({ res: 'evade', t: t.id, a: Q.o, x: t.x, y: t.y - 110 }); return; }
   if (t.projectileSlipT>0) { emitFx({res:'evade',t:t.id,a:Q.o,x:t.x,y:t.y-90}); return; }
   if (t.cid==='yankee' && rageOn(t) && Q.animeKind==='ki') { emitFx({res:'block',t:t.id,a:Q.o,x:t.x,y:ty}); return; }
@@ -3680,6 +3768,7 @@ function armorHit(t, h, attackerId) {
 }
 
 function applyHit(t, h, bk, attackerId) {
+ if(t.shadowClone){const a=byId(attackerId);if(!a||!sameTeam(a,t))shadowClonePop(t);return 0;}
  if(t.timeStopT>0&&!t.releasingStop){const q=t.stoppedHits||(t.stoppedHits=[]);if(q.length<128)q.push({h:{...h},bk,attackerId});return (h.k0+t.d*h.ks)*weightFactor(t);}
   const attacker = byId(attackerId); if (attacker && sameTeam(attacker, t)) return 0;
   const m = bk ? 1.4 : 1;
@@ -5928,12 +6017,12 @@ function fighterInfo(C){return `<div class="ability-line"><b>特殊技</b>　${C
 let hudKey='';
 function setTxt(el,v){if(el&&el.textContent!==v)el.textContent=v;}
 function setVar(el,k,v){if(el&&el['_'+k]!==v){el['_'+k]=v;el.style.setProperty(k,v);}}
-function drawHUD(){
- const roster=document.getElementById('battle-roster');const key=(battleTeamMode?'T':'F')+'|'+fighters.map(p=>p.id+':'+p.cid+':'+p.c+':'+p.team+':'+(p.cid==='rubber'?p.gear:isAnime(p)?(p.form||0)+':'+(p.modeT>0):0)).join('|');
- if(key!==hudKey){hudKey=key;roster.style.setProperty('--columns',Math.min(4,fighters.length));
-  roster.innerHTML=fighters.map(p=>`<div class="hud-card ${p.id===myId?'me ':''}${fighters.length>4?'crowded':''}" style="--team:${battleTeamMode?teamColor(p.team):p.c}"><div class="hud-portrait">${portrait(p.cid,p.gear,p.form,p.modeT>0)}</div><div class="hud-info"><div class="hud-name"></div><div class="hud-damage"></div></div><div class="hud-stocks"></div><div class="hud-skill"></div><div class="hud-meter"></div></div>`).join('');
+function drawHUD(){const rosterFighters=fighters.filter(f=>!f.shadowClone);
+ const roster=document.getElementById('battle-roster');const key=(battleTeamMode?'T':'F')+'|'+rosterFighters.map(p=>p.id+':'+p.cid+':'+p.c+':'+p.team+':'+(p.cid==='rubber'?p.gear:isAnime(p)?(p.form||0)+':'+(p.modeT>0):0)).join('|');
+ if(key!==hudKey){hudKey=key;roster.style.setProperty('--columns',Math.min(4,rosterFighters.length));
+  roster.innerHTML=rosterFighters.map(p=>`<div class="hud-card ${p.id===myId?'me ':''}${rosterFighters.length>4?'crowded':''}" style="--team:${battleTeamMode?teamColor(p.team):p.c}"><div class="hud-portrait">${portrait(p.cid,p.gear,p.form,p.modeT>0)}</div><div class="hud-info"><div class="hud-name"></div><div class="hud-damage"></div></div><div class="hud-stocks"></div><div class="hud-skill"></div><div class="hud-meter"></div></div>`).join('');
  }
- fighters.forEach((p,i)=>{const el=roster.children[i];if(!el)return;el.classList.toggle('out',p.out);setTxt(el.querySelector('.hud-name'),(battleTeamMode?teamName(p.team)+' / ':'')+(p.id===myId?'P1 / ':p.cpu?'CPU / ':'')+p.label);
+ rosterFighters.forEach((p,i)=>{const el=roster.children[i];if(!el)return;el.classList.toggle('out',p.out);setTxt(el.querySelector('.hud-name'),(battleTeamMode?teamName(p.team)+' / ':'')+(p.id===myId?'P1 / ':p.cpu?'CPU / ':'')+p.label);
  const d=el.querySelector('.hud-damage');setTxt(d,Math.round(p.d)+'%');d._c=d._c||'';const dc=p.d<60?'#fff9e9':p.d<110?'#ffc363':'#ff6453';if(d._c!==dc){d._c=dc;d.style.color=dc;}
  const stock=el.querySelector('.hud-stocks');if(stock.childElementCount!==Math.max(0,p.s))stock.innerHTML='<i></i>'.repeat(Math.max(0,p.s));
  let m=0,label='';if(p.cid==='boxer'){m=p.ko;label=m>=100?'KO READY':'KO';}if(p.cid==='swordsman'){m=p.senku;label=m>=100?'旋空 READY':'旋空';}if(p.cid==='yankee'){m=p.rageT>0?p.rageT/RAGE_T*100:p.rage;label=p.rageT>0?'RAGE!':m>=100?'RAGE READY':'RAGE';}if(p.cid==='gunman'){m=p.bullets/GUN_MAX*100;label=p.reloadT>0?'RELOAD':p.bullets+' / '+GUN_MAX;}
@@ -5945,7 +6034,7 @@ function drawHUD(){
  el.classList.toggle('ko-armed',p.cid==='boxer'&&p.ko>=100&&!p.out);el.classList.toggle('rage-active',rageOn(p)&&!p.out);
  setVar(el,'--meter',Math.round(Math.max(0,Math.min(100,m)))+'%');setTxt(el.querySelector('.hud-skill'),label);
  });
- setVar(roster,'--pc-columns',String(Math.max(1,fighters.length)));
+ setVar(roster,'--pc-columns',String(Math.max(1,rosterFighters.length)));
  setTxt(document.getElementById('match-label'),battleTeamMode?(online?'ONLINE TEAM BATTLE':'TEAM BATTLE'):(online?'ONLINE MATCH':'LOCAL BATTLE'));
  if(!online){setTxt(document.getElementById('match-stage'),stage.name);}
  else if(performance.now()-netDiagAt>650){
@@ -6479,7 +6568,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_SMART_AI_V27';
+const NET_PROTOCOL='SBO_NET_SHADOW_CLONE_V29';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -6765,7 +6854,9 @@ function sendLocalPolished(){
  }
 }
 function onPPolished(s){
- const f=byId(s.key);if(!f||!f.remote)return;const v=s.val();
+ let f=byId(s.key);const v=s.val();
+ if(!f&&v?.sc===1&&v.rd===curRound)f=shadowCloneReceiveSnapshot(s.key,v);
+ if(!f||!f.remote)return;
  if(!v||v.rd!==curRound||!['x','y','vx','r','d','s','ts'].every(k=>Number.isFinite(v[k])))return;
  if(Number.isFinite(v.sq)){if(v.sq<=(f.netLastSeq??-1))return;f.netLastSeq=v.sq;}
  else if(f.buf.length&&v.ts<=f.buf[f.buf.length-1].ts)return;
@@ -6930,7 +7021,7 @@ function premiumDragonImpact(){
 }
 
 function animeBody(p,t,ghost=false){const r=baseAnimeBody(p,t,ghost);polishCostume(p,t);return r;}
-function drawFighter(p){const old=visualFrame;if(p.timeStopT>0){if(p.stopPoseFrame===undefined)p.stopPoseFrame=old;visualFrame=p.stopPoseFrame;}else delete p.stopPoseFrame;try{baseDrawFighter(p);}finally{visualFrame=old;}}
+function drawFighter(p){const old=visualFrame;if(p.shadowClone){push();drawingContext.globalAlpha*=.78;}if(p.timeStopT>0){if(p.stopPoseFrame===undefined)p.stopPoseFrame=old;visualFrame=p.stopPoseFrame;}else delete p.stopPoseFrame;try{baseDrawFighter(p);if(p.shadowClone&&!p.out){push();noFill();stroke(160,222,252,95);strokeWeight(2);ellipse(p.x,p.y-32,44,70);noStroke();fill(205,239,255,230);textAlign(CENTER);textSize(10);text('影分身',p.x,p.y-84);pop();}}finally{visualFrame=old;if(p.shadowClone)pop();}}
 function pausedObject(owner){const ts=activeTimeStopFx();return !!ts&&ts.id!==owner;}
 function cancelControl(key){press[key]=false;const p=byId(myId);if(p){if(key==='a')p.ch=0;if(['s','h','v','g'].includes(key))p.sph=0;}}
 function releaseStoppedHits(p){const hits=p.stoppedHits||[];p.stoppedHits=[];if(!hits.length||p.out)return;p.releasingStop=true;let peak=0,vel=null;try{for(const e of hits){const k=applyHit(p,e.h,e.bk,e.attackerId);if(k>=peak){peak=k;vel={vx:p.vx,vy:p.vy,kb:p.kb};}}if(vel)Object.assign(p,vel);}finally{p.releasingStop=false;}burst(p.x,p.y-30,24,12,'#e4d4ff',8);ring(p.x,p.y-30,12,14);sfxBlock();shake=Math.max(shake,9);}
