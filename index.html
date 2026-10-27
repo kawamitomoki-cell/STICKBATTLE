@@ -168,7 +168,7 @@ html,body{touch-action:pan-y}#wrap,#pad,#acts{touch-action:none;-webkit-touch-ca
 <div id="sc-title" class="screen" style="display:flex">
  <div class="title-art"></div><div class="title-content"><div class="title-kicker">ONE ARENA. NO LIMITS.</div>
  <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">17人のファイター。勝負を決める、ただ一撃。</p>
- <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">DOMAIN CUTIN V13 / 黒閃・龍拳</div>
+ <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">NETWORK OPTIMIZED V20 / 低遅延対応</div>
 </div>
 <div id="sc-mode" class="screen">
  <div class="hd">CHOOSE YOUR BATTLE<small>モードを選択</small></div><div class="mode-grid">
@@ -387,7 +387,7 @@ const CH_TH = 12, CH_FULL = 50, CH_WARN = 70, CH_OVER = 100, STUN_T = 80;
 const CT_ON = 3, CT_OFF = 20, CT_END = 46, CT_COOL = 90;
 const DG_T = 18, DG_INV0 = 2, DG_INV1 = 14, DG_COOL = 40, DG_SPD = 9;
 const FREEZE = 28, FREEZE_KO = 36;
-const INTERP = 80, SEND_MS = 33;            // 通信：表示の遅らせ幅・送信間隔
+const INTERP = 95, SEND_MS = 50;            // 20Hz：最新状態を優先して送信。通信遅延を溜めない
 const FIXED_MS = 1000 / 60, MAX_SIM_STEPS = 5; // 端末FPSに左右されない60Hz固定更新
 // 波動拳は同時発射数の制限なし
 const RAGE_MAX = 100, RAGE_T = 600, RAGE_FREEZE = 44; // ヤンキー：10秒覚醒＋変身演出
@@ -1748,6 +1748,8 @@ function simulateFrame() {
 
 function draw() {
   if (!battleSessionActive()) return;
+  const observedFps=1000/Math.max(1,deltaTime||FIXED_MS);
+  netPerfFps=netPerfFps*.96+Math.min(90,observedFps)*.04;
   recoverCinematic();
   simAcc += Math.min(deltaTime || FIXED_MS, 100);
   let steps = 0;
@@ -2265,6 +2267,9 @@ function startBattleCommon(list, mapId, wpn, stocks, teamMode=false) {
   bt = { phase: 'count', t: 200, winnerTeam: 0 };
   battleStartAt = Date.now();
   show('battle');
+  // 800×450キャンバスはオンライン中は等倍で描く。高DPI端末では描画ピクセル数を最大1/4にできる。
+  const preferredDensity=online?1:(window.matchMedia('(hover: hover) and (pointer: fine)').matches?2:1);
+  if(pixelDensity()!==preferredDensity)pixelDensity(preferredDensity);
 }
 
 function makeFighter(m, i) {
@@ -3494,7 +3499,8 @@ function burst(x, y, n, spd, c, sz) {
     const a = random(TWO_PI), v = random(0.3, 1) * spd;
     particles.push({ x, y, vx: cos(a) * v, vy: sin(a) * v, life: random(16, 30), max: 30, c, s: random(sz * 0.5, sz) });
   }
-  if (particles.length > 300) particles.splice(0, particles.length - 300);
+  const particleLimit=online?(fighters.length>=5?145:210):300;
+  if(particles.length>particleLimit)particles.splice(0,particles.length-particleLimit);
 }
 function ring(x, y, vr, life) { particles.push({ ring: true, x, y, r: 4, vr, life, max: life }); }
 
@@ -4920,7 +4926,13 @@ function drawHUD(){
  });
  setVar(roster,'--pc-columns',String(Math.max(1,fighters.length)));
  setTxt(document.getElementById('match-label'),battleTeamMode?(online?'ONLINE TEAM BATTLE':'TEAM BATTLE'):(online?'ONLINE MATCH':'LOCAL BATTLE'));
- setTxt(document.getElementById('match-stage'),stage.name+(online&&netRtt?'　通信 '+Math.round(netRtt/10)*10+'ms':''));
+ if(!online){setTxt(document.getElementById('match-stage'),stage.name);}
+ else if(performance.now()-netDiagAt>650){
+  netDiagAt=performance.now();
+  const latency=netRtt?'　応答 '+Math.round(netRtt/10)*10+'ms':'';
+  const fps='　'+Math.round(netPerfFps)+'FPS';
+  setTxt(document.getElementById('match-stage'),stage.name+latency+fps);
+ }
 }
 function titleIllustration(){return `<svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="heroRed" x2="1" y2="1"><stop stop-color="#ff6550"/><stop offset="1" stop-color="#b42a31"/></linearGradient><linearGradient id="heroIce" x2="1" y2="1"><stop stop-color="#a7fff1"/><stop offset="1" stop-color="#3eacb1"/></linearGradient></defs><path d="M840-80h420L810 980H390z" fill="#ff493f09"/><path d="M1060-80h5L600 980h-5z" fill="#ff493f50"/><circle cx="1090" cy="400" r="290" fill="none" stroke="#98b3c014" stroke-width="1"/><circle cx="1090" cy="400" r="265" fill="none" stroke="#98b3c012" stroke-width="35"/><g transform="translate(1020 540) rotate(-12)"><ellipse cx="10" cy="230" rx="210" ry="20" fill="#0005"/><g stroke="#080d19" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"><path d="M0-110L20 48-100 190M20 48l140 130M-4-76l-110 20-62-80M0-80l118-48 56-56" fill="none"/></g><g stroke="url(#heroRed)" stroke-width="23" stroke-linecap="round" stroke-linejoin="round"><path d="M0-110L20 48-100 190M20 48l140 130M-4-76l-110 20-62-80M0-80l118-48 56-56" fill="none"/></g><path d="M-25-110h45L48 16H-17z" fill="#172537"/><path d="M-18-104L0-28l14-76" fill="#f0dfb2"/><circle cx="-10" cy="-156" r="42" fill="url(#heroRed)" stroke="#0c1420" stroke-width="6"/><path d="M-48-166h76M-48-166l-45 30" stroke="#f4dcc1" stroke-width="9"/><circle cx="172" cy="-190" r="25" fill="#ff8b68"/></g><g transform="translate(1200 240) scale(.8) rotate(18)"><g stroke="#78dfce" stroke-width="19" stroke-linecap="round"><path d="M0-34v100l-70 83M0 66l75 67M0-22l-60 38M0-22l58 25 39-32" fill="none"/></g><path d="M-25-40h50l17 115H-39z" fill="#232d40"/><path d="M-17-33l14 77M18-33L3 44" stroke="#b34d5b" stroke-width="3"/><circle cx="0" cy="-70" r="30" fill="url(#heroIce)"/><path d="M-30-78q20-43 58 0" fill="#102635"/><path d="M100-33L-160-185" stroke="#baffec" stroke-width="5"/></g><path d="M540 520L1430 50" stroke="#88ffe02a" stroke-width="60"/><path d="M540 520L1430 50" stroke="#baffe5a0" stroke-width="2"/><path d="M760 790L1430 470" stroke="#ff82642a" stroke-width="30"/></svg>`;}
 document.querySelector('.title-art').innerHTML=titleIllustration();
@@ -5432,7 +5444,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_18_CINEMA_TOUCH';
+const NET_PROTOCOL='SBO_NET_20_ADAPTIVE_NETWORK';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -5445,7 +5457,7 @@ function writeEvent(e){
  if(!online||!roomRef)return;
  const room=roomRef,data=safeWire({...e,by:myId,rd:curRound,uid:e.uid||myId+'_'+curRound+'_'+(++netSeq)});
  try{const ref=room.child('ev').push();const task=ref.set(data);Promise.resolve(task).then(()=>{netIssue='';}).catch(networkError);
-  setTimeout(()=>{try{Promise.resolve(ref.remove()).catch(networkError);}catch(err){networkError(err);}},60000);
+  setTimeout(()=>{try{Promise.resolve(ref.remove()).catch(networkError);}catch(err){networkError(err);}},20000);
  }catch(err){networkError(err);}
 }
 // 以前は「本人→ホスト→全員」の2段経由で、KOアッパーは「攻撃者→被弾者→ホスト→全員」の3段経由だった。
@@ -5636,35 +5648,86 @@ function paintAnimeBackdrop(){chronoBackdrop();}
 
 // Snapshot transport: bounded pipeline, round-local acknowledgements and monotonic sequence numbers.
 let stateGeneration=0,stateSequence=0;
-const stateWrites=new Map();
-function resetStateTransport(){stateGeneration++;stateWrites.clear();sendInflight=0;lastSentKey='';lastSentAt=0;lastStatsAt=0;}
+const stateWrites=new Map(),lastFighterTx=new Map();
+let netSentSnapshots=0,netSkippedBusy=0,netLastStatsAt=0,netPerfFps=60,netDiagAt=0;
+function resetStateTransport(){
+ stateGeneration++;stateWrites.clear();lastFighterTx.clear();
+ sendInflight=0;lastSentKey='';lastSentAt=0;lastStatsAt=0;
+ netSentSnapshots=0;netSkippedBusy=0;netPerfFps=60;netDiagAt=0;
+}
 function projectSnapshot(s,ms){
  if(s.ats>0||s.adom>0||s.o)return{x:s.x,y:s.y};
- const k=Math.max(0,Math.min(ms,100))/FIXED_MS*(s.asl>0?.38:1);
+ const k=Math.max(0,Math.min(ms,85))/FIXED_MS*(s.asl>0?.38:1);
  let x=s.x+(s.vx||0)*k,y=s.y;
  if(!s.g&&Number.isFinite(s.vy)){
   y=s.y+s.vy*k+GRAV*.5*k*(k+1);
-  if(y>=s.y)for(let i=0;i<stage.plats.length;i++){const pl=stage.plats[i];if(s.dt>0&&s.dp===i)continue;if(x>=pl.x-6&&x<=pl.x+pl.w+6&&s.y<=pl.y&&y>=pl.y)y=Math.min(y,pl.y);}
+  if(y>=s.y)for(let i=0;i<stage.plats.length;i++){
+   const pl=stage.plats[i];if(s.dt>0&&s.dp===i)continue;
+   if(x>=pl.x-6&&x<=pl.x+pl.w+6&&s.y<=pl.y&&y>=pl.y)y=Math.min(y,pl.y);
+  }
  }
  return{x,y};
 }
+function importantStateChange(a,b){
+ return !a||a.s!==b.s||a.o!==b.o||a.mk!==b.mk||a.af!==b.af||
+  a.ats!==b.ats||a.atsf!==b.atsf||a.adom!==b.adom||a.gr!==b.gr||
+  a.iv!==b.iv||a.w!==b.w||a.g!==b.g||a.f!==b.f||a.stn!==b.stn;
+}
 function sendLocalPolished(){
  if(!online||!battleSessionActive()||!roomRef)return;
- if(stateWrites.size>=8){if(performance.now()-Math.min(...stateWrites.values())>1200)netIssue='通信待ち… 接続を確認中';return;}
- const now=Date.now(),upd={};let key='';
- for(const f of fighters)if(isLocal(f)){const s=stateOf(f);upd[f.id]=s;key+=JSON.stringify(s);}
- if(!key||key===lastSentKey&&now-lastSentAt<200)return;
- const stats=now-lastStatsAt>1000||bt.phase!=='play',sq=++stateSequence;
- for(const id in upd){upd[id].ts=now;upd[id].sq=sq;if(stats)upd[id].stats=byId(id)?.stats||null;}
- if(stats)lastStatsAt=now;
- lastSentKey=key;lastSentAt=now;
- const generation=stateGeneration,started=performance.now(),token=generation+':'+sq;
- stateWrites.set(token,started);sendInflight=stateWrites.size;
- try{Promise.resolve(roomRef.child('p').update(safeWire(upd))).then(()=>{
+ const now=Date.now();
+ // 不安定な回線ほど未確定の古い状態が積み重なるため、送信キューを小さく保つ。
+ if(stateWrites.size>=3){
+  netSkippedBusy++;
+  const oldest=Math.min(...stateWrites.values());
+  if(performance.now()-oldest>850)netIssue='通信遅延が大きくなっています';
+  return;
+ }
+ const upd={},samples=[];
+ const localCount=fighters.reduce((n,f)=>n+(isLocal(f)?1:0),0);
+ for(const f of fighters){
+  if(!isLocal(f))continue;
+  const snapshot=stateOf(f);
+  const previous=lastFighterTx.get(f.id);
+  const vital=importantStateChange(previous?.state,snapshot);
+  // 操作中の人間は20Hz、CPUは10〜14Hz。重要な変化だけは優先的に即時同期。
+  const pace=f.cpu?(localCount>=5?100:75):50;
+  const elapsed=previous?now-previous.at:Infinity;
+  if(previous&&!vital&&elapsed<pace)continue;
+  const signature=JSON.stringify(snapshot);
+  if(previous&&!vital&&signature===previous.signature&&elapsed<450)continue;
+  upd[f.id]=snapshot;samples.push({id:f.id,state:snapshot,signature});
+ }
+ if(!samples.length)return;
+ const includeStats=now-lastStatsAt>=1500||bt.phase!=='play';
+ const seq=++stateSequence;
+ for(const sm of samples){
+  const snap=upd[sm.id];snap.ts=now;snap.sq=seq;
+  if(includeStats)snap.stats=byId(sm.id)?.stats||null;
+ }
+ if(includeStats)lastStatsAt=now;
+ const room=roomRef,generation=stateGeneration,started=performance.now(),token=generation+':'+seq;
+ const payload=safeWire(upd);
+ // 送信前の最新スナップショットでキャッシュ更新。次フレームは古い状態を再送しない。
+ for(const sm of samples)lastFighterTx.set(sm.id,{at:now,state:sm.state,signature:sm.signature});
+ lastSentAt=now;stateWrites.set(token,started);sendInflight=stateWrites.size;
+ try{
+  Promise.resolve(room.child('p').update(payload)).then(()=>{
    if(generation!==stateGeneration)return;
-   netIssue='';const r=performance.now()-started;netRtt=netRtt?netRtt*.85+r*.15:r;
- }).catch(e=>{if(generation===stateGeneration){lastSentKey='';networkError(e);}}).finally(()=>{stateWrites.delete(token);sendInflight=stateWrites.size;});}
- catch(e){stateWrites.delete(token);sendInflight=stateWrites.size;lastSentKey='';networkError(e);}
+   netIssue='';const r=performance.now()-started;
+   netRtt=netRtt?netRtt*.85+r*.15:r;
+   netSentSnapshots++;
+  }).catch(e=>{
+   if(generation!==stateGeneration)return;
+   // 失敗した場合のみ次回すぐ送り直す。
+   for(const sm of samples){const cached=lastFighterTx.get(sm.id);if(cached&&cached.at===now)lastFighterTx.delete(sm.id);}
+   networkError(e);
+  }).finally(()=>{stateWrites.delete(token);sendInflight=stateWrites.size;});
+ }catch(e){
+  stateWrites.delete(token);sendInflight=stateWrites.size;
+  for(const sm of samples)lastFighterTx.delete(sm.id);
+  networkError(e);
+ }
 }
 function onPPolished(s){
  const f=byId(s.key);if(!f||!f.remote)return;const v=s.val();
@@ -5682,12 +5745,18 @@ function onPPolished(s){
 function updateRemotePolished(){
  const now=Date.now();
  for(const f of fighters){if(!f.remote||!f.buf.length)continue;
-  const latest=f.buf[f.buf.length-1],want=constrain((f.gapAvg||SEND_MS)*1.15+(f.jit||0)*1.5+8,40,110);
-  f.interp=f.interp?f.interp+(want-f.interp)*.08:want;
+  const latest=f.buf[f.buf.length-1];
+  // 通信間隔＋ばらつきに応じて表示遅延を自動調節。
+  // 少しバッファを厚くする代わりに、受信のたびのワープ・瞬間停止を減らす。
+  const want=constrain((f.gapAvg||SEND_MS)*1.30+(f.jit||0)*2.0+15,75,175);
+  f.interp=f.interp?f.interp+(want-f.interp)*.055:want;
   const rt=now-f.off-f.interp;let a=null,b=null;
   for(let i=f.buf.length-1;i>=0;i--)if(f.buf[i].ts<=rt){a=f.buf[i];b=f.buf[i+1]||null;break;}
   let pos={x:latest.x,y:latest.y},r=latest.r;
-  if(!f.netSnap&&a&&b){const q=constrain((rt-a.ts)/Math.max(1,b.ts-a.ts),0,1);pos={x:lerp(a.x,b.x,q),y:lerp(a.y,b.y,q)};r=lerp(a.r,b.r,q);}
+  if(!f.netSnap&&a&&b){
+   const q=constrain((rt-a.ts)/Math.max(1,b.ts-a.ts),0,1);
+   pos={x:lerp(a.x,b.x,q),y:lerp(a.y,b.y,q)};r=lerp(a.r,b.r,q);
+  }
   else if(!f.netSnap&&a)pos=projectSnapshot(a,rt-a.ts);
   else if(!f.netSnap)pos={x:f.buf[0].x,y:f.buf[0].y};
   f.netSnap=false;
