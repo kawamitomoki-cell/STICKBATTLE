@@ -247,50 +247,222 @@ html,body{touch-action:pan-y}#wrap,#pad,#acts{touch-action:none;-webkit-touch-ca
 #tour-preview{max-height:65vh}
 @media(max-width:650px){.tour-cols{min-width:620px}.tour-col{min-width:180px}}
 </style>
+<style>
+/* =====================================================
+   STICK BATTLE ONLINE / MODE SELECT + VERTICAL BRACKET
+   Isolated UI skin: no changes to gameplay or network.
+   ===================================================== */
+#sc-mode.mode-rework-screen,#sc-extra.mode-rework-screen,#sc-tour-choice.mode-rework-screen{
+  justify-content:flex-start;gap:20px;
+  background:radial-gradient(ellipse at 88% 15%,rgba(193,77,68,.11),transparent 45%),
+  radial-gradient(ellipse at 5% 90%,rgba(58,143,182,.13),transparent 56%),#0a111c;
+}
+.mode-rework-head{width:min(1180px,100%);display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin:10px 0 2px}
+.mode-rework-head h2{font-size:clamp(34px,5.2vw,66px);font-weight:1000;letter-spacing:-.07em;line-height:1.14;color:#f8f7f3;margin:10px 0 12px}
+.mode-rework-head h2 span{color:#f1c478}
+.mode-rework-head p{color:#aebfd2;font-size:clamp(12px,1.6vw,15px);line-height:1.6;letter-spacing:.04em}
+.mode-overline{font-size:11px;letter-spacing:.22em;color:#e6b971;font-weight:900}
+.mode-head-stamp{text-align:right;display:grid;gap:0;line-height:1;opacity:.38;flex-shrink:0}
+.mode-head-stamp b{font-size:75px;letter-spacing:-.09em;color:#c4cfdd}
+.mode-head-stamp small{font-size:9px;letter-spacing:.2em}
+.mode-grid.mode-rework-grid{width:min(1180px,100%);grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:minmax(165px,auto);gap:14px}
+.mode-rework-grid .big.mode-card,.mode-rework-extra .big.mode-card,.mode-rework-tour .big.mode-card{
+  width:100%;position:relative;isolation:isolate;overflow:hidden;min-height:190px;
+  justify-content:flex-end;gap:0;padding:25px 28px;border:1px solid #ffffff25;
+  border-radius:17px;color:#fff;box-shadow:0 18px 35px #00000025;
+  background:#1c2a3b;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.mode-rework-grid .mode-card::after,.mode-rework-extra .mode-card::after,.mode-rework-tour .mode-card::after{
+ content:attr(data-ghost);position:absolute;right:-10px;bottom:-60px;font-size:clamp(130px,18vw,235px);
+ font-weight:1000;letter-spacing:-.09em;line-height:1;color:#ffffff0d;pointer-events:none;z-index:-1
+}
+.mode-rework-grid .mode-card::before,.mode-rework-extra .mode-card::before,.mode-rework-tour .mode-card::before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+ background:radial-gradient(circle at 91% 12%,#ffffff25,transparent 39%),linear-gradient(90deg,#0004,transparent 80%)
+}
+.mode-rework-grid .mode-card:hover,.mode-rework-extra .mode-card:hover,.mode-rework-tour .mode-card:hover,
+.mode-rework-grid .mode-card:focus-visible,.mode-rework-extra .mode-card:focus-visible,.mode-rework-tour .mode-card:focus-visible{
+ transform:translateY(-4px);border-color:#f6d693;box-shadow:0 21px 42px #0008,0 0 0 1px #e9bf6d80;outline:none
+}
+.mode-rework-grid .mode-card .mode-no,.mode-rework-extra .mode-card .mode-no,.mode-rework-tour .mode-card .mode-no{
+ position:absolute!important;top:20px!important;left:26px!important;color:#fff;opacity:.85;
+ font-size:10px;letter-spacing:.18em;font-weight:900
+}
+.mode-rework-grid .mode-symbol,.mode-rework-extra .mode-symbol,.mode-rework-tour .mode-symbol{
+ position:absolute;right:25px;top:19px;font-size:36px;line-height:1;color:#fff9;font-weight:400
+}
+.mode-card-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.mode-card-kicker{font-size:10px;letter-spacing:.21em;font-weight:900;opacity:.8}
+.mode-rework-grid .mode-card b,.mode-rework-extra .mode-card b,.mode-rework-tour .mode-card b{
+ font-size:clamp(27px,2.8vw,41px);letter-spacing:-.045em;line-height:1.1;font-style:normal;
+ color:#fff;text-shadow:0 3px 14px #0002
+}
+.mode-rework-grid .mode-card-desc,.mode-rework-extra .mode-card-desc,.mode-rework-tour .mode-card-desc{
+ font-size:13px;line-height:1.55;color:#f1f3f8d9;font-weight:650;max-width:34em
+}
+.mode-card-foot{margin-top:10px;border-top:1px solid #fff4;width:100%;padding-top:12px;font-size:12px;letter-spacing:.07em;font-weight:900;color:#fff}
+.mode-card-foot span{float:right;font-size:19px;line-height:.7}
+.mode-rework-grid #go-cpu{grid-column:span 7;grid-row:span 2;min-height:394px;background:linear-gradient(133deg,#d64550 0%,#912f40 55%,#301d39 100%)}
+.mode-rework-grid #go-online{grid-column:span 5;grid-row:auto;min-height:188px;background:linear-gradient(120deg,#176476 0%,#16475c 50%,#182a46 100%)}
+.mode-rework-grid #go-more{grid-column:span 5;grid-row:auto;min-height:188px;background:linear-gradient(126deg,#6a438e,#332749);color:#fff}
+.mode-rework-grid #go-howto{grid-column:span 12;grid-row:auto;min-height:115px;background:linear-gradient(100deg,#233248,#182232);display:flex;flex-direction:row;align-items:flex-end;justify-content:space-between}
+.mode-rework-grid #go-howto .mode-card-content{padding-top:13px}
+.mode-rework-grid #go-howto b{font-size:clamp(24px,2.8vw,35px)}
+.mode-guide-arrow{font-size:32px;color:#d7bd86;margin-left:auto;align-self:flex-end}
+.mode-rework-footer{width:min(1180px,100%);font-size:10px;letter-spacing:.23em;color:#647b90;text-align:right}
+.mode-rework-extra.extra-choice{width:min(1180px,100%);grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.mode-rework-extra .big.mode-card{min-height:300px}
+.mode-rework-extra #extra-training{background:linear-gradient(140deg,#1d7280,#163c52 80%)}
+.mode-rework-extra #extra-kumite{background:linear-gradient(140deg,#a7444d,#633044 80%)}
+.mode-rework-extra #extra-tournament{background:linear-gradient(140deg,#7d598e,#3e305b 80%)}
+.mode-rework-extra .mode-stripe{margin-top:8px}
+.mode-rework-extra .mode-stripe span{border:1px solid #fff4;background:#0b142338;color:#fff;font-size:10px;border-radius:99px}
+.mode-ranking-shortcut{width:min(1180px,100%);display:flex;gap:17px;align-items:center;background:linear-gradient(105deg,#1b2639,#253148);
+ border:1px solid #caa96263;border-radius:13px;color:#f8f7f4;padding:18px 24px;text-align:left;transition:background .2s,border-color .2s}
+.mode-ranking-shortcut:hover,.mode-ranking-shortcut:focus-visible{background:#303b55;border-color:#f4d38a;outline:none}
+.mode-ranking-shortcut .mode-rank-icon{font-size:33px}
+.mode-ranking-shortcut b{display:block;font-size:17px;font-weight:900}
+.mode-ranking-shortcut small{display:block;font-size:11px;color:#b1bfd1;margin-top:4px}
+.mode-shortcut-arrow{margin-left:auto;color:#eecb88;font-size:25px}
+.mode-rework-tour.tour-config{width:min(1000px,100%);grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.mode-rework-tour .big.mode-card{min-height:305px}
+.mode-rework-tour #tour-offline{background:linear-gradient(140deg,#ad6c36,#744435,#32263a);color:#fff}
+.mode-rework-tour #tour-network{background:linear-gradient(140deg,#39799f,#33406b,#28254e);color:#fff}
+/* Bottom-to-top bracket: winner paths ascend to the crown. */
+.tour-board{width:min(1120px,100%);max-height:none;padding:18px 20px;background:linear-gradient(130deg,#111a2a,#0c1423);border:1px solid #5b719260;border-radius:15px}
+#tour-preview,#champion-board{width:min(1120px,100%);max-height:none}
+#battle-bracket,#lb-tourney-board,#tour-result{max-height:70vh}
+.bracket-panel{min-width:0;color:#eaf2fa}
+.bracket-panel-header{display:flex;align-items:flex-end;justify-content:space-between;gap:15px;border-bottom:1px solid #ffffff20;padding:2px 5px 15px;margin-bottom:16px}
+.bracket-panel-kicker{font-size:10px;color:#e4bb72;letter-spacing:.18em;font-weight:900}
+.bracket-panel-header h3{font-size:clamp(22px,3vw,32px);letter-spacing:.03em;color:#fff;margin:4px 0}
+.bracket-panel-header p{font-size:12px;color:#a8bdd3;line-height:1.5}
+.bracket-panel-meta{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}
+.bracket-panel-meta span{border:1px solid #b0c4e136;color:#c5d7ec;padding:6px 9px;border-radius:99px;font-size:10px;font-weight:800}
+.bracket-scroller{overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:#59718f #152135;border-radius:11px}
+.bracket-vertical{min-width:650px;padding:5px 9px 16px}
+.bracket-champion{display:flex;align-items:center;flex-direction:column;gap:7px;margin:0 auto;width:min(310px,92%);padding:15px 16px 17px;
+ background:radial-gradient(circle at 50% -20%,#bd98614a,#332b2850 70%);border:1px solid #e7c58588;
+ border-radius:16px;box-shadow:0 0 40px #dfaa5130,0 12px 24px #0004}
+.bracket-crown-mark{font-size:34px;color:#f4cc82;line-height:1}
+.bracket-crown-label{font-size:12px;letter-spacing:.16em;color:#ffd993;font-weight:1000}
+.bracket-champion-pending{font-size:15px;font-weight:900;color:#c9d6eb}
+.bracket-champion-fighter{width:100%}
+.bracket-champion-fighter .tour-fighter{border-radius:8px;padding:8px;background:#e3b85b1c}
+.bracket-crown-link{height:48px;display:flex;align-items:center;justify-content:center;position:relative;color:#f2c579;font-size:21px}
+.bracket-crown-link:before{content:"";position:absolute;top:0;bottom:0;width:2px;background:linear-gradient(#f8d188,#8e7858);opacity:.5}
+.bracket-crown-link span{background:#141b29;z-index:1;padding:0 5px;border-radius:6px;line-height:1.2}
+.bracket-tier{width:100%;display:grid;gap:11px}
+.bracket-tier-label{display:flex;align-items:baseline;gap:12px;padding:0 4px}
+.bracket-tier-label span{font-size:10px;color:#e6b973;letter-spacing:.15em;font-weight:950}
+.bracket-tier-label b{font-size:18px;color:#fff}
+.bracket-tier-label small{font-size:10px;color:#97abc5}
+.bracket-tier-grid{display:grid;grid-template-columns:repeat(var(--match-count),minmax(0,1fr));gap:13px}
+.bracket-match{position:relative;min-width:0;padding:9px 10px 8px;border-radius:11px;background:linear-gradient(145deg,#24334b,#142034);
+ border:1px solid #718ba449;box-shadow:0 9px 20px #0003;min-height:118px}
+.bracket-match.is-done{border-color:#b9a36c79}
+.bracket-match.is-current{border-color:#ffcd6d;box-shadow:0 0 0 1px #ffcf6d7a,0 0 28px #d7a34442;background:linear-gradient(145deg,#57412d,#252a3d)}
+.bracket-match-top{display:flex;justify-content:space-between;gap:6px;color:#93aac4;font-size:8px;font-weight:950;letter-spacing:.06em;margin-bottom:6px}
+.bracket-match.is-current .bracket-match-top span:last-child{color:#ffdc8d}
+.bracket-match.is-done .bracket-match-top span:last-child{color:#b9f2c1}
+.bracket-competitors{display:grid;gap:1px}
+.bracket-match .tour-fighter{padding:4px 3px;min-height:29px;border-radius:6px;gap:4px;min-width:0}
+.bracket-match .tour-fighter svg{width:24px;height:24px;flex:0 0 24px}
+.bracket-match .tour-fighter div{min-width:0;flex:1}
+.bracket-match .tour-fighter b{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bracket-match .tour-fighter small{font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bracket-match .tour-fighter.winner{background:#af8b3c46;color:#ffdd8d}
+.bracket-match .tour-fighter.me{outline:1px solid #62deca70}
+.bracket-match .bracket-tbd{font-size:10px;color:#7086a6;font-style:italic}
+.bracket-vs{text-align:center;color:#6d819a;font-size:8px;font-weight:950;letter-spacing:.2em}
+.bracket-match-foot{border-top:1px solid #ffffff1d;margin-top:5px;padding-top:6px;color:#9cacc5;font-size:9px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bracket-match.is-current .bracket-match-foot{color:#ffdc8d;font-weight:900}
+.bracket-match.is-done .bracket-match-foot{color:#cbdab0}
+.bracket-links{height:60px;display:flex;align-items:center}
+.bracket-links svg{display:block;width:100%;height:100%;overflow:visible}
+.bracket-links path{fill:none;stroke:#92a8c1;stroke-width:1.9;vector-effect:non-scaling-stroke;stroke-linejoin:round;opacity:.7}
+.bracket-pan-tip{display:flex;justify-content:center;gap:8px;color:#e5b979;font-size:11px;font-weight:800;margin:8px 0 0}
+.bracket-pan-tip span{color:#869bb4;font-weight:600}
+.bracket-history{margin-top:20px;border-top:1px solid #ffffff20;padding-top:12px}
+.bracket-history summary{cursor:pointer;color:#f3cd8a;font-size:12px;font-weight:900;padding:8px;list-style-position:inside}
+.bracket-history summary span{font-size:10px;color:#9eb2c8;margin-left:8px}
+.bracket-history-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;padding:9px 0}
+.bracket-history-row{background:#1d2939;border-radius:8px;padding:10px;display:grid;gap:4px}
+.bracket-history-row span{font-size:9px;color:#abc0db}
+.bracket-history-row b{font-size:12px;color:#f5d9a0}
+.bracket-history-row small{font-size:10px;color:#a7b6ca}
+@media(max-width:760px){
+ .mode-rework-head{margin-top:1px}.mode-head-stamp{display:none}
+ .mode-grid.mode-rework-grid{grid-template-columns:1fr;gap:11px;grid-auto-rows:auto}
+ .mode-rework-grid #go-cpu,.mode-rework-grid #go-online,.mode-rework-grid #go-more,.mode-rework-grid #go-howto{grid-column:1;grid-row:auto;min-height:172px}
+ .mode-rework-grid #go-cpu{min-height:205px}
+ .mode-rework-grid .big.mode-card,.mode-rework-extra .big.mode-card,.mode-rework-tour .big.mode-card{padding:23px 21px 18px}
+ .mode-rework-grid #go-howto{min-height:140px}
+ .mode-rework-grid .mode-card .mode-no,.mode-rework-extra .mode-card .mode-no,.mode-rework-tour .mode-card .mode-no{top:16px!important;left:19px!important}
+ .mode-rework-grid .mode-card b,.mode-rework-extra .mode-card b,.mode-rework-tour .mode-card b{font-size:clamp(25px,7vw,34px)}
+ .mode-rework-grid .mode-symbol,.mode-rework-extra .mode-symbol,.mode-rework-tour .mode-symbol{top:15px;right:19px;font-size:29px}
+ .mode-rework-grid .mode-card-desc,.mode-rework-extra .mode-card-desc,.mode-rework-tour .mode-card-desc{font-size:11px}
+ .mode-rework-extra.extra-choice,.mode-rework-tour.tour-config{grid-template-columns:1fr;gap:12px}
+ .mode-rework-extra .big.mode-card,.mode-rework-tour .big.mode-card{min-height:195px}
+ .bracket-panel-header{align-items:flex-start;flex-direction:column;gap:7px}
+ .bracket-panel-meta{justify-content:flex-start}
+ .tour-board{padding:12px 10px}
+ .bracket-vertical{min-width:650px}
+ .bracket-pan-tip{font-size:10px;flex-wrap:wrap;text-align:center}
+}
+@media(prefers-reduced-motion:reduce){
+ .mode-rework-grid .mode-card,.mode-rework-extra .mode-card,.mode-rework-tour .mode-card{transition:none}
+}
+</style>
 </head>
 <body>
 
 <div id="sc-title" class="screen" style="display:flex">
  <div class="title-art"></div><div class="title-content"><div class="title-kicker">ONE ARENA. NO LIMITS.</div>
  <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">17人のファイター。勝負を決める、ただ一撃。</p>
- <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">KUMITE ULTIMATE</div>
+ <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">MODE SELECT / TOURNAMENT UI</div>
 </div>
-<div id="sc-mode" class="screen">
- <div class="hd">CHOOSE YOUR BATTLE<small>モードを選択</small></div><div class="mode-grid">
- <button class="big" id="go-cpu"><span class="mode-no">01 / LOCAL BATTLE</span><span class="mode-art" data-portrait="karate"></span><b>SMASH THE CPU.</b><span>CPU対戦</span><small>1〜7体のライバルと。自分の限界を超えろ。</small></button>
- <button class="big" id="go-online"><span class="mode-no">02 / ONLINE</span><b>BRING YOUR RIVALS.</b><span>オンライン対戦</span><small>部屋コード・QRで、友達と同じアリーナへ。</small></button>
- <button class="big" id="go-howto"><span class="mode-no">03 / HOW TO PLAY</span><b>30秒でわかるルール</b><small>勝ち方と基本操作だけ。はじめての人はこちら！</small></button><button class="big" id="go-more"><span class="mode-no">04 / EXTRA MODES</span><b>ほかの遊び</b><span>トレーニング・組み手・トーナメント</span><small>いつもと違うルールでも戦おう！</small></button></div>
+<div id="sc-mode" class="screen mode-rework-screen">
+ <div class="mode-rework-head">
+  <div><span class="mode-overline">STICK BATTLE / SELECT YOUR MODE</span><h2>どの戦いに<span>挑む？</span></h2><p>ひとりで極める。仲間と競う。新しい戦いを見つける。</p></div>
+  <div class="mode-head-stamp" aria-hidden="true"><b>04</b><small>GAME MODES</small></div>
+ </div>
+ <div class="mode-grid mode-rework-grid">
+  <button class="big mode-card" id="go-cpu" data-ghost="01"><span class="mode-no">01 / SINGLE PLAYER</span><span class="mode-symbol" aria-hidden="true">⚔</span><span class="mode-card-content"><span class="mode-card-kicker">LOCAL BATTLE</span><b>CPU対戦</b><span class="mode-card-desc">1〜7体のライバルに挑め。チーム戦も自由自在。</span><span class="mode-card-foot">ひとりで遊ぶ <span aria-hidden="true">↗</span></span></span></button>
+  <button class="big mode-card" id="go-online" data-ghost="02"><span class="mode-no">02 / MULTIPLAYER</span><span class="mode-symbol" aria-hidden="true">◎</span><span class="mode-card-content"><span class="mode-card-kicker">ONLINE BATTLE</span><b>オンライン対戦</b><span class="mode-card-desc">友達とリアルタイム対戦。部屋コードで簡単に参加。</span><span class="mode-card-foot">友達と対戦 <span aria-hidden="true">↗</span></span></span></button>
+  <button class="big mode-card" id="go-more" data-ghost="03"><span class="mode-no">03 / CHALLENGES</span><span class="mode-symbol" aria-hidden="true">✦</span><span class="mode-card-content"><span class="mode-card-kicker">EXTRA MODES</span><b>ほかの遊び</b><span class="mode-card-desc">組み手・トーナメント・トレーニング。戦い方は無限大。</span><span class="mode-card-foot">モードを選ぶ <span aria-hidden="true">↗</span></span></span></button>
+  <button class="big mode-card mode-card-guide" id="go-howto" data-ghost="04"><span class="mode-no">04 / BEGINNER GUIDE</span><span class="mode-symbol" aria-hidden="true">?</span><span class="mode-card-content"><span class="mode-card-kicker">HOW TO PLAY</span><b>ルール・操作方法</b><span class="mode-card-desc">初めてでも大丈夫。技の出し方から勝ち方まで、ここで確認。</span></span><span class="mode-guide-arrow" aria-hidden="true">↗</span></button>
+ </div>
+ <p class="mode-rework-footer">CHOOSE YOUR FIGHT. WRITE YOUR LEGEND.</p>
 </div>
 
-<div id="sc-extra" class="screen">
- <div class="hd">EXTRA MODES<small>ほかの遊び</small></div>
- <p class="mode-explain">練習したい、連勝したい、優勝したい。目的に合わせてモードを選ぼう！</p>
- <div class="extra-choice">
-  <button class="big" id="extra-training"><span class="mode-no">01 / PRACTICE</span><b>トレーニング</b><small>何度でも復活。技の練習やコンボ研究に。</small><div class="mode-stripe"><span>ダメージリセット</span><span>CPU行動切替</span></div></button>
-  <button class="big" id="extra-kumite"><span class="mode-no">02 / SURVIVAL</span><b>組み手</b><small>最強CPUが次々に登場！ 何人抜けるか挑戦しよう！</small><div class="mode-stripe"><span>連勝記録</span><span>CPU最強固定</span></div></button>
-  <button class="big" id="extra-tournament"><span class="mode-no">03 / BRACKET</span><b>トーナメント</b><small>1対1の勝ち抜き戦。最後に優勝するのは誰だ？</small><div class="mode-stripe"><span>8人戦</span><span>オンライン対応</span></div></button>
+<div id="sc-extra" class="screen mode-rework-screen">
+ <div class="mode-rework-head"><div><span class="mode-overline">BEYOND THE BATTLE / EXTRA MODES</span><h2>もうひとつの<span>戦場。</span></h2><p>練習・連戦・優勝。それぞれの目標を追いかけよう。</p></div></div>
+ <div class="extra-choice mode-rework-extra">
+  <button class="big mode-card" id="extra-training" data-ghost="01"><span class="mode-no">01 / PRACTICE</span><span class="mode-symbol" aria-hidden="true">◎</span><span class="mode-card-content"><span class="mode-card-kicker">TRAIN YOUR SKILL</span><b>トレーニング</b><span class="mode-card-desc">技を試して、自分だけのコンボを研究。</span><span class="mode-stripe"><span>自由に練習</span><span>ゲージ調整</span></span><span class="mode-card-foot">練習を始める ↗</span></span></button>
+  <button class="big mode-card" id="extra-kumite" data-ghost="02"><span class="mode-no">02 / SURVIVAL</span><span class="mode-symbol" aria-hidden="true">∞</span><span class="mode-card-content"><span class="mode-card-kicker">ENDLESS CHALLENGE</span><b>組み手</b><span class="mode-card-desc">全キャラのCPUが次々に登場。何人抜けるか挑戦！</span><span class="mode-stripe"><span>全キャラ登場</span><span>勝ち抜き記録</span></span><span class="mode-card-foot">連戦に挑む ↗</span></span></button>
+  <button class="big mode-card" id="extra-tournament" data-ghost="03"><span class="mode-no">03 / TOURNAMENT</span><span class="mode-symbol" aria-hidden="true">♛</span><span class="mode-card-content"><span class="mode-card-kicker">ROAD TO CHAMPION</span><b>トーナメント</b><span class="mode-card-desc">勝ち上がれ。頂点に立つのはたった1人。</span><span class="mode-stripe"><span>勝ち上がり戦</span><span>オンライン対応</span></span><span class="mode-card-foot">優勝を目指す ↗</span></span></button>
  </div>
- <button class="big kumite-rank-launch" id="extra-ranking"><span class="mode-no">ULTIMATE LEADERBOARD</span><b>組み手ランキングを見る 🏆</b><small>最強CPU限定・オンラインランキング</small></button>
- <div class="nav"><button class="back" id="extra-back">メニューにもどる</button></div>
+ <button class="mode-ranking-shortcut" id="extra-ranking"><span class="mode-rank-icon" aria-hidden="true">🏆</span><span><b>組み手ランキング</b><small>みんなの勝ち抜き記録を見る</small></span><span class="mode-shortcut-arrow" aria-hidden="true">↗</span></button>
+ <div class="nav"><button class="back" id="extra-back">← モード選択にもどる</button></div>
 </div>
-<div id="sc-tour-choice" class="screen">
- <div class="hd">TOURNAMENT<small>トーナメントを始めよう</small></div>
- <p class="mode-explain">勝った人が次の試合へ進む、1対1の勝ち抜き戦。対戦表も確認できるよ。</p>
- <div class="tour-config">
-  <button class="big" id="tour-offline"><span class="mode-no">SOLO / VS CPU</span><b>1人で遊ぶ</b><small>8人トーナメント。ほかのCPU同士の試合は自動で進行するよ。</small></button>
-  <button class="big" id="tour-network"><span class="mode-no">ONLINE / VS FRIENDS</span><b>オンラインで遊ぶ</b><small>部屋コードで友達を招待。参加者とCPUで4〜8人の勝ち抜き戦。</small></button>
+<div id="sc-tour-choice" class="screen mode-rework-screen">
+ <div class="mode-rework-head"><div><span class="mode-overline">TOURNAMENT / ROAD TO THE TOP</span><h2>頂点まで、<span>勝ち上がれ。</span></h2><p>勝者だけが次の試合へ。優勝までの道のりをトーナメント表で追える。</p></div></div>
+ <div class="tour-config mode-rework-tour">
+  <button class="big mode-card" id="tour-offline" data-ghost="01"><span class="mode-no">01 / SOLO TOURNAMENT</span><span class="mode-symbol" aria-hidden="true">⚔</span><span class="mode-card-content"><span class="mode-card-kicker">SINGLE PLAYER</span><b>1人で遊ぶ</b><span class="mode-card-desc">8人で頂点を争う。ほかのCPU同士は自動で対戦。</span><span class="mode-card-foot">ソロで挑む ↗</span></span></button>
+  <button class="big mode-card" id="tour-network" data-ghost="02"><span class="mode-no">02 / ONLINE TOURNAMENT</span><span class="mode-symbol" aria-hidden="true">◎</span><span class="mode-card-content"><span class="mode-card-kicker">MULTIPLAYER</span><b>オンラインで遊ぶ</b><span class="mode-card-desc">友達と部屋を作って参加。勝ち抜き戦で最強を決めよう。</span><span class="mode-card-foot">部屋を作る・参加する ↗</span></span></button>
  </div>
- <div class="nav"><button class="back" id="tour-choice-back">ほかの遊びにもどる</button></div>
+ <div class="nav"><button class="back" id="tour-choice-back">← ほかの遊びにもどる</button></div>
 </div>
 <div id="sc-tour-bracket" class="screen">
  <div class="hd">TOURNAMENT BRACKET<small>参加キャラと対戦表を確認</small></div>
- <p class="mode-explain">対戦カードを確認してから試合へ！ CPU同士の試合は自動判定し、試合結果に明記します。</p>
+ <p class="mode-explain">下から上へ勝ち上がるトーナメント表。勝者の進む道と次の試合を確認しよう。</p>
  <div id="tour-preview" class="tour-board"></div>
  <div class="nav"><button class="back" id="tour-preview-back">もどる</button><button class="next" id="tour-preview-start">対戦開始！</button></div>
 </div>
 <div id="sc-kumite-ranking" class="screen">
  <div class="hd">SURVIVAL RANKING<small>組み手・オンラインランキング</small></div>
- <p class="mode-explain">最強CPUだけの組み手ランキングです。登録名・使用キャラ・マップ・勝ち抜き数は公開されます。</p>
+ <p class="mode-explain">組み手の勝ち抜き記録を表示します。登録名・使用キャラ・マップ・勝ち抜き数は公開されます。</p>
  <div id="rank-status" role="status"></div>
  <div id="rank-table"></div>
  <div class="nav"><button class="back" id="rank-back">もどる</button><button class="next" id="rank-refresh">更新する</button></div>
@@ -2478,7 +2650,7 @@ function configureOfflineStageOptions(){
  if(teamRow)teamRow.style.display=normal?'flex':'none';
  document.getElementById('team-side-row').style.display=normal&&settings.teamMode?'flex':'none';
  const note=document.querySelector('.stage-help-tip');
- if(note)note.textContent=offlineMode==='kumite'?'組み手は個人戦・CPU最強固定。プレイヤー名・使用キャラ・マップ・勝ち抜き数が公開ランキングに登録されます。':offlineMode==='tournament'?'1対1の勝ち抜き戦。開始前にキャラ付きのトーナメント表を表示します。':'残機＝残りの戦える回数。迷ったら設定はそのままでOK！';
+ if(note)note.textContent=offlineMode==='kumite'?'組み手は個人戦。全キャラのCPUが登場します。プレイヤー名・使用キャラ・マップ・勝ち抜き数はランキングに登録されます。':offlineMode==='tournament'?'1対1の勝ち抜き戦。開始前にキャラ付きのトーナメント表を表示します。':'残機＝残りの戦える回数。迷ったら設定はそのままでOK！';
 }
 function rankingLevelName(lv){return LV_NAME[Math.max(0,Math.min(3,lv))]||'ふつう';}
 // ランキングは Firebase Realtime Database の /kumite_rankings_v1 を利用。
@@ -2498,14 +2670,14 @@ function openKumiteRanking(fromScene=scene){
 }
 async function loadKumiteRanking(){
  const token=++rankFetchToken,status=document.getElementById('rank-status'),table=document.getElementById('rank-table');
- status.textContent='最強CPUのランキングを取得中…';table.innerHTML='';
+ status.textContent='組み手ランキングを取得中…';table.innerHTML='';
  if(!await initFirebase()){status.textContent='ランキングを読み込めませんでした。'+firebaseLastError;return;}
  try{
   const snap=await db.ref(KUMITE_RANK_PATH+'/lv'+KUMITE_CPU_LEVEL).orderByChild('wins').limitToLast(100).once('value');
   if(token!==rankFetchToken||scene!=='sc-kumite-ranking')return;
   const arr=Object.entries(snap.val()||{}).map(([key,v])=>({...v,key})).filter(r=>r&&Number.isFinite(r.wins)&&r.wins>=0&&Number(r.lv)===KUMITE_CPU_LEVEL&&CHARS[r.cid]&&MAPS[r.map]&&typeof r.name==='string');
   arr.sort((a,b)=>b.wins-a.wins||(a.at||0)-(b.at||0));
-  status.textContent='Firebase接続OK ／ '+rankingLevelName(KUMITE_CPU_LEVEL)+' ／ 上位 '+arr.length+' 件'+(arr.length===100?'（100件まで表示）':'');
+  status.textContent='Firebase接続OK ／ 組み手ランキング ／ 上位 '+arr.length+' 件'+(arr.length===100?'（100件まで表示）':'');
   if(!arr.length){table.innerHTML='<div class="card">まだ記録がありません。最初の記録を目指そう！</div>';return;}
   table.innerHTML='<div class="rank-row rank-head"><span>順位</span><span>プレイヤー</span><span>使用キャラ</span><span>使用マップ</span><span>記録</span></div>'+arr.map((r,i)=>'<div class="rank-row '+(i<3?'top3':'')+'"><b>'+(i+1)+'</b><div class="rank-player">'+esc(r.name)+'</div><div class="rank-character">'+rankAvatar(r.cid)+'<span>'+esc(CHARS[r.cid]?.name||'')+'</span></div><div class="rank-map">'+esc(MAPS[r.map]?.name||'')+'</div><div class="rank-wins">'+Math.floor(r.wins)+'<small style="font-size:10px"> 人</small></div></div>').join('');
  }catch(err){
@@ -2537,7 +2709,7 @@ async function submitKumiteResult(){
   const old=await ref.once('value');
   if(!old.exists())await ref.set({...run,at:window.firebase.database.ServerValue.TIMESTAMP});
   kumiteSubmitted=true;
-  el.textContent='🏆 '+run.wins+'人抜きの記録を '+rankingLevelName(run.lv)+' ランキングへ登録しました！';
+  el.textContent='🏆 '+run.wins+'人抜きの記録をランキングへ登録しました！';
  }catch(err){
   el.textContent=rankingFirebaseError(err,'write');
   retry.style.display='';
@@ -2580,27 +2752,6 @@ function tourDetailHTML(d){
  const loserD=Number.isFinite(d.loserDamage)?' ／ 敗者の被ダメ '+Math.round(d.loserDamage)+'%':'';
  const map=d.map&&MAPS[d.map]?' ／ '+esc(MAPS[d.map].name):'';
  return '<div class="tour-result-line">'+esc(d.method||'勝利')+duration+winnerD+loserD+map+'</div>';
-}
-function tourBoardHTML(t){
- if(!t)return '<p>組み合わせを準備中…</p>';
- const total=(t.entrants||[]).length;
- const allRounds=total>=8?3:total>=4?2:1;
- const results=[...(t.history||[])];
- if(!t.champion)results.push({round:t.round,pairs:(t.matches||[]).map((ids,i)=>({ids,winner:i<t.index?(t.winners||[])[i]:null,detail:(t.details||[])[i],active:i===t.index}))});
- const cols=[];
- for(let round=1;round<=allRounds;round++){
-  const data=results.find(r=>r.round===round);
-  const pairs=data?.pairs||Array.from({length:total/Math.pow(2,round)},()=>({ids:[null,null],winner:null}));
-  cols.push('<div class="tour-col"><strong>'+(round===allRounds?'決勝':round===allRounds-1?'準決勝':'1回戦')+'</strong>'+pairs.map((m,i)=>{
-   const hasWinner=!!m.winner;
-   return '<div class="tour-pair '+(m.active?'is-current':'')+'"><span class="tour-match-no">MATCH '+(i+1)+(m.active?'　● NEXT / NOW':'')+'</span>'+m.ids.map(id=>tourFighterHTML(t,id,m.winner)).join('<div style="height:1px;background:#ffffff1f;margin:3px 0"></div>')+(hasWinner?tourDetailHTML(m.detail):'<div class="tour-result-line">'+(m.active?'まもなく対戦':'結果待ち')+'</div>')+'</div>';
-  }).join('')+'</div>');
- }
- cols.push('<div class="tour-col"><strong>チャンピオン</strong><div class="tour-pair">'+(t.champion?'<div class="tour-trophy">🏆 優勝</div>'+tourFighterHTML(t,t.champion,t.champion):'<div class="tour-trophy">🏆 優勝者は誰だ？</div>')+'</div></div>');
- const records=(t.history||[]).flatMap(r=>r.pairs.map((m,i)=>({r:r.round,i,m})))
-   .concat(!t.champion?(t.matches||[]).slice(0,t.index).map((ids,i)=>({r:t.round,i,m:{ids,winner:t.winners[i],detail:t.details?.[i]}})):[]);
- const journal=records.length?'<div class="tour-records"><h4>試合結果・勝ち上がり履歴</h4>'+records.map(({r,i,m})=>'<div class="tour-record">'+r+'回戦 第'+(i+1)+'試合　'+esc(tourName(t,m.ids[0]))+' VS '+esc(tourName(t,m.ids[1]))+'<div><strong>勝者：'+esc(tourName(t,m.winner))+'</strong>　'+(m.detail?.method==='cpu-sim'?'CPU自動判定':esc(m.detail?.method||'勝利'))+(Number.isFinite(m.detail?.durationSec)?'　'+Math.floor(m.detail.durationSec/60)+':'+String(m.detail.durationSec%60).padStart(2,'0'):'')+'</div></div>').join('')+'</div>':'';
- return '<h3>🏆 キャラクター付きトーナメント表</h3><div style="font-size:11px;color:#aec0d7;margin-bottom:8px">'+esc(MAPS[t.map]?.name||'')+'　｜ 残機 '+(t.stocks||settings.stocks||DEFAULT_STOCK)+'　｜ 勝ったキャラが右のラウンドへ進出</div><div class="tour-cols">'+cols.join('')+'</div>'+journal;
 }
 function currentTournament(){
  if(!online)return offlineMode==='tournament'?offlineTour:null;
@@ -2662,7 +2813,7 @@ function setTrainingAi(mode){trainingAiMode=mode%3;document.getElementById('trai
 function configureExtraCpuOptions(){
  const row=document.getElementById('cpu-opts');row.style.display='flex';
  document.getElementById('seg-cpun').parentElement.style.display=offlineMode==='normal'?'flex':'none';
- document.getElementById('seg-cpupool').parentElement.style.display='flex';
+ document.getElementById('seg-cpupool').parentElement.style.display=offlineMode==='kumite'?'none':'flex';
  document.getElementById('seg-cpulv').parentElement.style.display=['training','kumite'].includes(offlineMode)?'none':'flex';
 }
 function extraModeStart(mode){
@@ -2687,7 +2838,7 @@ function startBattleOffline() {
    modeHeader();return;
   }
   if(offlineMode==='training'||offlineMode==='kumite'){
-   const keys=cpuCharacterPool(settings.cpuPool),cid=keys[Math.floor(Math.random()*keys.length)];
+   const keys=cpuCharacterPool(offlineMode==='kumite'?'all':settings.cpuPool),cid=keys[Math.floor(Math.random()*keys.length)];
    if(offlineMode==='kumite')kumiteOpponentSeed++;
    const list=[{id:myId,cid:settings.cid,label:cleanName(settings.name),cpu:0,owner:myId},
                {id:'cpu'+kumiteOpponentSeed,cid:cid,label:offlineMode==='training'?'練習相手':'対戦相手 '+(kumiteCount+1),cpu:1,owner:myId}];
@@ -2813,7 +2964,7 @@ function checkEnd() {
    const me=byId(myId),enemy=fighters.find(f=>f.cpu);
    if(me?.out){bt={phase:'game',t:125,winner:enemy?.id||null,winnerTeam:0};sfxGame();return;}
    if(enemy?.out){
-    kumiteCount++;const main=stage.plats[0],keys=cpuCharacterPool(settings.cpuPool);
+    kumiteCount++;const main=stage.plats[0],keys=cpuCharacterPool('all');
     const cid=keys[Math.floor(Math.random()*keys.length)];
     fighters=fighters.filter(f=>!f.cpu);
     const nxt=makeFighter({id:'cpu'+(++kumiteOpponentSeed),cid,label:'対戦相手 '+(kumiteCount+1),cpu:1,owner:myId},1);
@@ -2882,7 +3033,7 @@ function showResult() {
    tourBox.style.display='block';tourBox.innerHTML=tourBoardHTML(offlineTour);
   }else if(online&&gmCache?.mode==='tournament'&&gmCache.tour){tourBox.style.display='block';tourBox.innerHTML=tourBoardHTML(gmCache.tour);}
   else if(!online&&offlineMode==='kumite'){
-   tourBox.style.display='block';tourBox.innerHTML='<h3>組み手の記録</h3><p>'+kumiteCount+'人抜き達成！ ／ CPU難易度：'+esc(rankingLevelName(KUMITE_CPU_LEVEL))+'</p>';
+   tourBox.style.display='block';tourBox.innerHTML='<h3>組み手の記録</h3><p>'+kumiteCount+'人抜き達成！'+'</p>';
    void submitKumiteResult();
   }
   const rc = document.getElementById('res-chars'), rt = document.getElementById('res-title');
@@ -2939,6 +3090,57 @@ function applyCharChange(id) {
   sfxPickup();
 }
 
+
+// ========================================================
+// Vertical tournament bracket / bottom-to-top championship path
+// Data source is unchanged (t.history, t.matches, t.winners, t.champion).
+// ========================================================
+function tourBracketLinks(lowerCount){
+ const upperCount=Math.max(1,lowerCount/2), paths=[];
+ for(let j=0;j<upperCount;j++){
+  const parent=(j+.5)*1000/upperCount;
+  const left=(2*j+.5)*1000/lowerCount;
+  const right=(2*j+1.5)*1000/lowerCount;
+  paths.push('M'+left+' 58 V29 H'+parent+' V0');
+  paths.push('M'+right+' 58 V29 H'+parent);
+ }
+ return '<div class="bracket-links" aria-hidden="true"><svg viewBox="0 0 1000 58" preserveAspectRatio="none" focusable="false"><path d="'+paths.join(' ')+'"/></svg></div>';
+}
+function tourBoardHTML(t){
+ if(!t)return '<div class="bracket-empty">組み合わせを準備中…</div>';
+ const total=(t.entrants||[]).length;
+ const rounds=total>=8?3:total>=4?2:1;
+ const results=Array.isArray(t.history)?t.history.slice():[];
+ const matches=Array.isArray(t.matches)?t.matches:[];
+ const winners=Array.isArray(t.winners)?t.winners:[];
+ const details=Array.isArray(t.details)?t.details:[];
+ if(!t.champion)results.push({round:t.round,pairs:matches.map((ids,i)=>({ids,winner:i<t.index?winners[i]:null,detail:details[i],active:i===t.index}))});
+ const title=total>=8?'8 PLAYER TOURNAMENT':total>=4?'4 PLAYER TOURNAMENT':'CHAMPIONSHIP';
+ const champion=t.champion?'<div class="bracket-champion-fighter">'+tourFighterHTML(t,t.champion,t.champion)+'</div>':'<div class="bracket-champion-pending">優勝者は誰だ？</div>';
+ const safeMap=esc(MAPS[t.map]?.name||'ステージ未定');
+ const stocks=Number(t.stocks)||Number(settings.stocks)||DEFAULT_STOCK;
+ const journal=results.flatMap(r=>(r.pairs||[]).filter(m=>m.winner).map((m,i)=>({round:r.round,i,m})));
+ const matchHistory=journal.length?'<details class="bracket-history"><summary>試合結果・履歴 <span>'+journal.length+' 試合</span></summary><div class="bracket-history-list">'+journal.map(({round,i,m})=>'<div class="bracket-history-row"><span>'+round+'回戦</span><b>'+esc(tourName(t,m.winner))+' 勝利</b><small>'+esc(tourName(t,m.ids?.find(id=>id!==m.winner)))+' に勝利'+(m.detail?.method==='cpu-sim'?' · CPU自動判定':'')+'</small></div>').join('')+'</div></details>':'';
+ let tree='<div class="bracket-champion '+(t.champion?'is-complete':'')+'"><span class="bracket-crown-mark" aria-hidden="true">♛</span><span class="bracket-crown-label">CHAMPION / 優勝</span>'+champion+'</div><div class="bracket-crown-link" aria-hidden="true"><span>↑</span></div>';
+ for(let round=rounds;round>=1;round--){
+  const count=Math.max(1,Math.pow(2,rounds-round));
+  const data=results.find(r=>r.round===round);
+  const pairs=(data?.pairs||Array.from({length:count},()=>({ids:[null,null],winner:null,active:false})));
+  const stageName=round===rounds?'決勝':round===rounds-1?'準決勝':'1回戦';
+  const stageEnglish=round===rounds?'GRAND FINAL':round===rounds-1?'SEMI FINAL':'ROUND 1';
+  const cards=Array.from({length:count},(_,i)=>{
+   const m=pairs[i]||{ids:[null,null]};
+   const ids=Array.isArray(m.ids)?m.ids:[null,null];
+   const won=!!m.winner, active=!!m.active;
+   const text=won?'WINNER DECIDED':active?'NEXT MATCH':'AWAITING MATCH';
+   const foot=won?(m.detail?.method==='cpu-sim'?'CPU自動判定':'勝者が次へ進出'):active?'● 次の対戦':'対戦待ち';
+   return '<div class="bracket-match '+(won?'is-done ':'')+(active?'is-current':'')+'"><div class="bracket-match-top"><span>MATCH '+(i+1)+'</span><span>'+text+'</span></div><div class="bracket-competitors">'+ids.map(id=>id?tourFighterHTML(t,id,m.winner):'<div class="tour-fighter bracket-tbd"><span>勝ち上がり待ち</span></div>').join('<div class="bracket-vs">VS</div>')+'</div><div class="bracket-match-foot">'+foot+'</div></div>';
+  }).join('');
+  tree+='<section class="bracket-tier" aria-label="'+stageName+'"><div class="bracket-tier-label"><span>'+stageEnglish+'</span><b>'+stageName+'</b><small>'+count+'試合</small></div><div class="bracket-tier-grid" style="--match-count:'+count+'">'+cards+'</div></section>';
+  if(round>1)tree+=tourBracketLinks(count*2);
+ }
+ return '<div class="bracket-panel"><div class="bracket-panel-header"><div><span class="bracket-panel-kicker">'+title+'</span><h3>ROAD TO THE TOP</h3><p>下から上へ。勝者が次のラウンドに進む。</p></div><div class="bracket-panel-meta"><span>'+safeMap+'</span><span>残機 '+stocks+'</span><span>'+(t.champion?'優勝決定':'第'+(t.round||1)+'ラウンド')+'</span></div></div><div class="bracket-scroller" role="region" tabindex="0" aria-label="トーナメント表。左右にスクロールできます"><div class="bracket-vertical">'+tree+'</div></div><p class="bracket-pan-tip">↑ 優勝に向かって勝ち上がる <span>／ 横に動かして全体を確認</span></p>'+matchHistory+'</div>';
+}
 // ========================================================
 // ⑧ キャラの動き
 // ========================================================

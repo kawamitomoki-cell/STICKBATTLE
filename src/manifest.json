@@ -2,7 +2,8 @@
   "styles": [
     "src/styles/base.css",
     "src/styles/tournament.css",
-    "src/styles/overrides.css"
+    "src/styles/overrides.css",
+    "src/styles/mode-bracket.css"
   ],
   "scripts": [
     "src/game/00-firebase.js",
@@ -12,6 +13,7 @@
     "src/game/04-network-lobby.js",
     "src/game/05-network-sync.js",
     "src/game/06-game-modes.js",
+    "src/game/06b-tournament-bracket.js",
     "src/game/07-movement.js",
     "src/game/08-combat.js",
     "src/game/09-projectiles.js",

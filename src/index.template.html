@@ -12,50 +12,56 @@
 
 {{STYLE_1}}
 {{STYLE_2}}
+{{STYLE_3}}
 </head>
 <body>
 
 <div id="sc-title" class="screen" style="display:flex">
  <div class="title-art"></div><div class="title-content"><div class="title-kicker">ONE ARENA. NO LIMITS.</div>
  <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">17人のファイター。勝負を決める、ただ一撃。</p>
- <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">KUMITE ULTIMATE</div>
+ <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">MODE SELECT / TOURNAMENT UI</div>
 </div>
-<div id="sc-mode" class="screen">
- <div class="hd">CHOOSE YOUR BATTLE<small>モードを選択</small></div><div class="mode-grid">
- <button class="big" id="go-cpu"><span class="mode-no">01 / LOCAL BATTLE</span><span class="mode-art" data-portrait="karate"></span><b>SMASH THE CPU.</b><span>CPU対戦</span><small>1〜7体のライバルと。自分の限界を超えろ。</small></button>
- <button class="big" id="go-online"><span class="mode-no">02 / ONLINE</span><b>BRING YOUR RIVALS.</b><span>オンライン対戦</span><small>部屋コード・QRで、友達と同じアリーナへ。</small></button>
- <button class="big" id="go-howto"><span class="mode-no">03 / HOW TO PLAY</span><b>30秒でわかるルール</b><small>勝ち方と基本操作だけ。はじめての人はこちら！</small></button><button class="big" id="go-more"><span class="mode-no">04 / EXTRA MODES</span><b>ほかの遊び</b><span>トレーニング・組み手・トーナメント</span><small>いつもと違うルールでも戦おう！</small></button></div>
+<div id="sc-mode" class="screen mode-rework-screen">
+ <div class="mode-rework-head">
+  <div><span class="mode-overline">STICK BATTLE / SELECT YOUR MODE</span><h2>どの戦いに<span>挑む？</span></h2><p>ひとりで極める。仲間と競う。新しい戦いを見つける。</p></div>
+  <div class="mode-head-stamp" aria-hidden="true"><b>04</b><small>GAME MODES</small></div>
+ </div>
+ <div class="mode-grid mode-rework-grid">
+  <button class="big mode-card" id="go-cpu" data-ghost="01"><span class="mode-no">01 / SINGLE PLAYER</span><span class="mode-symbol" aria-hidden="true">⚔</span><span class="mode-card-content"><span class="mode-card-kicker">LOCAL BATTLE</span><b>CPU対戦</b><span class="mode-card-desc">1〜7体のライバルに挑め。チーム戦も自由自在。</span><span class="mode-card-foot">ひとりで遊ぶ <span aria-hidden="true">↗</span></span></span></button>
+  <button class="big mode-card" id="go-online" data-ghost="02"><span class="mode-no">02 / MULTIPLAYER</span><span class="mode-symbol" aria-hidden="true">◎</span><span class="mode-card-content"><span class="mode-card-kicker">ONLINE BATTLE</span><b>オンライン対戦</b><span class="mode-card-desc">友達とリアルタイム対戦。部屋コードで簡単に参加。</span><span class="mode-card-foot">友達と対戦 <span aria-hidden="true">↗</span></span></span></button>
+  <button class="big mode-card" id="go-more" data-ghost="03"><span class="mode-no">03 / CHALLENGES</span><span class="mode-symbol" aria-hidden="true">✦</span><span class="mode-card-content"><span class="mode-card-kicker">EXTRA MODES</span><b>ほかの遊び</b><span class="mode-card-desc">組み手・トーナメント・トレーニング。戦い方は無限大。</span><span class="mode-card-foot">モードを選ぶ <span aria-hidden="true">↗</span></span></span></button>
+  <button class="big mode-card mode-card-guide" id="go-howto" data-ghost="04"><span class="mode-no">04 / BEGINNER GUIDE</span><span class="mode-symbol" aria-hidden="true">?</span><span class="mode-card-content"><span class="mode-card-kicker">HOW TO PLAY</span><b>ルール・操作方法</b><span class="mode-card-desc">初めてでも大丈夫。技の出し方から勝ち方まで、ここで確認。</span></span><span class="mode-guide-arrow" aria-hidden="true">↗</span></button>
+ </div>
+ <p class="mode-rework-footer">CHOOSE YOUR FIGHT. WRITE YOUR LEGEND.</p>
 </div>
 
-<div id="sc-extra" class="screen">
- <div class="hd">EXTRA MODES<small>ほかの遊び</small></div>
- <p class="mode-explain">練習したい、連勝したい、優勝したい。目的に合わせてモードを選ぼう！</p>
- <div class="extra-choice">
-  <button class="big" id="extra-training"><span class="mode-no">01 / PRACTICE</span><b>トレーニング</b><small>何度でも復活。技の練習やコンボ研究に。</small><div class="mode-stripe"><span>ダメージリセット</span><span>CPU行動切替</span></div></button>
-  <button class="big" id="extra-kumite"><span class="mode-no">02 / SURVIVAL</span><b>組み手</b><small>最強CPUが次々に登場！ 何人抜けるか挑戦しよう！</small><div class="mode-stripe"><span>連勝記録</span><span>CPU最強固定</span></div></button>
-  <button class="big" id="extra-tournament"><span class="mode-no">03 / BRACKET</span><b>トーナメント</b><small>1対1の勝ち抜き戦。最後に優勝するのは誰だ？</small><div class="mode-stripe"><span>8人戦</span><span>オンライン対応</span></div></button>
+<div id="sc-extra" class="screen mode-rework-screen">
+ <div class="mode-rework-head"><div><span class="mode-overline">BEYOND THE BATTLE / EXTRA MODES</span><h2>もうひとつの<span>戦場。</span></h2><p>練習・連戦・優勝。それぞれの目標を追いかけよう。</p></div></div>
+ <div class="extra-choice mode-rework-extra">
+  <button class="big mode-card" id="extra-training" data-ghost="01"><span class="mode-no">01 / PRACTICE</span><span class="mode-symbol" aria-hidden="true">◎</span><span class="mode-card-content"><span class="mode-card-kicker">TRAIN YOUR SKILL</span><b>トレーニング</b><span class="mode-card-desc">技を試して、自分だけのコンボを研究。</span><span class="mode-stripe"><span>自由に練習</span><span>ゲージ調整</span></span><span class="mode-card-foot">練習を始める ↗</span></span></button>
+  <button class="big mode-card" id="extra-kumite" data-ghost="02"><span class="mode-no">02 / SURVIVAL</span><span class="mode-symbol" aria-hidden="true">∞</span><span class="mode-card-content"><span class="mode-card-kicker">ENDLESS CHALLENGE</span><b>組み手</b><span class="mode-card-desc">全キャラのCPUが次々に登場。何人抜けるか挑戦！</span><span class="mode-stripe"><span>全キャラ登場</span><span>勝ち抜き記録</span></span><span class="mode-card-foot">連戦に挑む ↗</span></span></button>
+  <button class="big mode-card" id="extra-tournament" data-ghost="03"><span class="mode-no">03 / TOURNAMENT</span><span class="mode-symbol" aria-hidden="true">♛</span><span class="mode-card-content"><span class="mode-card-kicker">ROAD TO CHAMPION</span><b>トーナメント</b><span class="mode-card-desc">勝ち上がれ。頂点に立つのはたった1人。</span><span class="mode-stripe"><span>勝ち上がり戦</span><span>オンライン対応</span></span><span class="mode-card-foot">優勝を目指す ↗</span></span></button>
  </div>
- <button class="big kumite-rank-launch" id="extra-ranking"><span class="mode-no">ULTIMATE LEADERBOARD</span><b>組み手ランキングを見る 🏆</b><small>最強CPU限定・オンラインランキング</small></button>
- <div class="nav"><button class="back" id="extra-back">メニューにもどる</button></div>
+ <button class="mode-ranking-shortcut" id="extra-ranking"><span class="mode-rank-icon" aria-hidden="true">🏆</span><span><b>組み手ランキング</b><small>みんなの勝ち抜き記録を見る</small></span><span class="mode-shortcut-arrow" aria-hidden="true">↗</span></button>
+ <div class="nav"><button class="back" id="extra-back">← モード選択にもどる</button></div>
 </div>
-<div id="sc-tour-choice" class="screen">
- <div class="hd">TOURNAMENT<small>トーナメントを始めよう</small></div>
- <p class="mode-explain">勝った人が次の試合へ進む、1対1の勝ち抜き戦。対戦表も確認できるよ。</p>
- <div class="tour-config">
-  <button class="big" id="tour-offline"><span class="mode-no">SOLO / VS CPU</span><b>1人で遊ぶ</b><small>8人トーナメント。ほかのCPU同士の試合は自動で進行するよ。</small></button>
-  <button class="big" id="tour-network"><span class="mode-no">ONLINE / VS FRIENDS</span><b>オンラインで遊ぶ</b><small>部屋コードで友達を招待。参加者とCPUで4〜8人の勝ち抜き戦。</small></button>
+<div id="sc-tour-choice" class="screen mode-rework-screen">
+ <div class="mode-rework-head"><div><span class="mode-overline">TOURNAMENT / ROAD TO THE TOP</span><h2>頂点まで、<span>勝ち上がれ。</span></h2><p>勝者だけが次の試合へ。優勝までの道のりをトーナメント表で追える。</p></div></div>
+ <div class="tour-config mode-rework-tour">
+  <button class="big mode-card" id="tour-offline" data-ghost="01"><span class="mode-no">01 / SOLO TOURNAMENT</span><span class="mode-symbol" aria-hidden="true">⚔</span><span class="mode-card-content"><span class="mode-card-kicker">SINGLE PLAYER</span><b>1人で遊ぶ</b><span class="mode-card-desc">8人で頂点を争う。ほかのCPU同士は自動で対戦。</span><span class="mode-card-foot">ソロで挑む ↗</span></span></button>
+  <button class="big mode-card" id="tour-network" data-ghost="02"><span class="mode-no">02 / ONLINE TOURNAMENT</span><span class="mode-symbol" aria-hidden="true">◎</span><span class="mode-card-content"><span class="mode-card-kicker">MULTIPLAYER</span><b>オンラインで遊ぶ</b><span class="mode-card-desc">友達と部屋を作って参加。勝ち抜き戦で最強を決めよう。</span><span class="mode-card-foot">部屋を作る・参加する ↗</span></span></button>
  </div>
- <div class="nav"><button class="back" id="tour-choice-back">ほかの遊びにもどる</button></div>
+ <div class="nav"><button class="back" id="tour-choice-back">← ほかの遊びにもどる</button></div>
 </div>
 <div id="sc-tour-bracket" class="screen">
  <div class="hd">TOURNAMENT BRACKET<small>参加キャラと対戦表を確認</small></div>
- <p class="mode-explain">対戦カードを確認してから試合へ！ CPU同士の試合は自動判定し、試合結果に明記します。</p>
+ <p class="mode-explain">下から上へ勝ち上がるトーナメント表。勝者の進む道と次の試合を確認しよう。</p>
  <div id="tour-preview" class="tour-board"></div>
  <div class="nav"><button class="back" id="tour-preview-back">もどる</button><button class="next" id="tour-preview-start">対戦開始！</button></div>
 </div>
 <div id="sc-kumite-ranking" class="screen">
  <div class="hd">SURVIVAL RANKING<small>組み手・オンラインランキング</small></div>
- <p class="mode-explain">最強CPUだけの組み手ランキングです。登録名・使用キャラ・マップ・勝ち抜き数は公開されます。</p>
+ <p class="mode-explain">組み手の勝ち抜き記録を表示します。登録名・使用キャラ・マップ・勝ち抜き数は公開されます。</p>
  <div id="rank-status" role="status"></div>
  <div id="rank-table"></div>
  <div class="nav"><button class="back" id="rank-back">もどる</button><button class="next" id="rank-refresh">更新する</button></div>

@@ -12,7 +12,7 @@ function configureOfflineStageOptions(){
  if(teamRow)teamRow.style.display=normal?'flex':'none';
  document.getElementById('team-side-row').style.display=normal&&settings.teamMode?'flex':'none';
  const note=document.querySelector('.stage-help-tip');
- if(note)note.textContent=offlineMode==='kumite'?'組み手は個人戦・CPU最強固定。プレイヤー名・使用キャラ・マップ・勝ち抜き数が公開ランキングに登録されます。':offlineMode==='tournament'?'1対1の勝ち抜き戦。開始前にキャラ付きのトーナメント表を表示します。':'残機＝残りの戦える回数。迷ったら設定はそのままでOK！';
+ if(note)note.textContent=offlineMode==='kumite'?'組み手は個人戦。全キャラのCPUが登場します。プレイヤー名・使用キャラ・マップ・勝ち抜き数はランキングに登録されます。':offlineMode==='tournament'?'1対1の勝ち抜き戦。開始前にキャラ付きのトーナメント表を表示します。':'残機＝残りの戦える回数。迷ったら設定はそのままでOK！';
 }
 function rankingLevelName(lv){return LV_NAME[Math.max(0,Math.min(3,lv))]||'ふつう';}
 // ランキングは Firebase Realtime Database の /kumite_rankings_v1 を利用。
@@ -32,14 +32,14 @@ function openKumiteRanking(fromScene=scene){
 }
 async function loadKumiteRanking(){
  const token=++rankFetchToken,status=document.getElementById('rank-status'),table=document.getElementById('rank-table');
- status.textContent='最強CPUのランキングを取得中…';table.innerHTML='';
+ status.textContent='組み手ランキングを取得中…';table.innerHTML='';
  if(!await initFirebase()){status.textContent='ランキングを読み込めませんでした。'+firebaseLastError;return;}
  try{
   const snap=await db.ref(KUMITE_RANK_PATH+'/lv'+KUMITE_CPU_LEVEL).orderByChild('wins').limitToLast(100).once('value');
   if(token!==rankFetchToken||scene!=='sc-kumite-ranking')return;
   const arr=Object.entries(snap.val()||{}).map(([key,v])=>({...v,key})).filter(r=>r&&Number.isFinite(r.wins)&&r.wins>=0&&Number(r.lv)===KUMITE_CPU_LEVEL&&CHARS[r.cid]&&MAPS[r.map]&&typeof r.name==='string');
   arr.sort((a,b)=>b.wins-a.wins||(a.at||0)-(b.at||0));
-  status.textContent='Firebase接続OK ／ '+rankingLevelName(KUMITE_CPU_LEVEL)+' ／ 上位 '+arr.length+' 件'+(arr.length===100?'（100件まで表示）':'');
+  status.textContent='Firebase接続OK ／ 組み手ランキング ／ 上位 '+arr.length+' 件'+(arr.length===100?'（100件まで表示）':'');
   if(!arr.length){table.innerHTML='<div class="card">まだ記録がありません。最初の記録を目指そう！</div>';return;}
   table.innerHTML='<div class="rank-row rank-head"><span>順位</span><span>プレイヤー</span><span>使用キャラ</span><span>使用マップ</span><span>記録</span></div>'+arr.map((r,i)=>'<div class="rank-row '+(i<3?'top3':'')+'"><b>'+(i+1)+'</b><div class="rank-player">'+esc(r.name)+'</div><div class="rank-character">'+rankAvatar(r.cid)+'<span>'+esc(CHARS[r.cid]?.name||'')+'</span></div><div class="rank-map">'+esc(MAPS[r.map]?.name||'')+'</div><div class="rank-wins">'+Math.floor(r.wins)+'<small style="font-size:10px"> 人</small></div></div>').join('');
  }catch(err){
@@ -71,7 +71,7 @@ async function submitKumiteResult(){
   const old=await ref.once('value');
   if(!old.exists())await ref.set({...run,at:window.firebase.database.ServerValue.TIMESTAMP});
   kumiteSubmitted=true;
-  el.textContent='🏆 '+run.wins+'人抜きの記録を '+rankingLevelName(run.lv)+' ランキングへ登録しました！';
+  el.textContent='🏆 '+run.wins+'人抜きの記録をランキングへ登録しました！';
  }catch(err){
   el.textContent=rankingFirebaseError(err,'write');
   retry.style.display='';
@@ -114,27 +114,6 @@ function tourDetailHTML(d){
  const loserD=Number.isFinite(d.loserDamage)?' ／ 敗者の被ダメ '+Math.round(d.loserDamage)+'%':'';
  const map=d.map&&MAPS[d.map]?' ／ '+esc(MAPS[d.map].name):'';
  return '<div class="tour-result-line">'+esc(d.method||'勝利')+duration+winnerD+loserD+map+'</div>';
-}
-function tourBoardHTML(t){
- if(!t)return '<p>組み合わせを準備中…</p>';
- const total=(t.entrants||[]).length;
- const allRounds=total>=8?3:total>=4?2:1;
- const results=[...(t.history||[])];
- if(!t.champion)results.push({round:t.round,pairs:(t.matches||[]).map((ids,i)=>({ids,winner:i<t.index?(t.winners||[])[i]:null,detail:(t.details||[])[i],active:i===t.index}))});
- const cols=[];
- for(let round=1;round<=allRounds;round++){
-  const data=results.find(r=>r.round===round);
-  const pairs=data?.pairs||Array.from({length:total/Math.pow(2,round)},()=>({ids:[null,null],winner:null}));
-  cols.push('<div class="tour-col"><strong>'+(round===allRounds?'決勝':round===allRounds-1?'準決勝':'1回戦')+'</strong>'+pairs.map((m,i)=>{
-   const hasWinner=!!m.winner;
-   return '<div class="tour-pair '+(m.active?'is-current':'')+'"><span class="tour-match-no">MATCH '+(i+1)+(m.active?'　● NEXT / NOW':'')+'</span>'+m.ids.map(id=>tourFighterHTML(t,id,m.winner)).join('<div style="height:1px;background:#ffffff1f;margin:3px 0"></div>')+(hasWinner?tourDetailHTML(m.detail):'<div class="tour-result-line">'+(m.active?'まもなく対戦':'結果待ち')+'</div>')+'</div>';
-  }).join('')+'</div>');
- }
- cols.push('<div class="tour-col"><strong>チャンピオン</strong><div class="tour-pair">'+(t.champion?'<div class="tour-trophy">🏆 優勝</div>'+tourFighterHTML(t,t.champion,t.champion):'<div class="tour-trophy">🏆 優勝者は誰だ？</div>')+'</div></div>');
- const records=(t.history||[]).flatMap(r=>r.pairs.map((m,i)=>({r:r.round,i,m})))
-   .concat(!t.champion?(t.matches||[]).slice(0,t.index).map((ids,i)=>({r:t.round,i,m:{ids,winner:t.winners[i],detail:t.details?.[i]}})):[]);
- const journal=records.length?'<div class="tour-records"><h4>試合結果・勝ち上がり履歴</h4>'+records.map(({r,i,m})=>'<div class="tour-record">'+r+'回戦 第'+(i+1)+'試合　'+esc(tourName(t,m.ids[0]))+' VS '+esc(tourName(t,m.ids[1]))+'<div><strong>勝者：'+esc(tourName(t,m.winner))+'</strong>　'+(m.detail?.method==='cpu-sim'?'CPU自動判定':esc(m.detail?.method||'勝利'))+(Number.isFinite(m.detail?.durationSec)?'　'+Math.floor(m.detail.durationSec/60)+':'+String(m.detail.durationSec%60).padStart(2,'0'):'')+'</div></div>').join('')+'</div>':'';
- return '<h3>🏆 キャラクター付きトーナメント表</h3><div style="font-size:11px;color:#aec0d7;margin-bottom:8px">'+esc(MAPS[t.map]?.name||'')+'　｜ 残機 '+(t.stocks||settings.stocks||DEFAULT_STOCK)+'　｜ 勝ったキャラが右のラウンドへ進出</div><div class="tour-cols">'+cols.join('')+'</div>'+journal;
 }
 function currentTournament(){
  if(!online)return offlineMode==='tournament'?offlineTour:null;
@@ -196,7 +175,7 @@ function setTrainingAi(mode){trainingAiMode=mode%3;document.getElementById('trai
 function configureExtraCpuOptions(){
  const row=document.getElementById('cpu-opts');row.style.display='flex';
  document.getElementById('seg-cpun').parentElement.style.display=offlineMode==='normal'?'flex':'none';
- document.getElementById('seg-cpupool').parentElement.style.display='flex';
+ document.getElementById('seg-cpupool').parentElement.style.display=offlineMode==='kumite'?'none':'flex';
  document.getElementById('seg-cpulv').parentElement.style.display=['training','kumite'].includes(offlineMode)?'none':'flex';
 }
 function extraModeStart(mode){
@@ -221,7 +200,7 @@ function startBattleOffline() {
    modeHeader();return;
   }
   if(offlineMode==='training'||offlineMode==='kumite'){
-   const keys=cpuCharacterPool(settings.cpuPool),cid=keys[Math.floor(Math.random()*keys.length)];
+   const keys=cpuCharacterPool(offlineMode==='kumite'?'all':settings.cpuPool),cid=keys[Math.floor(Math.random()*keys.length)];
    if(offlineMode==='kumite')kumiteOpponentSeed++;
    const list=[{id:myId,cid:settings.cid,label:cleanName(settings.name),cpu:0,owner:myId},
                {id:'cpu'+kumiteOpponentSeed,cid:cid,label:offlineMode==='training'?'練習相手':'対戦相手 '+(kumiteCount+1),cpu:1,owner:myId}];
@@ -347,7 +326,7 @@ function checkEnd() {
    const me=byId(myId),enemy=fighters.find(f=>f.cpu);
    if(me?.out){bt={phase:'game',t:125,winner:enemy?.id||null,winnerTeam:0};sfxGame();return;}
    if(enemy?.out){
-    kumiteCount++;const main=stage.plats[0],keys=cpuCharacterPool(settings.cpuPool);
+    kumiteCount++;const main=stage.plats[0],keys=cpuCharacterPool('all');
     const cid=keys[Math.floor(Math.random()*keys.length)];
     fighters=fighters.filter(f=>!f.cpu);
     const nxt=makeFighter({id:'cpu'+(++kumiteOpponentSeed),cid,label:'対戦相手 '+(kumiteCount+1),cpu:1,owner:myId},1);
@@ -416,7 +395,7 @@ function showResult() {
    tourBox.style.display='block';tourBox.innerHTML=tourBoardHTML(offlineTour);
   }else if(online&&gmCache?.mode==='tournament'&&gmCache.tour){tourBox.style.display='block';tourBox.innerHTML=tourBoardHTML(gmCache.tour);}
   else if(!online&&offlineMode==='kumite'){
-   tourBox.style.display='block';tourBox.innerHTML='<h3>組み手の記録</h3><p>'+kumiteCount+'人抜き達成！ ／ CPU難易度：'+esc(rankingLevelName(KUMITE_CPU_LEVEL))+'</p>';
+   tourBox.style.display='block';tourBox.innerHTML='<h3>組み手の記録</h3><p>'+kumiteCount+'人抜き達成！'+'</p>';
    void submitKumiteResult();
   }
   const rc = document.getElementById('res-chars'), rt = document.getElementById('res-title');
