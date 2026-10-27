@@ -150,11 +150,11 @@ function buildMenus() {
   document.getElementById('extra-back').onclick=()=>show('sc-mode');
   document.getElementById('extra-training').onclick=()=>extraModeStart('training');
   document.getElementById('extra-kumite').onclick=()=>extraModeStart('kumite');
-  document.getElementById('extra-ranking').onclick=()=>openKumiteRanking('sc-extra',settings.cpuLv);
+  document.getElementById('extra-ranking').onclick=()=>openKumiteRanking('sc-extra');
   document.getElementById('rank-back').onclick=()=>{rankFetchToken++;show(rankingReturnScene);};
   document.getElementById('rank-refresh').onclick=()=>loadKumiteRanking();
   document.getElementById('kumite-submit-retry').onclick=()=>{void submitKumiteResult();};
-  document.getElementById('res-rank').onclick=()=>openKumiteRanking('sc-result',settings.cpuLv);
+  document.getElementById('res-rank').onclick=()=>openKumiteRanking('sc-result');
   document.getElementById('extra-tournament').onclick=()=>show('sc-tour-choice');
   document.getElementById('tour-choice-back').onclick=()=>show('sc-extra');
   document.getElementById('tour-offline').onclick=()=>extraModeStart('tournament');
