@@ -1139,10 +1139,19 @@ function drawAnimeActor(p,t,ghost=false){
  if(p.cid==='gojo'){
   if(p.sph>0){const oc=p.sph>=GOJO_PURPLE_HOLD?'#b98cff':p.sph>=GOJO_RED_HOLD?'#ff5b6b':'#59bcff';animeGlow(hx+4,hy,8+Math.min(p.sph/70,1)*12,oc);}
   if(atk&&['gojopunch','gblackflash'].includes(mv.kind)){
-   // 命中前は普通の呪力パンチ。黒閃はヒット確定後にだけ発生する。
-   const x=hx+8,y=hy;
-   if(active){noFill();stroke('#a8e4ff');strokeWeight(4);arc(x-8,y,60,48,-PI*.7,PI*.4);}
-   noStroke();fill('#bceaff');circle(x,y,22);
+   // 最大溜め黒閃はヒット前から黒赤の重い圧を出す。通常打撃は淡い青。
+   const x=hx+8,y=hy,chargeFlash=mv.maxChargeBF||mv.kind==='gblackflash'&&p.ch>=CH_FULL;
+   if(active){
+     noFill();
+     if(mv.kind==='gblackflash'){
+       stroke(chargeFlash?'#ff3f53':'#a8e4ff');strokeWeight(chargeFlash?5:4);arc(x-8,y,60,48,-PI*.7,PI*.4);
+       if(chargeFlash){stroke('#17040a');strokeWeight(8);line(x-18,y+12,x+24,y-16);stroke('#ff9e9b');strokeWeight(1.6);line(x-16,y+12,x+21,y-15);} 
+     }else{
+       stroke('#a8e4ff');strokeWeight(4);arc(x-8,y,60,48,-PI*.7,PI*.4);
+     }
+   }
+   noStroke();fill(mv.kind==='gblackflash'?(chargeFlash?'#7f0916':'#1a1017'):'#bceaff');circle(x,y,mv.kind==='gblackflash'?(chargeFlash?26:22):22);
+   if(mv.kind==='gblackflash'){fill(chargeFlash?'#ff3d4d':'#ff6c84');circle(x+4,y-2,10);}
   }
   if(atk&&mv.kind==='purplecast'&&p.a<32){const q=p.a/32;animeGlow(24,-44-16*(1-q),13,'#5abfff');animeGlow(24,-28+16*(1-q),13,'#ff4c70');if(q>.55)animeGlow(26,-36,(q-.55)*52,'#bb87ff');}
   if(p.ct>0||p.infinityCd>7){noFill();stroke('#a6d6ff');strokeWeight(1.5);ellipse(23,-37,11,54);}
@@ -2420,7 +2429,10 @@ function fireAttack(p, ch) {
   if(animeBasic(p,ch))return;
   const C = CC(p.cid);
   let mv;
-  if (ch >= CH_TH) {
+  if (p.cid==='gojo' && ch >= CH_FULL) {
+    // 五条の最大溜め攻撃は確定黒閃。通常の溜め斬りではなく、黒赤の踏み込み打撃になる。
+    mv = { ...mkMv('gblackflash'), dm: 21.5, k0: 16.5, ks: 0.125, up: 0.72, lunge: 12, ko: true, pierce: true, minKb: 26, maxChargeBF: true };
+  } else if (ch >= CH_TH) {
     const pw = 0.3 + 0.7 * Math.min(ch - CH_TH, CH_FULL - CH_TH) / (CH_FULL - CH_TH);
     mv = { ...mkMv('charge', p.w), dm: 10 + 12 * pw, k0: 8 + 9 * pw, ks: 0.10, up: 0.6, lunge: 7 * pw };
   } else {
@@ -2443,6 +2455,7 @@ function fireAttack(p, ch) {
   animeDecorate(p,mv);
   if (mv.sword) { mv.dm *= 1.3; mv.k0 *= 1.2; p.am -= (mv.kind === 'charge' ? 2 : 1); }
   p.mv = mv; p.a = 1; p.hit = {};
+  if (p.cid==='gojo' && mv.kind==='gblackflash' && mv.maxChargeBF) animeCall(p,'黒閃','#ff646b',true,1.08,.78);
 }
 
 function startSpecial(p) {
@@ -2817,7 +2830,7 @@ function meleeCheck(a) {
       a.hit[t.id] = true;
       const oraFinish=mv.kind==='ora'&&a.a>=mv.act1-1;
       const A = { id: a.id, x: Math.round(a.x), f: a.f, c: a.c,
-                  mv: { type: oraFinish?'heavy':mv.type, kind: oraFinish?'orafinish':mv.kind, style:mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':'', dm: Math.round((oraFinish?14.5:mv.dm) * 10) / 10, k0: Math.round((oraFinish?15.0:mv.k0) * 10) / 10, ks: oraFinish?.115:mv.ks, up: oraFinish?.48:mv.up, ko: !!mv.ko, blockOnly: !!mv.blockOnly, ragePunch: !!mv.ragePunch, pierce: !!mv.pierce, minKb:oraFinish?15.5:(mv.minKb||0) } };
+                  mv: { type: oraFinish?'heavy':mv.type, kind: oraFinish?'orafinish':mv.kind, style:mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), dm: Math.round((oraFinish?14.5:mv.dm) * 10) / 10, k0: Math.round((oraFinish?15.0:mv.k0) * 10) / 10, ks: oraFinish?.115:mv.ks, up: oraFinish?.48:mv.up, ko: !!mv.ko, blockOnly: !!mv.blockOnly, ragePunch: !!mv.ragePunch, pierce: !!mv.pierce, minKb:oraFinish?15.5:(mv.minKb||0) } };
       if (isLocal(t)) resolveMelee(A, t);
       else {
         send({ k: 'mh', to: t.id, a: a.id, ax: A.x, f: a.f, c: a.c, mv: A.mv });
@@ -2851,7 +2864,7 @@ function resolveMelee(A, t) {
     return;
   }
   const kb = applyHit(t, h, bk, A.id);
-  emitFx({ res: 'hit', t: t.id, a: A.id, x: t.x, y: ty, kb: Math.round(kb * 10) / 10, bk: bk ? 1 : 0, up: ['upper','gdragon','gblackflash'].includes(mv.kind) ? 1 : 0, style: mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), moveKind:mv.kind, c: t.c, gain: 8, axe:mv.kind==='axeheavy'||mv.kind==='axeup' });
+  emitFx({ res: 'hit', t: t.id, a: A.id, x: t.x, y: ty, kb: Math.round(kb * 10) / 10, bk: bk ? 1 : 0, up: ['upper','gdragon','gblackflash'].includes(mv.kind) || mv.style==='blackflash' ? 1 : 0, style: mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), moveKind:mv.kind, c: t.c, gain: 8, axe:mv.kind==='axeheavy'||mv.kind==='axeup' });
 }
 
 function resolveProj(Q, t) {
@@ -5761,14 +5774,18 @@ function dragonRibbon(x,y,t,scaleFactor=1,alpha=1){
  stroke('#ffe7a0');strokeWeight(2);for(const i of [11,23]){const v=points[i];line(v.x,v.y,v.x+24,v.y-7);line(v.x+24,v.y-7,v.x+32,v.y-18);line(v.x+24,v.y-7,v.x+35,v.y-8);}pop();
 }
 function chronoWorld(){
- const t=1-freezeT/Math.max(1,freezeMax),p=byId(fz?.att);if(!p)return;
+ const t=1-freezeT/Math.max(1,freezeMax);
  push();noStroke();fill(t<.32?'#111425':t<.46?'#e1efe6':'#182337');rect(-300,-300,stage.w+600,stage.h+600);
  const cx=stage.w*.5,cy=stage.h*.55;
  if(t>.28){const r=Math.pow(Math.min(1,(t-.28)/.4),.5)*stage.w;noFill();stroke(t<.45?'#352448':'#8edbc9');strokeWeight(t<.45?35:3);ellipse(cx,cy,r*2,r*1.2);stroke('#a783c1');strokeWeight(8*(1-t)+1);ellipse(cx,cy,r*1.7,r);}
  for(let i=0;i<18;i++){const a=i*TWO_PI/18;stroke(i%2?'#968aa436':'#73a6ac30');strokeWeight(1);line(cx+cos(a)*70,cy+sin(a)*40,cx+cos(a)*stage.w,cy+sin(a)*stage.h);}
- // Character close-up panel: intact silhouette, cap, chain and fully articulated Stand.
- push();translate(stage.w*.45,stage.h*.72);scale(2.25);drawingContext.globalAlpha=t>.36?1:.45+Math.min(1,t*4)*.55;
- const pose={...p,x:0,y:0,r:0,f:1,inv:0,ivf:0,a:0,mv:null,timeStopSelfT:1};drawAnimeActor(pose,visualFrame,false);pop();
+ // 真ん中に承太郎を出さず、時空の歪みだけで世界停止を表現する。
+ noFill();
+ for(let i=0;i<7;i++){
+   stroke(i%2?color(175,150,224,80-i*7):color(138,233,214,64-i*6));
+   strokeWeight(i%3===0?2.6:1.2);
+   push();translate(cx,cy);rotate((i-3)*.12+Math.sin(t*9+i)*.03);ellipse(0,0,220+i*120,72+i*36);pop();
+ }
  if(t>.33&&t<.42){fill(228,244,226,(1-(t-.33)/.09)*105);rect(0,0,stage.w,stage.h);}
  pop();
 }
@@ -5776,8 +5793,8 @@ function chronoText(){
  const t=1-freezeT/Math.max(1,freezeMax),inQ=1-Math.pow(1-Math.min(1,t*5),3);
  push();noStroke();fill('#090e18');rect(0,0,W,20);rect(0,WH-24,W,24);
  const y=WH*.79;fill(7,10,20,235);quad(0,y-28,W,y-45,W,y+47,0,y+58);fill('#b6a4d6');rect(0,y-28,5,83);
- textAlign(LEFT,CENTER);textStyle(BOLDITALIC);textSize(Math.min(42,W*.055));fill('#f3f1e5');text('STAR PLATINUM',24-(1-inQ)*170,y-5);
- textStyle(BOLD);textSize(16);fill('#99d7cf');text('ザ・ワールド  ── 時よ止まれ',26,y+31);textAlign(RIGHT,TOP);textSize(10);fill('#b1bacb');text('JOTARO KUJO',W-22,32);pop();
+ textAlign(LEFT,CENTER);textFont('sans-serif');textStyle(BOLD);textSize(Math.min(66,W*.086));stroke('#120f23');strokeWeight(8);fill('#f8f4ff');text('時よ止まれ！',24-(1-inQ)*190,y-7);
+ noStroke();textSize(17);fill('#99d7cf');text('ザ・ワールド',28,y+36);textAlign(RIGHT,TOP);textSize(10);fill('#b1bacb');text('空条承太郎',W-22,32);pop();
 }
 function chronoBackdrop(){
  const ts=activeTimeStopFx();if(!ts){classicAnimeBackdrop();return;}
@@ -5799,10 +5816,26 @@ function timeStopStatus(){
 }
 function premiumDragonImpact(){
  const el=freezeMax-freezeT,t=el/Math.max(1,freezeMax);
- push();noStroke();fill(18,12,8,225);rect(-300,-300,stage.w+600,stage.h+600);
- dragonRibbon(stage.w*.62,stage.h*.78,t,stage.h/490,1);
- for(let i=0;i<18;i++){const x=fz.x+(i-9)*42,y=fz.y+170-(el*17+i*41)%450;stroke(i%3?'#dda83b88':'#fff0b5');strokeWeight(i%3?1:2);line(x,y,x+18,y-65);}
- const a=byId(fz.a)||byId(fz.att);if(a){push();translate(stage.w*.43,stage.h*.65);scale(1.85);drawAnimeActor({...a,x:0,y:0,f:1,r:0,inv:0,ivf:0},visualFrame,false);pop();}pop();
+ push();noStroke();fill(18,12,8,228);rect(-300,-300,stage.w+600,stage.h+600);
+ const pulse=.82+.18*Math.sin(el*.55);
+ const coreX=fz?.x??stage.w*.5,coreY=fz?.y??stage.h*.52;
+ strokeCap(ROUND);noFill();
+ for(let i=0;i<5;i++){
+   const off=(i-2)*18;
+   stroke(205,92,12,70-i*8);strokeWeight(55-i*8);
+   line(coreX-30+off,coreY+150,coreX+48+off,coreY-210);
+   stroke(255,174,31,120-i*10);strokeWeight(24-i*3.4);
+   line(coreX-26+off,coreY+145,coreX+44+off,coreY-215);
+ }
+ stroke(255,236,170,235*pulse);strokeWeight(7);line(coreX-12,coreY+148,coreX+33,coreY-220);
+ for(let i=0;i<20;i++){
+   const x=coreX+(i-10)*36,y=coreY+175-(el*19+i*37)%460;
+   stroke(i%3?color(255,173,46,135):color(255,245,198,215));strokeWeight(i%4===0?2.8:1.3);
+   line(x,y,x+20,y-74);
+ }
+ noStroke();
+ for(let i=0;i<3;i++){fill(255,235,176,44-i*10);ellipse(coreX+4,coreY-10,240+i*90,120+i*44);}
+ pop();
 }
 
 function animeBody(p,t,ghost=false){const r=baseAnimeBody(p,t,ghost);polishCostume(p,t);return r;}
