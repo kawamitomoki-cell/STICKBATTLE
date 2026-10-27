@@ -2284,7 +2284,7 @@ async function hostStartTournament(){
   for(let i=0;i<needed;i++)cpu.push({id:'cpu_t'+i,cid:pool[Math.floor(Math.random()*pool.length)],label:'CPU '+(i+1),cpu:1,owner:myId,team:0});
   const entrants=[...humans.map(h=>({id:h.id,cid:h.cid,label:h.label,cpu:0,owner:h.id,team:0})),...cpu];
   for(let i=entrants.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[entrants[i],entrants[j]]=[entrants[j],entrants[i]];}
-  t={active:1,entrants,matches:Array.from({length:target/2},(_,i)=>[entrants[2*i].id,entrants[2*i+1].id]),round:1,index:0,winners:[],details:[],history:[],champion:'',map:g.map};
+  t={active:1,entrants,matches:Array.from({length:target/2},(_,i)=>[entrants[2*i].id,entrants[2*i+1].id]),round:1,index:0,winners:[],details:[],history:[],champion:'',map:g.map,stocks:clampInt(g.stocks,1,MAX_STOCK,DEFAULT_STOCK)};
   const patch={items:null,p:null,ev:null};
   for(const id in memCache)if(memCache[id]?.cpu)patch['mem/'+id]=null;
   for(const m of cpu)patch['mem/'+m.id]={...m,slot:100+cpu.indexOf(m)};
@@ -2300,7 +2300,7 @@ async function hostStartTournament(){
  const match=t.matches[t.index],players=match.map(id=>t.entrants.find(m=>m.id===id)).filter(Boolean);
  if(players.length!==2)return;
  await roomRef.update({items:null,p:null,ev:null});
- await roomRef.child('gm').set({...g,mode:'tournament',teamMode:0,wpn:0,stocks:1,players,tour:t,ph:'play',round:(g.round||0)+1,w:'',wt:0,matchDetail:null});
+ await roomRef.child('gm').set({...g,mode:'tournament',teamMode:0,wpn:0,stocks:clampInt(t.stocks||g.stocks,1,MAX_STOCK,DEFAULT_STOCK),players,tour:t,ph:'play',round:(g.round||0)+1,w:'',wt:0,matchDetail:null});
 }
 
 function hostTick() {
@@ -2605,7 +2605,7 @@ function tourBoardHTML(t){
  const records=(t.history||[]).flatMap(r=>r.pairs.map((m,i)=>({r:r.round,i,m})))
    .concat(!t.champion?(t.matches||[]).slice(0,t.index).map((ids,i)=>({r:t.round,i,m:{ids,winner:t.winners[i],detail:t.details?.[i]}})):[]);
  const journal=records.length?'<div class="tour-records"><h4>試合結果・勝ち上がり履歴</h4>'+records.map(({r,i,m})=>'<div class="tour-record">'+r+'回戦 第'+(i+1)+'試合　'+esc(tourName(t,m.ids[0]))+' VS '+esc(tourName(t,m.ids[1]))+'<div><strong>勝者：'+esc(tourName(t,m.winner))+'</strong>　'+(m.detail?.method==='cpu-sim'?'CPU自動判定':esc(m.detail?.method||'勝利'))+(Number.isFinite(m.detail?.durationSec)?'　'+Math.floor(m.detail.durationSec/60)+':'+String(m.detail.durationSec%60).padStart(2,'0'):'')+'</div></div>').join('')+'</div>':'';
- return '<h3>🏆 キャラクター付きトーナメント表</h3><div style="font-size:11px;color:#aec0d7;margin-bottom:8px">'+esc(MAPS[t.map]?.name||'')+'　｜ 勝ったキャラが右のラウンドへ進出</div><div class="tour-cols">'+cols.join('')+'</div>'+journal;
+ return '<h3>🏆 キャラクター付きトーナメント表</h3><div style="font-size:11px;color:#aec0d7;margin-bottom:8px">'+esc(MAPS[t.map]?.name||'')+'　｜ 残機 '+(t.stocks||settings.stocks||DEFAULT_STOCK)+'　｜ 勝ったキャラが右のラウンドへ進出</div><div class="tour-cols">'+cols.join('')+'</div>'+journal;
 }
 function currentTournament(){
  if(!online)return offlineMode==='tournament'?offlineTour:null;
@@ -2630,7 +2630,7 @@ function newSoloTournament(){
  const entrants=[{id:myId,cid:settings.cid,label:cleanName(settings.name),cpu:0,owner:myId},...rivals];
  // シャッフルして組み合わせを固定する。
  for(let i=entrants.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[entrants[i],entrants[j]]=[entrants[j],entrants[i]];}
- return {entrants,matches:Array.from({length:4},(_,i)=>[entrants[2*i].id,entrants[2*i+1].id]),round:1,index:0,winners:[],details:[],history:[],champion:'',active:1,map:settings.map};
+ return {entrants,matches:Array.from({length:4},(_,i)=>[entrants[2*i].id,entrants[2*i+1].id]),round:1,index:0,winners:[],details:[],history:[],champion:'',active:1,map:settings.map,stocks:settings.stocks};
 }
 function progressTournament(t,winner,detail=null){
  const current=t.matches[t.index];if(!current||!current.includes(winner))return false;
@@ -2688,7 +2688,7 @@ function startBattleOffline() {
    const me=offlineTour.entrants.find(x=>x.id===myId);
    me.cid=settings.cid;me.label=cleanName(settings.name);
    aiLv=settings.cpuLv;
-   startBattleCommon([me,enemy],settings.map,false,1,false);
+   startBattleCommon([me,enemy],settings.map,false,settings.stocks,false);
    modeHeader();return;
   }
   if(offlineMode==='training'||offlineMode==='kumite'){
@@ -2727,6 +2727,43 @@ function startBattleOnline() {
   if(g.mode==='tournament'&&!byId(myId))document.getElementById('combat-hint').textContent='観戦中｜次の試合で出番が来るまで観戦できます';
 }
 
+function chooseSpawnPoints(arena,n,team=false,roster=[]){
+  const options=[];
+  const floor=Math.max(...arena.plats.map(p=>p.y));
+  arena.plats.forEach((pl,pi)=>{
+    if(pl.w<88) return;
+    const m=Math.min(52,pl.w*.21);
+    const count=Math.max(2,Math.min(20,Math.ceil((pl.w-2*m)/70)+1));
+    for(let k=0;k<count;k++){
+      const x=pl.x+m+(pl.w-2*m)*k/(count-1);
+      if(x<38||x>arena.w-38)continue;
+      options.push({x,y:pl.y,pl:pi});
+    }
+  });
+  if(!options.length)return Array.from({length:n},(_,i)=>({x:arena.w*(i+1)/(n+1),y:floor,pl:0}));
+  const chosen=[];const count=Math.max(1,n);
+  // 2人戦は左右両端の安全な足場から。大人数は全幅へ分散する。
+  const sorted=roster.map((f,i)=>({f,i})).sort((a,b)=>{
+    if(team&&a.f.team!==b.f.team)return a.f.team===1?-1:1;
+    return a.i-b.i;
+  });
+  sorted.forEach(({f,i},order)=>{
+    let goal=arena.w*(order+.75)/(count+.50);
+    if(count===2)goal=order===0?arena.w*.17:arena.w*.83;
+    if(team&&count>=2)goal=f.team===1?arena.w*(.13+.20*(order/Math.max(1,count))):arena.w*(.67+.20*(order/Math.max(1,count)));
+    let best=null,bestScore=Infinity;
+    for(const v of options){
+      const dist=chosen.reduce((m,c)=>Math.min(m,Math.hypot(v.x-c.x,(v.y-c.y)*.85)),Infinity);
+      const crowdPenalty=Number.isFinite(dist)?Math.max(0,155-dist)*5:0;
+      const score=Math.abs(v.x-goal)*.78+Math.abs(v.y-floor)*.18+crowdPenalty;
+      if(score<bestScore){bestScore=score;best=v;}
+    }
+    const selected=best||options[order%options.length];
+    chosen.push({...selected,i});
+  });
+  return chosen.sort((a,b)=>a.i-b.i);
+}
+
 function startBattleCommon(list, mapId, wpn, stocks, teamMode=false) {
   animeFx=[];animeClock=0;
   senkuQueue=[];senkuSeen.clear();senkuActive=null;senkuAfter=null;specialNotices=[];hudKey="";resetNetRound();
@@ -2741,26 +2778,14 @@ function startBattleCommon(list, mapId, wpn, stocks, teamMode=false) {
   elim = []; freezeT = 0; pending = null; shake = 0; itemTimer = 240;
   hin = blankInput(); raw = { j: false, a: false, c: false, s: false, x: false, d: false };
   fighters = list.map((m, i) => makeFighter(m, i));
-  const main = stage.plats[0], n = fighters.length;
-
-  if (battleTeamMode) {
-    const red = fighters.filter(f => normTeam(f.team) === 1);
-    const blue = fighters.filter(f => normTeam(f.team) === 2);
-    const placeTeam = (arr, tm) => arr.forEach((f, i) => {
-      const q = (i + 1) / (arr.length + 1);
-      f.x = tm === 1 ? main.x + main.w * (0.05 + q * 0.40) : main.x + main.w * (0.55 + q * 0.40);
-      f.y = main.y;
-      f.f = tm === 1 ? 1 : -1;
-    });
-    placeTeam(red, 1); placeTeam(blue, 2);
-  } else {
-    fighters.forEach((f, i) => {
-      f.x = main.x + main.w * (i + 1) / (n + 1);
-      f.y = main.y;
-      f.f = f.x < stage.w / 2 ? 1 : -1;
-    });
-  }
-
+  // ステージ全体の足場を使用し、最初の数秒から密集する問題を防ぐ。
+  const starts = chooseSpawnPoints(stage, fighters.length, battleTeamMode, fighters);
+  fighters.forEach((f,i)=>{
+    const spot=starts[i];
+    f.x=spot.x;f.y=spot.y;f.g=true;f.groundPl=spot.pl;
+    f.f=spot.x<stage.w*.5?1:-1;
+    f.vx=0;f.vy=0;
+  });
   bt = { phase: 'count', t: 200, winnerTeam: 0 };
   battleStartAt = Date.now();
   show('battle');
@@ -3990,113 +4015,215 @@ function aiVerticalPursuit(p,t,I,A,L){
   return false;
 }
 
-function aiStep(p) {
-  const A = p.ai, I = A.inp, L = AI_LV[aiLv] || AI_LV[1];
-  A.jumpCd=Math.max(0,(A.jumpCd||0)-1);
-  A.dropCd=Math.max(0,(A.dropCd||0)-1);
-  if (A.hold > 0) { A.hold--; if (A.hold === 0 && I.a) { I.a = false; I.rc++; } }
-  if (A.shold > 0) { A.shold--; if (A.shold === 0) { I.s = false; I.u = false; I.gd = false; } }
-  // 変身キャラの足場すり抜けは下を約7フレーム押し続ける必要がある。
-  if((A.dropHold||0)>0){
-    I.d=true;I.u=false;I.l=false;I.r=false;
-    A.dropHold--;
-    if(A.dropHold===0)I.d=false;
-    A.t=1;return;
+// AI V27: position -> threat/defence -> character preference -> mix-up.
+// No CPU-only stat cheats; strong CPU improves decisions, not raw damage/speed.
+const AI_CHARACTER_PLAN={
+ karate:{ideal:50,near:39,far:280,shoot:200,skill:.40,charge:.32,guard:.34},
+ ninja:{ideal:62,near:42,far:250,shoot:210,skill:.57,charge:.25,guard:.23},
+ bomber:{ideal:190,near:82,far:350,shoot:230,skill:.57,charge:.20,guard:.35},
+ sumo:{ideal:47,near:35,far:100,shoot:110,skill:.31,charge:.40,guard:.35},
+ boxer:{ideal:45,near:34,far:94,shoot:105,skill:.32,charge:.38,guard:.46},
+ yankee:{ideal:51,near:36,far:120,shoot:130,skill:.26,charge:.31,guard:.23},
+ swordsman:{ideal:70,near:46,far:205,shoot:200,skill:.54,charge:.40,guard:.28},
+ lancer:{ideal:83,near:60,far:300,shoot:260,skill:.64,charge:.43,guard:.28},
+ gunman:{ideal:290,near:145,far:425,shoot:405,skill:.76,charge:.20,guard:.48},
+ archer:{ideal:295,near:135,far:510,shoot:490,skill:.80,charge:.16,guard:.43},
+ berserker:{ideal:55,near:39,far:122,shoot:125,skill:.44,charge:.57,guard:.22},
+ rubber:{ideal:111,near:59,far:200,shoot:215,skill:.58,charge:.35,guard:.36},
+ goku:{ideal:225,near:83,far:385,shoot:410,skill:.67,charge:.31,guard:.32},
+ gojo:{ideal:204,near:80,far:380,shoot:390,skill:.76,charge:.31,guard:.40},
+ tanjiro:{ideal:71,near:48,far:178,shoot:195,skill:.62,charge:.36,guard:.32},
+ naruto:{ideal:173,near:70,far:370,shoot:400,skill:.73,charge:.30,guard:.30},
+ jotaro:{ideal:79,near:49,far:228,shoot:230,skill:.61,charge:.32,guard:.38}
+};
+function aiReady(p){return p.kb===0&&p.stn===0&&p.a===0&&p.ch===0&&p.ct===0&&p.sph===0&&p.dg===0;}
+function aiAim(I,dx){I.l=dx < -10;I.r=dx > 10;}
+function aiCounterAction(p,I,A,dx,evade=false){
+ if(p.a||p.ch||p.ct||p.sph||p.kb||p.stn)return false;
+ if(evade){if(p.dgc!==0)return false;I.l=dx<0;I.r=dx>0;}else{
+  if(p.ctc!==0||p.cd!==0)return false;I.l=false;I.r=false;
+ }
+ I.cc++;A.t=3;return true;
+}
+function aiUseSpecial(p,I,A,hold=2,dir='neutral'){
+ if(!aiReady(p)||p.spc>0||p.reloadT>0&&p.cid==='gunman')return false;
+ I.l=false;I.r=false;I.u=false;I.d=false;I.gd=false;I.neutralSpecial=false;I.sideSpecial=0;
+ if(dir==='up')I.u=true;
+ else if(dir==='down'){I.d=true;I.gd=true;}
+ else if(dir==='side'){I[p.f>0?'r':'l']=true;I.sideSpecial=p.f;}
+ else I.neutralSpecial=true;
+ aiSpecial(I,A,Math.max(2,hold));A.t=2;return true;
+}
+function aiUpSpecial(p,I,A){
+ if(p.rec||!aiReady(p)||p.spc>0&&p.cid!=='boxer'||A.upCd>0)return false;
+ if(!aiUseSpecial(p,I,A,2,'up'))return false;
+ A.upCd=55;return true;
+}
+function aiSelectSpecial(p,t,I,A,L,plan,adx,dy){
+ if(!aiReady(p))return false;
+ const aligned=Math.abs(dy)<78,veryAligned=Math.abs(dy)<55,prob=Math.min(.98,L.spec*1.50*plan.skill+.09);
+ const near=adx<plan.near,mid=adx>=plan.near&&adx<plan.shoot;
+ if(p.cid==='boxer')return p.ko>=100&&aligned&&adx<78&&aiUseSpecial(p,I,A,2);
+ if(p.cid==='yankee')return p.rage>=RAGE_MAX&&p.rageT<=0&&aiUseSpecial(p,I,A,2);
+ if(p.cid==='swordsman')return p.senku>=SENKU_MAX&&adx<340&&veryAligned&&aiUseSpecial(p,I,A,2);
+ if(p.cid==='rubber'){
+  if(p.gearM>=100&&p.gear<5&&!p.tired)return aiUseSpecial(p,I,A,2,'down');
+  if(mid&&veryAligned&&Math.random()<prob)return aiUseSpecial(p,I,A,2,'side');
+  if(adx<185&&veryAligned&&Math.random()<prob*.60)return aiUseSpecial(p,I,A,2);
+  return false;
+ }
+ if(isAnime(p)){
+  if(p.cid==='goku'){
+   if(p.energy>=100&&p.form<3)return aiUseSpecial(p,I,A,2,'down');
+   if(adx>210&&p.energy<88&&Math.random()<prob*.65)return aiUseSpecial(p,I,A,35,'down');
+   if(adx>280&&veryAligned&&Math.random()<prob)return aiUseSpecial(p,I,A,65);
+   if(mid&&veryAligned&&Math.random()<prob*.55)return aiUseSpecial(p,I,A,2);
+  }else if(p.cid==='gojo'){
+   if(p.energy>=100&&adx<285)return aiUseSpecial(p,I,A,2,'down');
+   if(veryAligned&&adx<130&&Math.random()<prob)return aiUseSpecial(p,I,A,2,'side');
+   if(veryAligned&&adx<440&&Math.random()<prob)return aiUseSpecial(p,I,A,adx>250?155:adx>160?43:5);
+  }else if(p.cid==='tanjiro'){
+   if(p.energy>=100&&!p.modeT)return aiUseSpecial(p,I,A,2,'down');
+   if(veryAligned&&adx<190&&Math.random()<prob)return aiUseSpecial(p,I,A,2,adx<95?'neutral':'side');
+  }else if(p.cid==='naruto'){
+   if(p.energy>=100&&p.form<2)return aiUseSpecial(p,I,A,2,'down');
+   if(veryAligned&&adx<165&&Math.random()<prob)return aiUseSpecial(p,I,A,2,'side');
+   if(veryAligned&&adx>115&&adx<430&&Math.random()<prob)return aiUseSpecial(p,I,A,2);
+  }else if(p.cid==='jotaro'){
+   if(p.energy>=100)return aiUseSpecial(p,I,A,2,'down');
+   if(veryAligned&&adx<105&&Math.random()<prob)return aiUseSpecial(p,I,A,2);
+   if(veryAligned&&adx<240&&Math.random()<prob)return aiUseSpecial(p,I,A,2,'side');
   }
-  I.d=false;
-  if (p.out) return;
-  if (--A.t > 0) return;
-  A.t = L.think + Math.floor(Math.random() * L.think);
-  if (A.hold > 0 || A.shold > 0) return;
-  I.l = false; I.r = false; I.u = false;
-  const C = CC(p.cid), P = AI_STYLE[p.cid] || AI_STYLE.karate;
-
-  if (!overGround(p)) {
-    I[p.x < stageMid() ? 'r' : 'l'] = true;
-    if (p.vy > -2) {
-      if (p.jn < C.jumps) I.jc++;
-      else if (!p.rec) { I.u = true; aiSpecial(I, A, 2); }
-    }
-    A.t = 3;
-    return;
+  return false;
+ }
+ if(p.cid==='gunman'){
+  if(p.bullets<=0){if(p.reloadT<=0)return aiUseSpecial(p,I,A,28);return false;}
+  if(veryAligned&&adx<plan.shoot&&adx>80&&Math.random()<prob)return aiUseSpecial(p,I,A,2);
+  if(p.bullets<=2&&adx>220&&Math.random()<prob*.75)return aiUseSpecial(p,I,A,27);
+  return false;
+ }
+ if(p.cid==='archer')return veryAligned&&adx>105&&adx<plan.shoot&&Math.random()<prob&&aiUseSpecial(p,I,A,adx>220?42:24);
+ if(p.cid==='lancer')return veryAligned&&adx>=90&&adx<290&&Math.random()<prob&&aiUseSpecial(p,I,A,26+Math.floor(Math.random()*23));
+ if(p.cid==='bomber')return veryAligned&&adx>=115&&adx<385&&Math.random()<prob&&aiUseSpecial(p,I,A,Math.random()<.24?21:2);
+ if(p.cid==='ninja')return veryAligned&&adx>=62&&adx<280&&Math.random()<prob&&aiUseSpecial(p,I,A,2);
+ if(p.cid==='karate')return veryAligned&&adx>=100&&adx<345&&Math.random()<prob&&aiUseSpecial(p,I,A,2);
+ if(p.cid==='sumo')return veryAligned&&adx<90&&Math.random()<prob&&aiUseSpecial(p,I,A,2);
+ if(p.cid==='berserker')return veryAligned&&adx<130&&Math.random()<prob&&aiUseSpecial(p,I,A,2);
+ return false;
+}
+function aiNavigationV27(p,t,I,A,L,plan){
+ const dy=t.y-p.y,dx=t.x-p.x,adx=Math.abs(dx);
+ const upperReady=!p.rec&&A.upCd<=0&&p.kb===0&&p.stn===0&&p.a===0&&p.sph===0;
+ const floor=aiFloorY();
+ if(dy>75){
+  const pl=p.groundPl>=0?stage.plats[p.groundPl]:null;
+  if(p.g&&pl&&pl.y<floor-15&&t.y<floor+28){
+   const margin=Math.min(45,pl.w*.25),goal=Math.max(pl.x+margin,Math.min(pl.x+pl.w-margin,t.x));
+   if(Math.abs(goal-p.x)>29){aiAim(I,goal-p.x);A.t=3;return true;}
+   if(A.dropCd<=0){
+    A.dropHold=(p.cid==='rubber'||isAnime(p))?11:3;
+    A.dropCd=28;I.d=true;I.dc++;A.t=1;return true;
+   }
+   A.t=3;return true;
   }
-  const t = nearestFoe(p);
-  if (!t) return;
-  const dx = t.x - p.x, dy = t.y - p.y, adx = Math.abs(dx);
-  // 先に高さ合わせ。旧版は横距離だけ見ており、真下の敵に何もしなかった。
-  if(aiVerticalPursuit(p,t,I,A,L))return;
-  // 端で立ち往生しても飛び出しを優先しない。安全な着地先のない崖を警戒。
-  if(adx>105&&aiEdgeControl(p,I,t.x)){A.t=4;return;}
-  // 「最強」の近距離読み合いは、同じ高さにいる場合だけ行う。
-  if(aiLv>=3&&p.stn===0&&p.kb===0&&p.a===0&&p.ch===0){
-    if(adx<95&&t.mv&&t.a>0&&t.a<t.mv.act1){
-      if(t.mv.type==='normal'&&p.ctc===0&&Math.random()<.83){I.cc++;A.t=2;return;}
-      if(t.mv.type==='heavy'&&p.dgc===0&&Math.random()<.76){
-        I[dx>0?'l':'r']=true;I.cc++;A.t=2;return;
-      }
-    }
+  // 同じ足場にいられない位置の場合は落下を待ち、届く位置へ。
+  if(adx>Math.max(85,plan.far*.65)){aiAim(I,dx);aiEdgeControl(p,I,t.x);}
+  A.t=3;return true;
+ }
+ if(dy< -59){
+  const goal=aiJumpRoute(p,t),off=goal.x-p.x,dist=Math.abs(off),height=p.y-goal.y;
+  if(dist>18)aiAim(I,off);
+  // 旧AIは先にreturnして上特殊を一切試さなかった。経由地にも上必殺を使う。
+  if(height>90&&dist<125&&upperReady&&
+      (p.jn>=jumpsOf(p)||height>148||p.vy>0&&p.y-t.y>110)&&
+      (Math.random()<.17+L.read*.52)&&aiUpSpecial(p,I,A))return true;
+  if(height>37&&dist<185&&A.jumpCd<=0&&p.jn<jumpsOf(p)&&
+     (p.g||p.vy>-2&&p.y-goal.y>40)){
+    I.jc++;A.jumpCd=17;
   }
-  if(animeAI(p,I,A,adx))return;
-  const face = dx > 0 ? 'r' : 'l', away = dx > 0 ? 'l' : 'r';
-
-  const ex = nearExplosive(p, 110);
-  if (ex && Math.random() < L.read + 0.2) { I[ex.x < p.x ? 'r' : 'l'] = true; if (p.dgc === 0) I.cc++; return; }
-  const pr = incomingProj(p, 150);
-  if (pr && Math.random() < L.read) {
-    if (p.ctc === 0 && p.ch === 0 && p.a === 0) I.cc++; else I.jc++;
-    return;
+  // ある程度移動して、ジャンプだけでは足場に届かないなら上特殊も使用。
+  if(height>60&&dist<110&&upperReady&&p.jn>=jumpsOf(p)&&aiUpSpecial(p,I,A))return true;
+  aiEdgeControl(p,I,goal.x,true);A.t=3;return true;
+ }
+ return false;
+}
+function aiStep(p){
+ const A=p.ai,I=A.inp,L=AI_LV[aiLv]||AI_LV[1],plan=AI_CHARACTER_PLAN[p.cid]||AI_CHARACTER_PLAN.karate;
+ A.jumpCd=Math.max(0,(A.jumpCd||0)-1);A.dropCd=Math.max(0,(A.dropCd||0)-1);A.upCd=Math.max(0,(A.upCd||0)-1);
+ if(A.hold>0){A.hold--;if(A.hold===0&&I.a){I.a=false;I.rc++;}}
+ if(A.shold>0){A.shold--;if(A.shold===0){I.s=false;I.u=false;I.gd=false;I.d=false;I.sideSpecial=0;I.neutralSpecial=false;}}
+ if(A.dropHold>0){I.d=true;I.u=false;I.l=false;I.r=false;A.dropHold--;if(A.dropHold===0)I.d=false;A.t=1;return;}
+ I.d=false;
+ if(p.out)return;
+ if(--A.t>0)return;
+ A.t=Math.max(2,L.think+Math.floor(Math.random()*Math.max(1,L.think*.6)));
+ if(A.hold>0||A.shold>0)return;
+ I.l=false;I.r=false;I.u=false;I.sideSpecial=0;I.neutralSpecial=false;
+ if(!overGround(p)){
+  I[p.x<stageMid()?'r':'l']=true;
+  if(p.vy>=-2){if(p.jn<jumpsOf(p)&&A.jumpCd===0){I.jc++;A.jumpCd=15;}
+   else if(!p.rec&&A.upCd===0)aiUpSpecial(p,I,A);}
+  A.t=3;return;
+ }
+ const t=nearestFoe(p);if(!t)return;
+ const dx=t.x-p.x,dy=t.y-p.y,adx=Math.abs(dx),aligned=Math.abs(dy)<67,ideal=plan.ideal;
+ const danger=nearExplosive(p,115),incoming=incomingProj(p,175);
+ if(danger&&Math.random()<L.read){const dir=p.x>=danger.x?1:-1;
+  if(aiCounterAction(p,I,A,dir,true))return;aiAim(I,dir*150);A.t=3;return;}
+ if(incoming&&Math.random()<L.read){const dir=p.x>=incoming.x?1:-1;
+  if(aiCounterAction(p,I,A,0,false))return;
+  aiAim(I,dir*120);A.t=3;return;}
+ // 戦闘と追跡を両立。上下差がある時は届かない水平攻撃を出さない。
+ if(aiNavigationV27(p,t,I,A,L,plan))return;
+ // 着地直後に敵が接近していた場合も、高低差が小さければ格闘判断へ。
+ const ready=aiReady(p);
+ const enemyAttacking=t.mv&&t.a>0&&t.a<=Math.max(t.mv.act0+3,t.mv.act1);
+ if(ready&&aligned&&enemyAttacking&&adx<110&&Math.random()<L.read*plan.guard){
+   const normal=t.mv.type==='normal';
+   if(normal&&aiCounterAction(p,I,A,0,false))return;
+   if(!normal&&aiCounterAction(p,I,A,dx>0?-1:1,true))return;
+ }
+ if(ready&&aligned&&t.ch>=CH_TH&&adx<110&&Math.random()<L.read*.65){
+   if(aiCounterAction(p,I,A,dx>0?-1:1,true))return;
+ }
+ // キャラクターの得意距離。射撃キャラは後退するが、接近戦の通常技も使う。
+ let desired=0;
+ if(adx>ideal+(ideal>140?35:16))desired=Math.sign(dx);
+ else if(adx<plan.near&&plan.ideal>100)desired=-Math.sign(dx);
+ if(p.cid==='gunman'||p.cid==='archer'||p.cid==='bomber'){
+   if(adx<plan.near&&Math.random()<.75)desired=-Math.sign(dx);
+   if(adx>plan.far)desired=Math.sign(dx);
+ }
+ const sameY=Math.abs(dy)<55;
+ // 正面を向いて技を使用。p.f は実際の移動方向入力で更新される。
+ if(sameY&&ready&&p.cd===0&&adx<=Math.max(92,plan.shoot)){
+  if(p.f!==Math.sign(dx)&&adx>12){aiAim(I,dx);A.t=2;return;}
+  // 相手が近すぎるときは遠隔技にこだわらず格闘で切り返す。
+  if(adx<plan.near+18){
+   const roll=Math.random();
+   if(roll<L.read*.21&&aiCounterAction(p,I,A,0,false))return;
+   if(roll<.50){aiTap(I,A);A.t=2;return;}
+   if(roll<.78){I.a=true;I.ac++;A.hold=18+Math.floor(Math.random()*29);A.t=3;return;}
+   if(aiSelectSpecial(p,t,I,A,L,plan,adx,dy))return;
+   aiTap(I,A);A.t=2;return;
   }
-  if (Math.random() < Math.min(1, L.read * P.counter)) {
-    if (adx < 130 && t.cid === 'boxer' && (t.ko >= 100 || (t.mv && t.mv.kind === 'upper')) && Math.random() < 0.5) {
-      I[away] = true; if (p.dgc === 0) I.cc++; return;
-    }
-    if (adx < 140 && t.ch > CH_TH && p.ctc === 0) { I.cc++; return; }
-    if (adx < 130 && t.mv && t.mv.type === 'heavy' && t.mv.kind !== 'upper' && t.a < t.mv.act0 && p.ctc === 0) { I.cc++; return; }
-    if (adx < 100 && t.ct > 0) { I[face] = true; aiTap(I, A); return; }
-    if (adx < 80 && t.mv && t.mv.type === 'normal' && t.a > 0) { I[away] = true; if (p.dgc === 0) I.cc++; return; }
+  // 使いどころがよければ必殺技、そうでなければ通常・溜め・移動を選ぶ。
+  if(Math.random()<Math.min(.90,L.spec*1.8+plan.skill*.20)&&aiSelectSpecial(p,t,I,A,L,plan,adx,dy))return;
+  if(adx<Math.max(plan.near+19,81)&&Math.random()<.45){
+   if(Math.random()<plan.charge){I.a=true;I.ac++;A.hold=CH_FULL-4+Math.floor(Math.random()*6);}
+   else aiTap(I,A);
+   A.t=3;return;
   }
-  if (Math.random() < L.err) {
-    I[Math.random() < 0.5 ? 'l' : 'r'] = true;
-    if (Math.random() < 0.3) I.jc++;
-    return;
-  }
-  // 真上の相手には上必殺技
-  if (dy < -80 && adx < 70 && !p.rec && Math.random() < 0.35) { I.u = true; aiSpecial(I, A, 2); return; }
-  if (p.w === 'gun' && adx < 420 && Math.abs(dy) < 50) { I[face] = true; aiTap(I, A); return; }
-  if (p.cid === 'yankee' && p.rage >= RAGE_MAX && p.rageT <= 0) { aiSpecial(I, A, 2); return; }
-  if (p.cid === 'rubber' && p.gearM >= 100 && p.gear < 5 && !p.tired) { I.gd = true; aiSpecial(I, A, 2); return; }
-  if (p.cid === 'rubber' && p.spc === 0 && !p.tired && adx > 70 && adx < 190 && Math.abs(dy) < 45 && p.f === Math.sign(dx) && Math.random() < 0.5) { aiSpecial(I, A, 2); return; }
-  if (p.cid === 'swordsman' && p.senku >= SENKU_MAX && adx > 90 && Math.abs(dy) < 75) { I[face] = true; aiSpecial(I, A, 2); return; }
-  if(p.cid==='archer'&&Math.abs(dy)<85&&adx>85&&adx<600){I[face]=true;if(p.spc===0)aiSpecial(I,A,adx>200?32:2);else if(adx<190){I[face]=false;I[away]=true;}return;}
-  if(p.cid==='berserker'&&adx<125&&Math.abs(dy)<55&&p.spc===0){I[face]=true;aiSpecial(I,A,2);return;}
-  if (p.cid === 'gunman' && Math.abs(dy) < 70) {
-    I[face] = true;
-    if (p.bullets <= 2 && adx > 180) aiSpecial(I, A, 28);
-    else if (p.bullets > 0 && adx < 520) aiSpecial(I, A, 2);
-    return;
-  }
-  if (p.cid === 'lancer' && adx > 75 && adx < 330 && Math.abs(dy) < 65 && Math.random() < L.spec * 2 * P.special) { I[face] = true; aiSpecial(I, A, 22 + Math.floor(Math.random()*28)); return; }
-  if ((p.cid === 'karate' || p.cid === 'ninja' || p.cid === 'bomber') && p.spc === 0 && Math.abs(dy) < 70) {
-    const lo = p.cid === 'ninja' ? 60 : 110, hi = p.cid === 'ninja' ? 260 : 420;
-    if (adx > lo && adx < hi && Math.random() < L.spec * 2 * P.special) {
-      I[face] = true;
-      aiSpecial(I, A, p.cid === 'bomber' && Math.random() < 0.25 ? 22 : 2);
-      return;
-    }
-  }
-  if (p.cid === 'bomber' && adx < 115 && Math.random() < 0.55 * P.retreat) I[away] = true;
-  else if (p.cid === 'sumo' && Math.abs(p.x - stageMid()) > 160 && adx > 120) I[p.x < stageMid() ? 'r' : 'l'] = true;
-  else if (adx > (46 / P.aggression)) I[face] = true;
-  if (dy < -70 && adx < 180 && Math.random() < 0.6) I.jc++;
-  if((I.l||I.r)&&adx>55)aiEdgeControl(p,I,t.x);
-  if (adx < 64 && Math.abs(dy) < 50) {
-    I[face] = true;
-    const r = Math.random();
-    if (p.cid === 'sumo' && p.spc === 0 && r < 0.35) aiSpecial(I, A, 2);
-    else if (p.cid === 'boxer' && p.ko >= 100 && r < 0.7) aiSpecial(I, A, 2);
-    else if (r < 0.6) aiTap(I, A);
-    else { I.a = true; I.ac++; A.hold = 16 + Math.floor(Math.random() * 34); }
-  }
+ }
+ // 敵と接触して詰まるケース：距離をずらして仕切り直す／ジャンプで背後へ。
+ if(adx<26&&aligned&&p.g&&Math.random()<.26){I.jc++;A.jumpCd=15;A.t=3;return;}
+ if(desired){aiAim(I,desired*100);if(aiEdgeControl(p,I,p.x+desired*160))A.t=5;}
+ if(!desired&&adx<plan.near&&aligned){
+   // 射撃キャラでも近距離の格闘を使う。近接キャラは通常攻撃やカウンターで応戦。
+   if(ready&&p.cd===0){if(Math.random()<.65)aiTap(I,A);else if(!aiCounterAction(p,I,A,0,false))aiTap(I,A);}
+ }
+ if(aiLv<2&&Math.random()<L.err*.55){I.l=Math.random()<.5;I.r=!I.l;}
+ A.t=Math.max(2,Math.floor(L.think*.65));
 }
 
 // ========================================================
@@ -6155,7 +6282,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_EXTRA_MODES_V21';
+const NET_PROTOCOL='SBO_NET_SMART_AI_V27';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
