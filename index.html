@@ -6730,7 +6730,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_EREN_BURST_V39';
+const NET_PROTOCOL='SBO_NET_EREN_HUNT_V40';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -7201,7 +7201,7 @@ function releaseStoppedHits(p){const hits=p.stoppedHits||[];p.stoppedHits=[];if(
 const EREN={duration:1080,cutin:84,fatigue:60,hardTime:120,hardCooldown:360,
  normalGain:6,strongGain:10,takenGain:2,respawnCarry:50,wireTime:42,wireCooldown:12,wireSpeed:16,wireUpSpeed:8,wireDownSpeed:9,wireAccel:1.8,wireLift:.75,steerX:.8,steerY:.8,riseSpeed:9,glideTime:12,gasCost:14,gasRefund:6,gasDrain:.16,grabTime:24,grabDamage:20};
 CHARS.eren={name:'エレン・イェーガー',en:'EREN YEAGER',mark:'巨',spd:1.20,jump:1.04,jumps:2,wt:1.05,pow:1,size:1,ctx:0,back:false,ctc:1,dgc:.9,dgs:1.1,st:[4,3,2],
- sp:'特殊：ワイヤー付き横回転斬り（命中から攻撃へ連携／出し切りで吹っ飛ばす）／横：立体機動急襲。巨人：掴み投げ・タックル',up:'人間：ワイヤーとガスで斬り上がる縦回転斬り（空中1回）／巨人：対空アッパー',ab:'攻撃・被弾でTITAN GAUGE蓄積。MAXで下特殊：18秒の巨人化。ガスは着地で補充。巨人の下特殊：2秒硬質化（再使用6秒）。背後上部のうなじは1.2倍ダメージ'};
+ sp:'特殊：遠距離はワイヤー追尾急襲、近距離は横回転斬り／横：敵へ追尾急襲。巨人：掴み投げ・タックル',up:'人間：ワイヤーとガスで斬り上がる縦回転斬り（空中1回）／巨人：対空アッパー',ab:'攻撃・被弾でTITAN GAUGE蓄積。MAXで下特殊：18秒の巨人化。ガスは着地で補充。巨人の下特殊：2秒硬質化（再使用6秒）。背後上部のうなじは1.2倍ダメージ'};
 SPECIAL_IDS.push('eren');ANIME_COLORS.eren='#b8b276';fighterRoles.eren='ODM / 時間制限巨人化';
 const EREN_MOVES={
  erenBlades:{type:'normal',act0:3,act1:10,end:16,reach:28,R:23,yo:33,cd:3,multi:5,dm:5,k0:3,ks:.035,up:.4},
@@ -7224,7 +7224,7 @@ function fighterConfig(p){
  return {...c,size:3,spd:p.erenHard>0?.48:.82,jump:1.08,wt:.40,pow:1,dgs:.65,ctc:1.15};
 }
 let erenLifeSerial=0;
-function erenReset(p){Object.assign(p,{erenLife:isLocal(p)?++erenLifeSerial:0,erenAttacks:new Map(),erenCombo:null,erenGas:100,erenGlide:0,erenImpactToken:null,erenSteerX:0,erenSteerY:0,erenExit:0,erenForm:0,erenGauge:0,erenTime:0,erenFatigue:0,erenHard:0,erenHardCd:0,erenWire:null,erenSlashWire:null,erenWireCd:0,erenGrab:null,erenSwing:0,erenGainTargets:new Set(),erenGaugeReceipts:new Set(),erenGrabSeen:new Set()});}
+function erenReset(p){Object.assign(p,{erenLife:isLocal(p)?++erenLifeSerial:0,erenAttacks:new Map(),erenDash:null,erenCombo:null,erenGas:100,erenGlide:0,erenImpactToken:null,erenSteerX:0,erenSteerY:0,erenExit:0,erenForm:0,erenGauge:0,erenTime:0,erenFatigue:0,erenHard:0,erenHardCd:0,erenWire:null,erenSlashWire:null,erenWireCd:0,erenGrab:null,erenSwing:0,erenGainTargets:new Set(),erenGaugeReceipts:new Set(),erenGrabSeen:new Set()});}
 function erenGain(p,n){
  if(p?.cid!=='eren'||!isLocal(p)||p.out||erenTitan(p)||p.erenFatigue)return;
  const before=p.erenGauge||0;p.erenGauge=Math.min(100,before+Math.max(0,n));
@@ -7262,6 +7262,37 @@ function erenWire(p,up=false){
  p.vx=constrain(p.vx+p.f*5,-EREN.wireSpeed,EREN.wireSpeed);p.erenGas-=EREN.gasCost;p.erenSlashWire=null;p.erenWire=anchor;if(p.g){p.vy=-3;p.g=false;}p.erenWireCd=EREN.wireCooldown;if(up)p.rec=true;p.inv=Math.max(p.inv,4);
  p.spc=12;noiseHit(.1,.14,3500,true);return true;
 }
+// Aim at visible opponents, then brake inside sword range. No player input is read.
+function erenDashTarget(p,up=false,dir=0){
+ let best=null,score=Infinity;
+ for(const t of fighters){
+  if(t===p||t.out||sameTeam(p,t)||t.shadowClone||erenTitan(t)&&t.out)continue;
+  const dx=t.x-p.x,dy=t.y-p.y,d=Math.hypot(dx,dy);
+  if(!up&&!dir&&d<95)return null;
+  if(d<95||d>340||up&&(dy>-35||Math.abs(dx)>180)||dir&&dx*dir<0)continue;
+  // Avoid chasing targets outside the stage's playable rectangle.
+  if(t.x<25||t.x>stage.w-25||t.y<30||t.y>stage.h-25)continue;
+  const n=d+(dx*p.f<0?60:0);if(n<score){score=n;best=t;}
+ }
+ return best;
+}
+function erenStartDash(p,t,up=false){
+ if(!t||p.erenGas<EREN.gasCost||p.erenWireCd>0)return false;
+ p.erenGas-=EREN.gasCost;p.erenWire=null;p.erenSlashWire=null;p.erenGlide=0;
+ p.f=Math.sign(t.x-p.x)||p.f;p.erenDash={id:t.id,t:30,up};p.erenWireCd=12;
+ erenMove(p,up?'erenRiseSpin':'erenRaid');p.spc=36;if(up)p.rec=true;
+ noiseHit(.12,.17,3500,true);return true;
+}
+function erenDashTick(p){
+ const d=p.erenDash;if(!d)return;
+ const t=byId(d.id);
+ if(!t||t.out||sameTeam(p,t)||p.kb||p.stn||p.out||--d.t<=0){p.erenDash=null;p.vx*=.4;return;}
+ const dx=t.x-p.x,dy=t.y+(d.up?20:0)-p.y;
+ p.f=Math.sign(dx)||p.f;
+ if(Math.abs(dx)<36&&Math.abs(dy)<32){p.erenDash=null;p.vx*=.2;p.vy=constrain(p.vy,-3,3);if(d.spin){p.spc=0;erenSpecial(p,{neutralSpecial:true});}return;}
+ p.vx=constrain((dx-p.f*24)*.28,-18,18);p.vy=constrain(dy*.28-.6,-10,10);
+ if(dy<-8)p.g=false;
+}
 function erenCutin(e){
  const p=byId(e.id);if(!p||p.cid!=='eren')return;
  // State snapshots restore the form after reconnect; cinematics are cosmetic after validation.
@@ -7270,7 +7301,7 @@ function erenCutin(e){
 }
 function erenTransform(p){
  if(p.erenGauge<100||p.erenFatigue||erenTitan(p)||p.out)return false;
- clearActs(p);p.erenExit=0;p.erenForm=1;p.erenTime=EREN.duration;p.erenGauge=0;p.erenWire=null;p.erenSlashWire=null;p.erenGrab=null;p.erenHard=0;p.inv=Math.max(p.inv,90);p.kb=p.stn=0;p.vx=p.vy=0;
+ clearActs(p);p.erenDash=null;p.erenExit=0;p.erenForm=1;p.erenTime=EREN.duration;p.erenGauge=0;p.erenWire=null;p.erenSlashWire=null;p.erenGrab=null;p.erenHard=0;p.inv=Math.max(p.inv,90);p.kb=p.stn=0;p.vx=p.vy=0;
  // Feet remain on their current surface. Extra size grows upward, never into the floor.
  const e={id:p.id,x:Math.round(p.x),y:Math.round(p.y)};
  // Reuse hit transport so remote targets apply damage on their own owner, once.
@@ -7284,7 +7315,7 @@ function erenTransform(p){
 }
 function erenRevert(p){
  if(online&&isLocal(p))send({k:'eren-revert',id:p.id});
- p.erenExit=24;p.erenForm=0;p.erenTime=0;p.erenGauge=0;p.erenHard=0;p.erenWire=null;p.erenSlashWire=null;p.erenFatigue=EREN.fatigue;clearActs(p);
+ p.erenDash=null;p.erenExit=24;p.erenForm=0;p.erenTime=0;p.erenGauge=0;p.erenHard=0;p.erenWire=null;p.erenSlashWire=null;p.erenFatigue=EREN.fatigue;clearActs(p);
  burst(p.x,p.y-80,30,5,'#e2e1d1',15);animeNotice(p,'巨人化解除 ― 疲労','#c9d5de');
 }
 function erenSpecial(p,inp){
@@ -7303,12 +7334,13 @@ function erenSpecial(p,inp){
   if(side)p.f=side;
  }else if(up){
   if(p.rec){sfxNo();return;}
+  const foe=erenDashTarget(p,true);if(foe&&erenStartDash(p,foe,true))return;
   const anchor=erenAnchor(p,true)||erenAnchor(p,false);p.erenSlashWire=anchor?{...anchor,t:EREN.wireTime}:null;
   p.erenWire=null;p.erenGlide=0;p.vx=constrain(p.vx,-5,5);p.vy=-EREN.riseSpeed;p.g=false;p.groundPl=-1;p.rec=true;
   erenMove(p,'erenRiseSpin');p.spc=36;
  }
- else if(side){p.f=side;if(erenWire(p,false)){erenMove(p,'erenRaid');p.spc=56;}}
- else{const anchor=p.erenWire||erenAnchor(p,false);p.erenSlashWire=anchor?{...anchor,t:EREN.wireTime}:null;p.erenWire=null;p.erenGlide=0;p.vx=constrain(p.vx,-6,6);p.vy=constrain(p.vy,-4,8);erenMove(p,'erenCrossSpin');p.spc=42;}
+ else if(side){p.f=side;const foe=erenDashTarget(p,false,side);if(foe&&erenStartDash(p,foe))return;if(erenWire(p,false)){erenMove(p,'erenRaid');p.spc=56;}}
+ else{const foe=erenDashTarget(p);if(foe&&erenStartDash(p,foe))return;p.erenDash=null;const anchor=p.erenWire||erenAnchor(p,false);p.erenSlashWire=anchor?{...anchor,t:EREN.wireTime}:null;p.erenWire=null;p.erenGlide=0;p.vx=constrain(p.vx,-6,6);p.vy=constrain(p.vy,-4,8);erenMove(p,'erenCrossSpin');p.spc=42;}
 }
 // Explicit world-space giant hurtbox and fist shapes; normal fighters use their original geometry.
 const EREN_TITAN_BODY={halfWidth:45,height:225,napeX:19,napeY:171,napeRadius:11};
@@ -7361,6 +7393,7 @@ function erenTick(p){
  if(!erenTitan(p))p.erenGas=Math.min(100,(p.erenGas??100)+(p.g?2.5:.08));
  for(const key of ['erenExit','erenGlide','erenWireCd','erenHard','erenHardCd','erenFatigue'])if(p[key]>0)p[key]--;
  if(erenTitan(p)&&p.erenTime>0&&--p.erenTime===0)erenRevert(p);
+ erenDashTick(p);
  const slash=p.erenSlashWire;
  if(slash){const pl=stage.plats[slash.pl];if(!pl||slash.x<pl.x||slash.x>pl.x+pl.w||slash.y!==pl.y||--slash.t<=0||p.kb>0||p.out)p.erenSlashWire=null;}
  if(p.mv?.kind==='titanTackle'&&p.g&&p.a>=p.mv.act0&&p.a<=p.mv.act1&&p.a%6===0)burst(p.x-p.f*25,p.y,4,3,'#b6ac8d',6);
@@ -7388,7 +7421,8 @@ function erenReadState(s){
   return pl&&Number.isFinite(wire.x)&&wire.x>=pl.x&&wire.x<=pl.x+pl.w&&wire.y===pl.y&&Number.isFinite(wire.t)&&wire.t>0?
    {x:wire.x,y:wire.y,pl:wire.pl,t:Math.min(wire.t,EREN.wireTime),docked:wire.docked===true}:null;
  };
- return {erenLife:Math.floor(n('ep',1e9)),erenExit:n('ex',24),erenGas:n('eo',100),erenGlide:n('el',EREN.glideTime),erenForm:form,erenGauge:n('eg',100),erenTime:form?n('et',EREN.duration):0,
+ const dash=s.ed,enemy=dash&&byId(dash.id);
+ return {erenDash:enemy&&Number.isFinite(dash.t)&&dash.t>0?{id:enemy.id,t:Math.min(30,dash.t),up:dash.up===true}:null,erenLife:Math.floor(n('ep',1e9)),erenExit:n('ex',24),erenGas:n('eo',100),erenGlide:n('el',EREN.glideTime),erenForm:form,erenGauge:n('eg',100),erenTime:form?n('et',EREN.duration):0,
   erenHard:form?n('eh',EREN.hardTime):0,erenHardCd:n('ec',EREN.hardCooldown),erenFatigue:n('ez',EREN.fatigue),erenSwing:n('es',1e6),
   erenWire:readWire(s.ew),erenSlashWire:readWire(s.ewc),
   erenGrab:s.eb&&typeof s.eb.by==='string'&&byId(s.eb.by)&&Number.isFinite(s.eb.t)?{by:s.eb.by,dir:s.eb.dir===-1?-1:1,t:constrain(s.eb.t,0,EREN.grabTime)}:null};
@@ -7421,7 +7455,7 @@ const erenBaseStep=stepFighter;
 stepFighter=function(p,inp){
  const attackEdge=inp.ac!==p.prev.ac;
  if(p.cid==='eren'&&bt.phase==='play'&&!freezeT&&!p.out){
-  if(p.domainT>0){p.erenWire=null;p.erenSlashWire=null;p.erenGlide=0;}
+  if(p.domainT>0){p.erenDash=null;p.erenWire=null;p.erenSlashWire=null;p.erenGlide=0;}
   const side=inp.sideSpecial||(!inp.neutralSpecial&&!inp.u?((inp.r?1:0)-(inp.l?1:0)):0);
   const mobility=!!side&&!inp.gd&&(!inp.d||inp.sideSpecial);
   if(!erenTitan(p)&&!p.erenFatigue&&!p.timeStopT&&!p.domainT){
@@ -7431,7 +7465,7 @@ stepFighter=function(p,inp){
    // At the right edge, the old right-facing anchor may not exist even though a left one does.
    const wireFacing=inp.sideSpecial||p.erenSteerX||p.f;
    if(mobility&&inp.sc!==p.prev.sc&&!p.kb&&!p.stn&&!p.erenWireCd&&
-      p.erenGas>=EREN.gasCost&&erenAnchor({x:p.x,y:p.y,f:wireFacing},false)){
+      p.erenGas>=EREN.gasCost&&(erenDashTarget(p,false,wireFacing)||erenAnchor({x:p.x,y:p.y,f:wireFacing},false))){
     clearActs(p);p.spc=p.cd=0;
    }
    // Change travel thrust into a braced spin without losing the connected wire.
@@ -7439,8 +7473,10 @@ stepFighter=function(p,inp){
     clearActs(p);p.spc=p.cd=0;
    }
    if(p.erenSlashWire&&inp.jc!==p.prev.jc)p.erenSlashWire=null;
+   if(inp.sc!==p.prev.sc&&!side&&!inp.u&&!inp.d&&!inp.gd&&!p.kb&&!p.stn&&(p.erenDash||p.mv?.kind==='erenRaid'&&p.erenAttacks.get(p.mv.erenToken)?.connected)){if(p.erenDash){p.erenDash.spin=true;p.prev.sc=inp.sc;}else{clearActs(p);p.spc=p.cd=0;}}
    erenSpinFollow(p,inp);
-   if(p.erenWire&&inp.ac!==p.prev.ac&&!p.kb&&!p.stn){clearActs(p);p.cd=0;}
+   if((p.erenWire||p.erenDash)&&inp.ac!==p.prev.ac&&!p.kb&&!p.stn){clearActs(p);p.cd=0;}
+   if(p.erenDash&&inp.jc!==p.prev.jc){p.erenDash=null;p.vx*=.6;p.erenGlide=EREN.glideTime;}
    if(p.erenWire&&inp.jc!==p.prev.jc){
     const moving=!p.erenWire.docked;p.erenWire=null;
     if(moving){p.erenGlide=EREN.glideTime;p.vy=constrain(p.vy,-EREN.riseSpeed,-3);p.prev.jc=inp.jc;}
@@ -7469,7 +7505,7 @@ resolveProj=function(q,t){if(erenNape(t,q.x,q.y,q.r||0))q={...q,dm:q.dm*1.2};con
 const erenBaseHit=applyHit;
 applyHit=function(t,h,bk,id){
  const before=t.d,kb=erenBaseHit(t,h,bk,id);
- if(t.d>before){erenGain(t,(t.d-before)*EREN.takenGain);t.erenWire=null;t.erenSlashWire=null;t.erenGrab=null;}
+ if(t.d>before){erenGain(t,(t.d-before)*EREN.takenGain);t.erenDash=null;t.erenWire=null;t.erenSlashWire=null;t.erenGrab=null;}
  return kb;
 };
 const erenBaseArmorHit=armorHit;
@@ -7496,7 +7532,7 @@ playFx=function(e,remote){
  }
 };
 const erenBaseState=stateOf;
-stateOf=function(p){const s=erenBaseState(p);if(p.cid==='eren')Object.assign(s,{ep:p.erenLife||0,ex:p.erenExit||0,eo:p.erenGas??100,el:p.erenGlide||0,ef:p.erenForm||0,eg:p.erenGauge||0,et:p.erenTime||0,eh:p.erenHard||0,ec:p.erenHardCd||0,ez:p.erenFatigue||0,ew:p.erenWire,ewc:p.erenSlashWire,es:p.erenSwing||0});if(p.erenGrab)s.eb=p.erenGrab;return s;};
+stateOf=function(p){const s=erenBaseState(p);if(p.cid==='eren')Object.assign(s,{ed:p.erenDash,ep:p.erenLife||0,ex:p.erenExit||0,eo:p.erenGas??100,el:p.erenGlide||0,ef:p.erenForm||0,eg:p.erenGauge||0,et:p.erenTime||0,eh:p.erenHard||0,ec:p.erenHardCd||0,ez:p.erenFatigue||0,ew:p.erenWire,ewc:p.erenSlashWire,es:p.erenSwing||0});if(p.erenGrab)s.eb=p.erenGrab;return s;};
 const erenBaseEvent=handleGameplayEvent;
 handleGameplayEvent=function(e){if(e.k==='eren-revert'){const p=byId(e.id);if(p?.cid==='eren'&&p.owner===e.by&&!isLocal(p))erenRevert(p);return;}if(e.k==='mh'&&e.mv?.kind==='titanGrab'&&byId(e.a)?.owner!==e.by)return;return erenBaseEvent(e);};
 const erenBaseReceive=receiveNetEvent;
@@ -7509,7 +7545,7 @@ aiSkillOptions=function(p,t){
  if(p.cid!=='eren')return erenBaseSkills(p,t);
  if(p.erenHard>0)return [];
  if(!erenTitan(p))return [{name:'special',dir:'neutral',type:'heavy',range:76,startup:5,damage:18,recovery:14,hold:2},{name:'side',dir:'side',range:210,startup:3,damage:14,recovery:12,hold:2,
-  ready:()=>p.erenGas>=EREN.gasCost&&!p.erenWireCd&&!!erenAnchor(p,false)}];
+  ready:()=>p.erenGas>=EREN.gasCost&&!p.erenWireCd&&!!(erenDashTarget(p,false,p.f)||erenAnchor(p,false))}];
  return [{name:'special',dir:'neutral',range:115,startup:12,damage:EREN.grabDamage,recovery:32,hold:2,
    ready:()=>!erenTitan(t)},
   {name:'side',dir:'side',range:175,startup:8,damage:18,recovery:15,hold:2,ready:()=>{const pl=stage.plats[p.groundPl];return p.g&&!!pl&&p.x+p.f*175>pl.x+16&&p.x+p.f*175<pl.x+pl.w-16;}}];
@@ -7518,7 +7554,7 @@ const erenBaseTactics=aiTacticalAction;
 aiTacticalAction=function(p,t,A,I,D,plan){
  if(p.cid==='eren'&&aiReady(p)&&!p.erenFatigue&&!p.erenHard&&!p.spc){
   const dist=Math.abs(t.x-p.x),floor=stage.plats[p.groundPl];
-  if(!erenTitan(p)&&p.erenGauge<100&&!p.erenWire&&!p.erenWireCd&&dist>160&&dist<330&&Math.sign(t.x-p.x)===p.f&&!!erenAnchor(p,false)){aiUseSpecial(p,I,A,2,'side');return 'wire-approach';}
+  if(!erenTitan(p)&&p.erenGauge<100&&!p.erenWire&&!p.erenWireCd&&dist>160&&dist<330&&Math.sign(t.x-p.x)===p.f&&!!(erenDashTarget(p,false,p.f)||erenAnchor(p,false))){aiUseSpecial(p,I,A,2,'side');return 'wire-approach';}
   if(!erenTitan(p)&&!p.rec&&t.y<p.y-35&&t.y>p.y-110&&dist<65){aiUseSpecial(p,I,A,2,'up');return 'eren-vertical-spin';}
   if(erenTitan(p)&&t.y<p.y-45&&dist<95){aiUseSpecial(p,I,A,2,'up');return 'titan-anti-air';}
   if(!erenTitan(p)&&p.erenGauge>=100&&p.g&&floor?.w>=102&&p.x-floor.x>=45&&floor.x+floor.w-p.x>=45&&dist<360&&(t.d>65||p.d>65||dist<220||p.s<t.s)){aiUseSpecial(p,I,A,2,'down');return 'titan-transform';}
@@ -7558,7 +7594,7 @@ function erenDrawBody(p,t,titan=erenTitan(p)){
  if(p.erenRoar){translate(0,-28);rotate(-.12);translate(0,28);}
  if(!titan&&['erenSpin','erenRiseSpin'].includes(m?.kind)&&active){translate(0,-35);rotate((p.a-m.act0)/(m.act1-m.act0)*TWO_PI);translate(0,35);}
  if(!titan&&m?.kind==='erenCrossSpin'&&active)scale(.72+.28*Math.abs(Math.cos(p.a*.55)),1);
- if(!titan&&(p.erenWire||p.erenGlide>0))rotate(constrain((p.vx||0)*p.f*.022,-.5,.5));
+ if(!titan&&(p.erenWire||p.erenDash||p.erenGlide>0))rotate(constrain((p.vx||0)*p.f*.022,-.5,.5));
  if(isInvuln(p)){if(titan){noStroke();fill(244,210,128,22);ellipse(0,-38,78,105);noFill();stroke(245,213,138,125);strokeWeight(1.1);ellipse(0,-38,73,100);}else if(t%8<3)drawingContext.globalAlpha*=.55;}
  // Same blank face, rounded limbs and costume silhouette as the other SPECIAL fighters.
  if(!titan){noStroke();fill('#244d3d');beginShape();vertex(-8,-51);vertex(-23,-47);vertex(-34-Math.abs(p.vx)*.7,-24-Math.sin(t*.15)*3);vertex(-21,-30);vertex(-23,-20);vertex(-8,-29);endShape(CLOSE);}
@@ -7602,7 +7638,7 @@ function erenDrawBody(p,t,titan=erenTitan(p)){
  }else{
   const blade=(x,y,ang)=>{push();translate(x,y);rotate(ang);stroke('#172334');strokeWeight(3.3);line(0,0,28,-19);stroke('#edf4df');strokeWeight(2);line(0,0,28,-19);stroke('#90b1ad');strokeWeight(.7);line(0,1,27,-17);stroke('#80938b');strokeWeight(2);line(-3,-3,3,2);pop();};
   blade(hx,hy,active?Math.sin(p.a*.8)*.5:0);blade(-18,-29,active?-Math.sin(p.a*.8)*.5:.3);
-  if(p.erenWire||p.dg>0||m?.kind==='erenRiseSpin'&&p.a<=12){noStroke();for(let i=0;i<4;i++){fill(200,232,220,85-i*15);ellipse(-25-i*8,-23+i*2,8+i*5,5+i*2);}}
+  if(p.erenWire||p.erenDash||p.dg>0||m?.kind==='erenRiseSpin'&&p.a<=12){noStroke();for(let i=0;i<4;i++){fill(200,232,220,85-i*15);ellipse(-25-i*8,-23+i*2,8+i*5,5+i*2);}}
  }
  if(active&&m.kind!=='titanGrab'){
   const h=titan?EREN_TITAN_HITS[m.kind]:null,reach=h?h.reach/3:m.reach,yo=h?h.height/3:m.yo,R=h?h.radius/3:m.R;
@@ -7615,9 +7651,10 @@ function erenDrawBody(p,t,titan=erenTitan(p)){
 }
 function drawEren(p){
  if(p.out)return;
- const wire=p.erenWire||p.erenSlashWire;
+ const hooked=p.erenDash&&byId(p.erenDash.id);
+ const wire=hooked?{x:hooked.x,y:hooked.y-35}:p.erenWire||p.erenSlashWire;
  if(wire){push();stroke('#d5e8e1');strokeWeight(1.4);for(const offset of [-12,12])line(p.x+offset,p.y-27,wire.x,wire.y);noStroke();fill('#dce2bd');circle(wire.x,wire.y,6);pop();}
- if(!erenTitan(p)&&((p.erenWire||p.erenGlide>0)&&Math.abs(p.vx)>8||p.mv?.kind==='erenRiseSpin'&&Math.abs(p.vy)>4)){for(let i=2;i>=1;i--){push();drawingContext.globalAlpha*=.12/i;erenDrawBody({...p,x:p.x-p.vx*i*.8,y:p.y-p.vy*i*.8,inv:0},visualFrame-i*2);pop();}}
+ if(!erenTitan(p)&&((p.erenWire||p.erenDash||p.erenGlide>0)&&Math.abs(p.vx)>8||p.mv?.kind==='erenRiseSpin'&&Math.abs(p.vy)>4)){for(let i=2;i>=1;i--){push();drawingContext.globalAlpha*=.12/i;erenDrawBody({...p,x:p.x-p.vx*i*.8,y:p.y-p.vy*i*.8,inv:0},visualFrame-i*2);pop();}}
  if(p.erenExit>0){push();drawingContext.globalAlpha*=p.erenExit/24*.55;erenDrawBody({...p,inv:0,mv:null,ch:0},visualFrame,true);pop();}
  erenDrawBody(p,visualFrame);
  if(!erenTitan(p)){push();noStroke();fill('#091621');rect(p.x-23,p.y-86,46,3,1);fill(p.erenGas>=EREN.gasCost?'#83d5ba':'#e2a46c');rect(p.x-23,p.y-86,46*(p.erenGas??100)/100,3,1);pop();}
@@ -7680,14 +7717,14 @@ const erenBaseControl=updateControlUI;
 updateControlUI=function(){
  erenBaseControl();const p=byId(myId);if(p?.cid!=='eren')return;
  const titan=erenTitan(p),linked=p.mv?.kind==='erenCrossSpin'&&p.a<=p.mv.end&&p.erenAttacks.get(p.mv.erenToken)?.connected;
- const humanHint=p.ch>0?'攻撃を離して回転斬り ／ 最大溜めでフィニッシュ':linked?
+ const humanHint=p.erenDash?'追尾急襲！ 特殊で再攻撃 ／ ジャンプで離脱':p.ch>0?'攻撃を離して回転斬り ／ 最大溜めでフィニッシュ':linked?
   '攻撃で連携（長押しで溜め）／ そのままで吹き飛ばし':
-  '特殊：横回転 ／ 命中→攻撃で連携 ／ 横：移動 ／ 上：縦回転 ／ MAXで下特殊：巨人化';
+  '特殊：遠距離は追尾・近距離は回転 ／ 横：急襲 ／ 上：空中追撃 ／ ジャンプ：離脱 ／ MAXで下特殊：巨人化';
  document.getElementById('btn-g').classList.toggle('ready',!titan&&p.erenGauge>=100&&!p.erenFatigue);
  setTxt(document.getElementById('combat-hint'),netIssue||(p.out?'観戦中':titan?
   '特殊：掴み投げ ／ 横：タックル ／ 上：アッパー ／ 下：硬質化':humanHint));
  setTxt(document.querySelector('#btn-g small'),titan?p.erenHard>0?'硬質化中':p.erenHardCd>0?'待ち '+Math.ceil(p.erenHardCd/60)+'秒':'硬質化':'巨人化');
- setTxt(document.querySelector('#btn-s small'),titan?'掴み投げ':'横回転斬り');
+ setTxt(document.querySelector('#btn-s small'),titan?'掴み投げ':'追尾／回転斬り');
 };
 const erenBaseHUDDraw=drawHUD;
 drawHUD=function(){erenBaseHUDDraw();const list=fighters.filter(f=>!f.shadowClone);const rows=document.getElementById('battle-roster').children;list.forEach((p,i)=>{if(p.cid==='eren'&&rows[i]){rows[i].classList.toggle('titan-expiring',erenTitan(p)&&p.erenTime<=180);rows[i].style.setProperty('--team',p.erenTime<=180&&erenTitan(p)?'#ed975e':p.c);}});};

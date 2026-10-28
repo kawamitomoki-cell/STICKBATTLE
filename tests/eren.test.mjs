@@ -159,7 +159,7 @@ test('committed titan attacks tank ordinary hits but still take damage and heavy
  g.run('resolveMelee({...A,mv:{...A.mv,type:"heavy",kind:"charge",dm:20}},p);');assert.ok(g.run('p.kb>0'));assert.equal(g.run('p.d'),30);
 });
 test('flight can rehook during a slash, steer, detach with momentum and consume finite gas',()=>{
- const g=env();g.run(`p.f=1;p.g=true;p.groundPl=0;let I={...blankInput(),r:true,s:true,sc:1};stepFighter(p,I);
+ const g=env();g.run(`t.out=true;p.f=1;p.g=true;p.groundPl=0;let I={...blankInput(),r:true,s:true,sc:1};stepFighter(p,I);
  const first=p.erenSwing;for(let i=0;i<EREN.wireCooldown+1;i++)stepFighter(p,I);const gas=p.erenGas;
  I={...I,l:true,r:false,sc:2};stepFighter(p,I);`);
  assert.equal(g.run('p.f'),-1);assert.ok(g.run('p.erenSwing>first'));assert.ok(g.run('p.erenGas<gas'));
@@ -212,7 +212,7 @@ test('released flight brakes naturally and opposite steering can reverse the gli
  g.run('p.g=false;p.y=240;p.vx=20;p.erenGlide=18;for(let i=0;i<12;i++)stepFighter(p,{...blankInput(),l:true});');assert.ok(g.run('p.vx<0'));
 });
 test('edge rehook searches the requested direction even when the previous slash faces offstage',()=>{
- const g=env();g.run(`p.x=710;p.y=210;p.g=false;p.f=1;p.erenGas=80;erenMove(p,'erenRaid');p.a=15;p.spc=40;
+ const g=env();g.run(`t.out=true;p.x=710;p.y=210;p.g=false;p.f=1;p.erenGas=80;erenMove(p,'erenRaid');p.a=15;p.spc=40;
  const old=p.erenSwing;const forward=erenAnchor(p,false);stepFighter(p,{...blankInput(),l:true,s:true,sc:1});`);
  assert.equal(g.run('forward'),null);assert.equal(g.run('p.f'),-1);assert.ok(g.run('p.erenSwing>old'));assert.ok(g.run('p.erenWire.x<p.x'));
 });
@@ -399,4 +399,28 @@ test('titan can jump high enough for the standard upper platforms without changi
  assert.equal(g.run('human'),1.04);assert.ok(g.run('390-top>120&&390-top<180'));
  const h=env();h.run(`p.erenForm=1;p.erenTime=1080;p.x=520;p.g=true;p.groundPl=0;const I={...blankInput(),jc:1};for(let i=0;i<50;i++)stepFighter(p,I);`);
  assert.equal(h.run('p.y'),280);assert.equal(h.run('p.g'),true);
+});
+test('smart special closes a large gap, brakes and connects against a moving opponent',()=>{
+ const g=env();g.run(`p.g=true;p.groundPl=0;t.x=650;t.vx=-1;let I={...blankInput(),neutralSpecial:true,sc:1,s:true};let peak=0;
+ for(let i=0;i<28;i++){stepFighter(p,I);stepFighter(t,blankInput());meleeCheck(p);peak=Math.max(peak,Math.abs(p.vx));}`);
+ assert.ok(g.run('t.d>=14'));assert.equal(g.run('p.stats.deaths'),0);assert.equal(g.run('p.erenDash'),null);assert.ok(g.run('peak>10'));
+});
+test('air pursuit connects with an elevated opponent and still has finite travel',()=>{
+ const g=env();g.run(`p.g=false;p.y=350;t.x=560;t.y=240;t.g=false;erenSpecial(p,{u:true});const started=!!p.erenDash;
+ const I=blankInput();for(let i=0;i<30;i++){stepFighter(p,I);stepFighter(t,I);meleeCheck(p);}`);
+ assert.equal(g.run('started'),true);assert.ok(g.run('t.d>0'));assert.equal(g.run('p.erenDash'),null);
+});
+test('confirmed approach can transition immediately into a close spin',()=>{
+ const g=env();g.run(`p.g=true;p.groundPl=0;t.x=620;let I={...blankInput(),neutralSpecial:true,s:true,sc:1};
+ for(let i=0;i<25;i++){stepFighter(p,I);stepFighter(t,blankInput());meleeCheck(p);if(t.d)break;}
+ I={...I,sc:2};for(let i=0;i<25;i++){stepFighter(p,I);stepFighter(t,blankInput());meleeCheck(p);if(p.mv?.kind==='erenCrossSpin')break;}`);assert.equal(g.run('p.mv.kind'),'erenCrossSpin');
+});
+test('pursuit ignores allies and stops after interruption or a disappearing target',()=>{
+ const g=env();g.run(`t.x=620;battleTeamMode=true;p.team=t.team=1;`);assert.equal(g.run('erenDashTarget(p)'),null);
+ g.run('battleTeamMode=false;erenSpecial(p,{neutralSpecial:true});t.out=true;stepFighter(p,blankInput());');assert.equal(g.run('p.erenDash'),null);
+ g.run('t.out=false;p.spc=0;p.erenWireCd=0;erenSpecial(p,{neutralSpecial:true});applyHit(p,{dm:5,k0:2,ks:0,up:.3,f:-1},false,t.id);');assert.equal(g.run('p.erenDash'),null);
+});
+test('pursuit snapshots bound the timer and reject unknown targets',()=>{
+ const g=env();g.run('t.x=620;erenSpecial(p,{neutralSpecial:true});const restored=erenReadState(stateOf(p));');assert.equal(g.run('restored.erenDash.id'),'enemy');
+ assert.equal(g.run('erenReadState({ed:{id:"missing",t:22}}).erenDash'),null);assert.equal(g.run('erenReadState({ed:{id:t.id,t:1e9}}).erenDash.t'),30);
 });
