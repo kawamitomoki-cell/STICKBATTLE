@@ -1516,9 +1516,10 @@ function sendLocalPolished(){
 }
 function onPPolished(s){
  let f=byId(s.key);const v=s.val();
- if(!f&&v?.sc===1&&v.rd===curRound)f=shadowCloneReceiveSnapshot(s.key,v);
- if(!f||!f.remote)return;
+ // Validate before creating fighters: rejected snapshots must not reserve a clone slot.
  if(!v||v.rd!==curRound||!['x','y','vx','r','d','s','ts'].every(k=>Number.isFinite(v[k])))return;
+ if(!f&&v.sc===1)f=shadowCloneReceiveSnapshot(s.key,v);
+ if(!f||!f.remote)return;
  if(Number.isFinite(v.sq)){if(v.sq<=(f.netLastSeq??-1))return;f.netLastSeq=v.sq;}
  else if(f.buf.length&&v.ts<=f.buf[f.buf.length-1].ts)return;
  const now=Date.now(),prev=f.buf[f.buf.length-1],lat=now-v.ts;

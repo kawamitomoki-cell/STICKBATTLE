@@ -2048,6 +2048,7 @@ function shadowCloneSummon(p){
 }
 function shadowCloneReceiveSnapshot(id,s){
  if(!online||shadowCloneGone.has(id)||!s||s.sc!==1||s.rd!==curRound||s.o||typeof id!=='string')return null;
+ if(!Number.isFinite(s.x)||!Number.isFinite(s.y))return null;
  if(typeof s.so!=='string'||!id.startsWith('sclone_'+s.so+'_'))return null;
  const owner=byId(s.so);
  if(!owner||owner.cid!=='naruto'||owner.owner===myId)return null;
@@ -3055,7 +3056,7 @@ function checkEnd() {
    return;
   }
   if(!online&&offlineMode==='kumite'){
-   const me=byId(myId),enemy=fighters.find(f=>f.cpu);
+   const me=byId(myId),enemy=fighters.find(f=>f.cpu&&!f.shadowClone);
    if(me?.out){bt={phase:'game',t:125,winner:enemy?.id||null,winnerTeam:0};sfxGame();return;}
    if(enemy?.out){
     kumiteCount++;const main=stage.plats[0],keys=cpuCharacterPool('all');
@@ -6871,9 +6872,10 @@ function sendLocalPolished(){
 }
 function onPPolished(s){
  let f=byId(s.key);const v=s.val();
- if(!f&&v?.sc===1&&v.rd===curRound)f=shadowCloneReceiveSnapshot(s.key,v);
- if(!f||!f.remote)return;
+ // Validate before creating fighters: rejected snapshots must not reserve a clone slot.
  if(!v||v.rd!==curRound||!['x','y','vx','r','d','s','ts'].every(k=>Number.isFinite(v[k])))return;
+ if(!f&&v.sc===1)f=shadowCloneReceiveSnapshot(s.key,v);
+ if(!f||!f.remote)return;
  if(Number.isFinite(v.sq)){if(v.sq<=(f.netLastSeq??-1))return;f.netLastSeq=v.sq;}
  else if(f.buf.length&&v.ts<=f.buf[f.buf.length-1].ts)return;
  const now=Date.now(),prev=f.buf[f.buf.length-1],lat=now-v.ts;

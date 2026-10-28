@@ -323,7 +323,7 @@ function checkEnd() {
    return;
   }
   if(!online&&offlineMode==='kumite'){
-   const me=byId(myId),enemy=fighters.find(f=>f.cpu);
+   const me=byId(myId),enemy=fighters.find(f=>f.cpu&&!f.shadowClone);
    if(me?.out){bt={phase:'game',t:125,winner:enemy?.id||null,winnerTeam:0};sfxGame();return;}
    if(enemy?.out){
     kumiteCount++;const main=stage.plats[0],keys=cpuCharacterPool('all');
