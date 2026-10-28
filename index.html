@@ -4963,7 +4963,7 @@ function paintAnimeFormCutin(){
  push();
  // ルフィ版 paintGearCutin と同じ画面上下の黒帯・斜めのテロップ。
  noStroke();fill('#080d18');rect(0,0,W,23);rect(0,WH-23,W,23);
- if(t>.24&&t<.34){fill(255,247,230,(1-(t-.24)/.1)*(ss3?230:175));rect(0,0,W,WH);}
+ if(t>.24&&t<.34&&!(fz.cid==='eren'&&prefs.lowFlash)){fill(255,247,230,(1-(t-.24)/.1)*(ss3?230:175));rect(0,0,W,WH);}
  const y=WH*.74;
  fill(7,12,22,230);quad(0,y-43,W,y-66,W,y+53,0,y+63);
  fill(pal.main);quad(0,y-43,W*.70,y-57,W*.70,y-51,0,y-37);
@@ -4981,7 +4981,7 @@ function paintAnimeFormCutin(){
  textSize(kagura?Math.min(70,W*.095):ss3?49:51);text(pal.tag,24-(1-slide)*W*.45,y-5);noStroke();
  textStyle(BOLD);textSize(14);fill('#f5f1e9');text(pal.sub,27,y+35);
  textAlign(RIGHT,CENTER);textSize(12);fill(pal.hot);
- text(fz.cid==='goku'?'SON GOKU':fz.cid==='tanjiro'?'TANJIRO KAMADO':'NARUTO UZUMAKI',W-26,y+44);
+ text(fz.cid==='eren'?'EREN YEAGER':fz.cid==='goku'?'SON GOKU':fz.cid==='tanjiro'?'TANJIRO KAMADO':'NARUTO UZUMAKI',W-26,y+44);
  if(ss3){
    // スーパーサイヤ人3だけシネマティック中の電撃を追加。
    noFill();stroke('#d8faff');strokeWeight(1.6);
@@ -6727,7 +6727,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_EREN_MOBILE_V33';
+const NET_PROTOCOL='SBO_NET_EREN_ASSAULT_V34';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -7193,14 +7193,15 @@ function cancelControl(key){press[key]=false;const p=byId(myId);if(p){if(key==='
 function releaseStoppedHits(p){const hits=p.stoppedHits||[];p.stoppedHits=[];if(!hits.length||p.out)return;p.releasingStop=true;let peak=0,vel=null;try{for(const e of hits){const k=applyHit(p,e.h,e.bk,e.attackerId);if(k>=peak){peak=k;vel={vx:p.vx,vy:p.vy,kb:p.kb};}}if(vel)Object.assign(p,vel);}finally{p.releasingStop=false;}burst(p.x,p.y-30,24,12,'#e4d4ff',8);ring(p.x,p.y-30,12,14);sfxBlock();shake=Math.max(shake,9);}
 // Eren module: owner-authoritative state; existing fighters take unchanged paths.
 const EREN={duration:1080,cutin:84,fatigue:60,hardTime:120,hardCooldown:360,
- normalGain:8,strongGain:12,takenGain:2,respawnCarry:50,wireTime:32,wireCooldown:36,grabTime:24};
+ normalGain:8,strongGain:12,takenGain:2,respawnCarry:50,wireTime:42,wireCooldown:36,grabTime:24};
 CHARS.eren={name:'エレン・イェーガー',en:'EREN YEAGER',mark:'巨',spd:1.15,jump:1.04,jumps:2,wt:1.0,pow:1,size:1,ctx:0,back:false,ctc:1,dgc:.9,dgs:1.1,st:[4,3,2],
- sp:'特殊：ワイヤー高速移動、移動中の攻撃で3連斬り／横：急襲。巨人：左右2連打・掴み・タックル',up:'人間：上の足場へワイヤー復帰（空中1回）／巨人：対空アッパー、空中下特殊で踏みつけ',ab:'攻撃・被弾でTITAN GAUGE蓄積。MAXで下特殊：18秒の巨人化。巨人の下特殊：2秒硬質化（6秒間隔）。背後上部のうなじは1.2倍ダメージ'};
+ sp:'特殊：双剣4連斬り／横：ワイヤーで切り込む長い連続斬撃。巨人：左右2連打・掴み・タックル',up:'人間：上の足場へワイヤー復帰（空中1回）／巨人：対空アッパー、空中下特殊で踏みつけ',ab:'攻撃・被弾でTITAN GAUGE蓄積。MAXで下特殊：18秒の巨人化。巨人の下特殊：2秒硬質化（6秒間隔）。背後上部のうなじは1.2倍ダメージ'};
 SPECIAL_IDS.push('eren');ANIME_COLORS.eren='#b8b276';fighterRoles.eren='ODM / 時間制限巨人化';
 const EREN_MOVES={
  erenBlades:{type:'normal',act0:3,act1:10,end:16,reach:28,R:23,yo:33,cd:3,multi:5,dm:7,k0:3,ks:.035,up:.4},
  erenSpin:{type:'heavy',act0:5,act1:12,end:26,reach:32,R:32,yo:30,cd:6,dm:20,k0:10,ks:.075,up:.6},
- erenRaid:{type:'normal',act0:4,act1:16,end:32,reach:34,R:29,yo:32,cd:11,dm:18,k0:10,ks:.075,up:.5},
+ erenFlurry:{type:'normal',act0:2,act1:15,end:25,reach:32,R:27,yo:32,cd:8,multi:4,dm:5,k0:3,ks:.03,up:.4},
+ erenRaid:{type:'heavy',act0:3,act1:32,end:44,reach:34,R:30,yo:32,cd:12,multi:10,dm:14,k0:7,ks:.06,up:.4,rush:true},
  erenWireCut:{type:'normal',act0:2,act1:11,end:18,reach:32,R:28,yo:32,cd:3,multi:4,dm:6,k0:3,ks:.035,up:.4,rush:true},
  titanStomp:{type:'heavy',act0:8,act1:30,end:52,reach:0,R:27,yo:4,cd:20,dm:24,k0:18,ks:.12,up:.7},
  titanPunch:{type:'normal',act0:6,act1:16,end:24,reach:30,R:23,yo:12,cd:5,multi:6,dm:9,k0:7,ks:.10,up:.65},
@@ -7230,19 +7231,20 @@ function erenAttack(p,ch){
  if(ch<CH_TH)erenMove(p,erenTitan(p)?'titanPunch':p.erenWire?'erenWireCut':'erenBlades');
  else{const q=constrain((ch-CH_TH)/(CH_FULL-CH_TH),0,1);erenMove(p,erenTitan(p)?'titanSmash':'erenSpin',{dm:erenTitan(p)?22+12*q:12+8*q,k0:erenTitan(p)?17+7*q:8+4*q});}
 }
-function erenAnchor(p,up){
+function erenAnchor(p,up,assault=false){
  let best=null,score=Infinity;
  for(let i=0;i<stage.plats.length;i++){
   const pl=stage.plats[i];if(up&&pl.y>p.y-35)continue;
   const x=constrain(p.x+(up?p.f*40:p.f*280),pl.x+6,pl.x+pl.w-6),y=pl.y;
   const d=Math.hypot(x-p.x,y-(p.y-35));if(d<35||d>440||!up&&(x-p.x)*p.f<25)continue;
-  if(d<score){score=d;best={x,y,pl:i,t:EREN.wireTime};}
+  const value=d+(assault?Math.abs(y-p.y)*3:0);
+  if(value<score){score=value;best={x,y,pl:i,t:EREN.wireTime};}
  }
  return best;
 }
-function erenWire(p,up=false){
+function erenWire(p,up=false,assault=false){
  if(!up&&p.erenWireCd>0||up&&p.rec){sfxNo();return false;}
- const anchor=erenAnchor(p,up);if(!anchor){animeNotice(p,'アンカー接続先なし','#c9d5de');return false;}
+ const anchor=erenAnchor(p,up,assault);if(!anchor){animeNotice(p,'アンカー接続先なし','#c9d5de');return false;}
  p.erenWire=anchor;p.erenWireCd=EREN.wireCooldown;if(up)p.rec=true;p.inv=Math.max(p.inv,4);
  p.spc=12;noiseHit(.1,.14,3500,true);return true;
 }
@@ -7254,7 +7256,7 @@ function erenCutin(e){
 }
 function erenTransform(p){
  if(p.erenGauge<100||p.erenFatigue||erenTitan(p)||p.out)return false;
- clearActs(p);p.erenForm=1;p.erenTime=EREN.duration;p.erenGauge=0;p.erenWire=null;p.erenHard=0;p.inv=Math.max(p.inv,24);
+ clearActs(p);p.erenForm=1;p.erenTime=EREN.duration;p.erenGauge=0;p.erenWire=null;p.erenHard=0;p.inv=Math.max(p.inv,60);
  // Feet remain on their current surface. Extra size grows upward, never into the floor.
  const e={id:p.id,x:Math.round(p.x),y:Math.round(p.y)};
  if(online)requestCinematic('titan',e);else erenCutin(e);
@@ -7280,8 +7282,8 @@ function erenSpecial(p,inp){
   erenMove(p,up?'titanUpper':side?'titanTackle':'titanGrab');p.spc=up?48:side?65:64;
   if(side)p.f=side;
  }else if(up)erenWire(p,true);
- else if(side){p.f=side;if(erenWire(p)){erenMove(p,'erenRaid');p.spc=48;}}
- else erenWire(p);
+ else if(side){p.f=side;if(erenWire(p,false,true)){erenMove(p,'erenRaid');p.spc=56;}else{erenMove(p,'erenFlurry');p.spc=28;}}
+ else{erenMove(p,'erenFlurry');p.spc=28;}
 }
 function erenBody(p){return {left:p.x-34,right:p.x+34,top:p.y-207,bottom:p.y};}
 function erenBodyHit(p,x,y,r=0){
@@ -7323,7 +7325,7 @@ function erenTick(p){
   const pl=stage.plats[w.pl];
   if(!pl||w.x<pl.x||w.x>pl.x+pl.w||w.y!==pl.y||--w.t<=0||p.kb>0||p.out){p.erenWire=null;return;}
   const dx=w.x-p.x,dy=w.y-(p.y-35),d=Math.hypot(dx,dy);
-  if(d<24){p.erenWire=null;return;}
+  if(d<24){p.erenWire=null;p.vx*=.4;p.vy*=.4;return;}
   p.vx=constrain(p.vx+dx/d*3.1,-23,23);p.vy=constrain(p.vy+dy/d*2.6,-20,14);
   if(w.y<p.y-20){p.g=false;p.groundPl=-1;}
  }
@@ -7389,7 +7391,7 @@ const erenBaseSkills=aiSkillOptions;
 aiSkillOptions=function(p,t){
  if(p.cid!=='eren')return erenBaseSkills(p,t);
  if(p.erenHard>0)return [];
- if(!erenTitan(p))return [{name:'side',dir:'side',range:145,startup:8,damage:18,recovery:16,hold:2,ready:()=>!p.erenWireCd&&!!erenAnchor(p,false)}];
+ if(!erenTitan(p))return [{name:'special',dir:'neutral',range:75,startup:2,damage:20,recovery:10,hold:2},{name:'side',dir:'side',range:210,startup:3,damage:48,recovery:12,hold:2,ready:()=>!p.erenWireCd&&!!erenAnchor(p,false,true)}];
  return [{name:'special',dir:'neutral',range:120,startup:12,damage:20,hold:2},
   {name:'side',dir:'side',range:155,startup:11,damage:24,hold:2}];
 };
@@ -7397,7 +7399,7 @@ const erenBaseTactics=aiTacticalAction;
 aiTacticalAction=function(p,t,A,I,D,plan){
  if(p.cid==='eren'&&aiReady(p)&&!p.erenFatigue&&!p.spc){
   const dist=Math.abs(t.x-p.x),floor=stage.plats[p.groundPl];
-  if(!erenTitan(p)&&p.erenGauge<100&&!p.erenWire&&!p.erenWireCd&&dist>160&&dist<330&&Math.sign(t.x-p.x)===p.f&&!!erenAnchor(p,false)){aiUseSpecial(p,I,A,2);return 'wire-approach';}
+  if(!erenTitan(p)&&p.erenGauge<100&&!p.erenWire&&!p.erenWireCd&&dist>160&&dist<330&&Math.sign(t.x-p.x)===p.f&&!!erenAnchor(p,false)){aiUseSpecial(p,I,A,2,'side');return 'wire-approach';}
   if(erenTitan(p)&&!p.g&&!p.erenStompUsed&&t.y>p.y+55&&dist<100){aiUseSpecial(p,I,A,2,'down');return 'titan-stomp';}
   if(erenTitan(p)&&t.y<p.y-45&&dist<95){aiUseSpecial(p,I,A,2,'up');return 'titan-anti-air';}
   if(!erenTitan(p)&&p.erenGauge>=100&&p.g&&floor?.w>=100&&dist<360&&(t.d>65||p.d>65||dist<220||p.s<t.s)){aiUseSpecial(p,I,A,2,'down');return 'titan-transform';}
@@ -7413,7 +7415,7 @@ function erenDrawBody(p,t,titan=erenTitan(p)){
  const skin=flash[p.id]>0?'#fff9e8':'#dcb997',base=titan?'#c18c6d':'#8b704d';
  const walk=p.g?Math.sin(t*.30)*Math.min(4,Math.abs(p.vx||0))*1.5:4;
  push();translate(p.x,p.y);scale(sc);scale(p.f,1);
- if(isInvuln(p)&&t%8<3)drawingContext.globalAlpha*=.55;
+ if(isInvuln(p)){if(titan){noStroke();fill(244,210,128,22);ellipse(0,-38,78,105);noFill();stroke(245,213,138,125);strokeWeight(1.1);ellipse(0,-38,73,100);}else if(t%8<3)drawingContext.globalAlpha*=.55;}
  // Same blank face, rounded limbs and costume silhouette as the other SPECIAL fighters.
  if(!titan){noStroke();fill('#2c5745');quad(-12,-51,-27-Math.abs(p.vx)*.5,-37,-22,-21,-8,-29);}
  for(const side of [-1,1]){
@@ -7469,26 +7471,34 @@ function drawEren(p){
 const erenBaseDraw=drawFighter;
 drawFighter=function(p){if(p.cid==='eren')return drawEren(p);return erenBaseDraw(p);};
 function erenPaintCutin(){
- if(fzType==='erenHitstop')return;
  const p=byId(fz?.att);if(!p)return;
- const q=1-freezeT/EREN.cutin;
- push();noStroke();fill(5,13,17,prefs.lowFlash?150:190);rect(0,0,W,H);
- const actor={...p,x:W*.5,y:H*.78,f:1,a:0,mv:null,ch:0,ct:0,erenHard:0};
- if(q<.22){
-  erenDrawBody(actor,visualFrame,false);stroke('#dcc5a7');strokeWeight(5);line(actor.x+14,actor.y-37,actor.x+3,actor.y-55);
- }else{
-  if(q<.42){
-   stroke('#f4ce72');strokeWeight(prefs.lowFlash?2:4);
-   beginShape();vertex(W*.5-10,0);vertex(W*.5+20,H*.2);vertex(W*.5-18,H*.31);vertex(W*.5+8,H*.6);endShape();
-   if(!prefs.lowFlash&&q<.27){noStroke();fill(255,224,160,100);rect(0,0,W,H);}
-  }
-  if(q>.42)erenDrawBody(actor,visualFrame,true);
-  noStroke();for(let i=0;i<10;i++){const x=W*.5+Math.sin(i*2.4)*130,y=H*.67-Math.abs(Math.sin(i*3+q))*120;fill(217,222,203,q<.65?130:40);ellipse(x,y,70,50);}
-  if(q>.68){noFill();stroke('#e6d08c');strokeWeight(2);ellipse(W*.5,H*.72,130+(q-.68)*450,25+(q-.68)*50);}
+ const q=1-freezeT/Math.max(1,freezeMax),x=W*.54,y=WH*.69;
+ push();noStroke();fill(3,8,17,prefs.lowFlash?175:220);rect(0,0,W,WH);
+ // Match the established awakening: world freeze, radial energy, actor reveal,
+ // then the shared letterbox/diagonal title renderer used by the other forms.
+ const energy=Math.max(0,(q-.18)/.82);
+ for(let i=0;i<24;i++){
+  const a=i*TWO_PI/24,r=65+(i%4)*10;
+  stroke(219,193,115,prefs.lowFlash?45:105);strokeWeight(i%4===0?2.4:1);
+  line(x+Math.cos(a)*r,y-100+Math.sin(a)*r*.6,x+Math.cos(a)*(r+energy*210),y-100+Math.sin(a)*(r+energy*210)*.6);
  }
- noStroke();fill('#f1db99');textAlign(CENTER,CENTER);textStyle(BOLD);textSize(30);text(q<.22?'手を噛む ― 決意':q<.55?'進撃の巨人':'ATTACK TITAN',W*.5,H*.14);
- textSize(12);text('TITAN GAUGE / 18 SECONDS',W*.5,H*.22);pop();
+ const actor={...p,x:0,y:0,inv:0,ivf:0,dg:0,ch:0,a:0,mv:null,ct:q<.2?1:0,erenHard:0};
+ push();translate(x,y);
+ if(q<.2){scale(1.8);erenDrawBody(actor,visualFrame,false);stroke('#e3b99a');strokeWeight(4);line(12,-43,2,-58);}
+ else{drawingContext.globalAlpha*=Math.min(1,.25+(q-.2)*3);erenDrawBody(actor,visualFrame,true);}
+ pop();
+ if(q>.18&&q<.53)animeLightning(x,y-150,80,WH*.9,freezeMax-freezeT,'#f3d184');
+ noStroke();for(let i=0;i<12;i++){
+  const a=i*2.4,fade=q<.55?115:Math.max(0,100-(q-.55)*230);
+  fill(213,224,204,fade);ellipse(x+Math.sin(a)*110,y-30-Math.abs(Math.sin(a+q*3))*115,60,38);
+ }
+ if(q>.55){noFill();stroke(238,213,148,prefs.lowFlash?75:155);strokeWeight(2);ellipse(x,y-15,90+(q-.55)*500,15+(q-.55)*75);}
+ pop();
+ const original=fz;
+ try{fz={...fz,cid:'eren',form:1};paintAnimeFormCutin();}finally{fz=original;}
 }
+const erenBasePalette=animeFormPalette;
+animeFormPalette=function(cid,form){return cid==='eren'?{main:'#dfc079',hot:'#f5f0cf',shadow:'#273b31',tag:'ATTACK TITAN',sub:'進撃の巨人  /  18秒の覚醒'}:erenBasePalette(cid,form);};
 const erenBaseFreezeWorld=drawFreezeWorld,erenBaseFreezeText=drawFreezeText;
 drawFreezeWorld=function(){if(['titan','erenHitstop'].includes(fzType))return;return erenBaseFreezeWorld();};
 drawFreezeText=function(){if(fzType==='titan')return erenPaintCutin();if(fzType==='erenHitstop')return;return erenBaseFreezeText();};
@@ -7511,7 +7521,7 @@ portrait=function(id,gear=1,form=0,mode=false){return id==='eren'?erenPortrait(!
 const erenBaseHud=animeHud;
 animeHud=function(p){if(p.cid!=='eren')return erenBaseHud(p);const titan=erenTitan(p);return {m:titan?p.erenTime/EREN.duration*100:p.erenGauge,label:p.erenFatigue?'疲労':titan?(p.erenTime<=180?'解除間近 ':'ATTACK TITAN ')+Math.ceil(p.erenTime/60)+'秒':'TITAN GAUGE '+Math.floor(p.erenGauge||0)+'/100'};};
 const erenBaseControl=updateControlUI;
-updateControlUI=function(){erenBaseControl();const p=byId(myId);if(p?.cid!=='eren')return;setTxt(document.getElementById('combat-hint'),netIssue|| (erenTitan(p)?'特殊：掴み投げ ／ 横：タックル ／ 上：アッパー ／ 下：地上硬質化／空中踏みつけ':'特殊：ワイヤー ／ 横：急襲 ／ 上：ワイヤー復帰 ／ MAXで下特殊：巨人化'));setTxt(document.querySelector('#btn-g small'),erenTitan(p)?p.g?'硬質化':'踏みつけ':'巨人化');setTxt(document.querySelector('#btn-s small'),erenTitan(p)?'掴み投げ':'ワイヤー');};
+updateControlUI=function(){erenBaseControl();const p=byId(myId);if(p?.cid!=='eren')return;setTxt(document.getElementById('combat-hint'),netIssue|| (erenTitan(p)?'特殊：掴み投げ ／ 横：タックル ／ 上：アッパー ／ 下：地上硬質化／空中踏みつけ':'特殊：双剣4連斬り ／ 横：ワイヤー連続斬り込み ／ 上：ワイヤー復帰 ／ MAXで下特殊：巨人化'));setTxt(document.querySelector('#btn-g small'),erenTitan(p)?p.g?'硬質化':'踏みつけ':'巨人化');setTxt(document.querySelector('#btn-s small'),erenTitan(p)?'掴み投げ':'双剣連斬');};
 const erenBaseHUDDraw=drawHUD;
 drawHUD=function(){erenBaseHUDDraw();const list=fighters.filter(f=>!f.shadowClone);const rows=document.getElementById('battle-roster').children;list.forEach((p,i)=>{if(p.cid==='eren'&&rows[i]){rows[i].classList.toggle('titan-expiring',erenTitan(p)&&p.erenTime<=180);rows[i].style.setProperty('--team',p.erenTime<=180&&erenTitan(p)?'#ed975e':p.c);}});};
 
@@ -7525,7 +7535,11 @@ tryPickup=function(p,id,it){if(p.cid==='eren')return;return erenBasePickup(p,id,
 
 // The second fist uses the existing multi-hit window and the same owner-side hit transport.
 const erenBaseCheck=meleeCheck;
-meleeCheck=function(p){if(erenTitan(p)&&p.mv?.kind==='titanPunch'&&p.mv.multi){const finish=p.a>=p.mv.act0+6;p.mv.dm=finish?13:9;p.mv.k0=finish?15:7;}return erenBaseCheck(p);};
+meleeCheck=function(p){if(p.cid==='eren'&&!erenTitan(p)&&p.mv?.kind==='erenRaid'){const finish=p.a>=23;p.mv.dm=finish?20:14;p.mv.k0=finish?14:7;}if(erenTitan(p)&&p.mv?.kind==='titanPunch'&&p.mv.multi){const finish=p.a>=p.mv.act0+6;p.mv.dm=finish?13:9;p.mv.k0=finish?15:7;}return erenBaseCheck(p);};
+
+// Titans keep taking damage, but ordinary hits cannot interrupt committed strikes.
+const erenBaseArmored=isArmored;
+isArmored=function(p){return erenBaseArmored(p)||erenTitan(p)&&p.a>0&&p.mv&&p.a<=p.mv.act1&&['titanPunch','titanSmash','titanTackle','titanUpper','titanStomp'].includes(p.mv.kind);};
 </script>
 </body>
 </html>

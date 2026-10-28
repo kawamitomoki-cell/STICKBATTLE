@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import {game} from './helpers/game.mjs';
 const setup=`frameCount=0;startBattleCommon([{id:myId,cid:'eren',owner:myId,label:'EREN',cpu:0},{id:'enemy',cid:'karate',owner:myId,label:'Enemy',cpu:1}],'std',false,3);bt.phase='play';const p=byId(myId),t=byId('enemy');p.x=400;p.y=390;p.inv=0;t.x=455;t.y=390;t.inv=0;`;
 function env(){const g=game();g.run(setup);return g;}
-test('Eren is selectable in special roster and all ten attacks are registered',()=>{
+test('Eren is selectable in special roster and all eleven attacks are registered',()=>{
  const g=env();assert.ok(g.run('cpuCharacterPool("special").includes("eren")'));
- assert.equal(g.run('Object.keys(EREN_MOVES).length'),10);
+ assert.equal(g.run('Object.keys(EREN_MOVES).length'),11);
  for(const titan of [false,true])for(const direction of ['neutral','side','up','down']){
   g.run(`erenReset(p);p.erenForm=${titan?1:0};p.erenTime=1080;p.erenGauge=100;p.spc=0;p.prev=blankInput();
    erenSpecial(p,{neutralSpecial:${direction==='neutral'},u:${direction==='up'},d:${direction==='down'},sideSpecial:${direction==='side'?1:0}});`);
@@ -35,7 +35,7 @@ test('wire needs a real platform, expires, accelerates toward anchor, up use is 
  const g=env();g.run('const ok=erenWire(p,true);const wire=p.erenWire;erenTick(p);');
  assert.equal(g.run('ok'),true);assert.ok(g.run('p.vy<0'));assert.ok(g.run('wire.y===stage.plats[wire.pl].y'));
  assert.equal(g.run('erenWire(p,true)'),false);
- g.run('for(let i=0;i<40;i++)erenTick(p);');assert.equal(g.run('p.erenWire'),null);
+ g.run('for(let i=0;i<50;i++)erenTick(p);');assert.equal(g.run('p.erenWire'),null);
  g.run('erenReset(p);p.rec=false;stage={w:800,h:450,plats:[]};');assert.equal(g.run('erenWire(p,true)'),false);
 });
 test('titan body includes feet and head; nape is small, high and behind',()=>{
@@ -114,10 +114,10 @@ test('next stock retains at most 50 earned gauge; final stock resets to zero',()
 });
 test('polished moves give human and titan different finishers, keeping timed vulnerability',()=>{
  const g=env();g.run('fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'erenSpin');assert.equal(g.run('p.mv.dm'),20);
- g.run('p.erenGauge=100;erenTransform(p);');assert.equal(g.run('p.inv'),24);
+ g.run('p.erenGauge=100;erenTransform(p);');assert.equal(g.run('p.inv'),60);
  g.run('freezeT=0;fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'titanSmash');assert.equal(g.run('p.mv.dm'),34);
  assert.ok(g.run('p.mv.end>p.mv.act1+20'));
- g.run('clearActs(p);for(let i=0;i<24;i++)stepFighter(p,blankInput());');assert.equal(g.run('isInvuln(p)'),false);
+ g.run('clearActs(p);for(let i=0;i<60;i++)stepFighter(p,blankInput());');assert.equal(g.run('isInvuln(p)'),false);
 });
 test('wire combat keeps tether acceleration during an actual moving slash',()=>{
  const g=env();g.run('p.f=1;t.x=460;t.y=350;erenWire(p);erenAttack(p,1);const x=p.x,y=p.y;for(let i=0;i<10;i++){stepFighter(p,blankInput());meleeCheck(p);}');
@@ -135,4 +135,22 @@ test('airborne titan down special is a limited stomp; grounded down still harden
  assert.equal(g.run('p.mv.kind'),'titanStomp');assert.equal(g.run('p.vy'),14);
  g.run('p.spc=0;erenSpecial(p,{d:true});');assert.equal(g.run('p.mv.erenToken'),g.run('token'));
  g.run('p.g=true;p.y=390;erenTick(p);p.spc=0;erenSpecial(p,{d:true});');assert.equal(g.run('p.erenHard'),120);
+});
+test('neutral special cuts on the ground without requiring any terrain anchor',()=>{
+ const g=env();g.run('stage={w:800,h:450,plats:[]};erenSpecial(p,{neutralSpecial:true});');
+ assert.equal(g.run('p.mv.kind'),'erenFlurry');assert.equal(g.run('p.erenWire'),null);
+ g.run('for(const frame of [2,6,10,14]){p.a=frame;p.hit={};meleeCheck(p);}');assert.equal(g.run('t.d'),20);
+ assert.equal(g.run('p.erenGauge'),8);
+});
+test('side special anchors forward on the ground and cuts for 30 frames with a punishable recovery',()=>{
+ const g=env();g.run('p.f=1;erenSpecial(p,{sideSpecial:1});');
+ assert.equal(g.run('p.erenWire.y'),390);assert.equal(g.run('p.mv.kind'),'erenRaid');
+ assert.equal(g.run('p.mv.act1-p.mv.act0+1'),30);assert.ok(g.run('p.mv.multi>0&&p.mv.end>p.mv.act1+10'));
+ g.run('t.ct=CT_ON;t.f=-1;p.a=3;t.x=p.x+35;meleeCheck(p);');assert.equal(g.run('fzType'),'counter');
+});
+test('committed titan attacks tank ordinary hits but still take damage and heavy knockback',()=>{
+ const g=env();g.run(`p.erenForm=1;p.erenTime=1080;p.inv=0;erenMove(p,"titanPunch");p.a=6;
+ const A={id:t.id,x:t.x,f:-1,mv:{type:"normal",kind:"normal",dm:10,k0:8,ks:.05,up:.6}};resolveMelee(A,p);`);
+ assert.equal(g.run('p.d'),10);assert.equal(g.run('p.kb'),0);assert.equal(g.run('p.a'),6);
+ g.run('resolveMelee({...A,mv:{...A.mv,type:"heavy",kind:"charge",dm:20}},p);');assert.ok(g.run('p.kb>0'));assert.equal(g.run('p.d'),30);
 });

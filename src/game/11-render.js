@@ -295,7 +295,7 @@ function paintAnimeFormCutin(){
  push();
  // ルフィ版 paintGearCutin と同じ画面上下の黒帯・斜めのテロップ。
  noStroke();fill('#080d18');rect(0,0,W,23);rect(0,WH-23,W,23);
- if(t>.24&&t<.34){fill(255,247,230,(1-(t-.24)/.1)*(ss3?230:175));rect(0,0,W,WH);}
+ if(t>.24&&t<.34&&!(fz.cid==='eren'&&prefs.lowFlash)){fill(255,247,230,(1-(t-.24)/.1)*(ss3?230:175));rect(0,0,W,WH);}
  const y=WH*.74;
  fill(7,12,22,230);quad(0,y-43,W,y-66,W,y+53,0,y+63);
  fill(pal.main);quad(0,y-43,W*.70,y-57,W*.70,y-51,0,y-37);
@@ -313,7 +313,7 @@ function paintAnimeFormCutin(){
  textSize(kagura?Math.min(70,W*.095):ss3?49:51);text(pal.tag,24-(1-slide)*W*.45,y-5);noStroke();
  textStyle(BOLD);textSize(14);fill('#f5f1e9');text(pal.sub,27,y+35);
  textAlign(RIGHT,CENTER);textSize(12);fill(pal.hot);
- text(fz.cid==='goku'?'SON GOKU':fz.cid==='tanjiro'?'TANJIRO KAMADO':'NARUTO UZUMAKI',W-26,y+44);
+ text(fz.cid==='eren'?'EREN YEAGER':fz.cid==='goku'?'SON GOKU':fz.cid==='tanjiro'?'TANJIRO KAMADO':'NARUTO UZUMAKI',W-26,y+44);
  if(ss3){
    // スーパーサイヤ人3だけシネマティック中の電撃を追加。
    noFill();stroke('#d8faff');strokeWeight(1.6);
