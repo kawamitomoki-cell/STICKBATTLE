@@ -1229,7 +1229,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_EREN_FREEDOM_V35';
+const NET_PROTOCOL='SBO_NET_EREN_SPEC_V36';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -1552,10 +1552,12 @@ function updateRemotePolished(){
   else if(!f.netSnap)pos={x:f.buf[0].x,y:f.buf[0].y};
   f.netSnap=false;
   // Gameplay/animation uses the newest state; only world position is delayed for interpolation.
-  const s=latest;
+  const s=latest,erenState=(f.cid==='eren'||s.eb)?erenReadState(s):null;
+  const grip=erenState?.erenGrab,holder=grip?byId(grip.by):null;
+  if(grip&&erenTitan(holder)&&!holder.out)pos={x:holder.x+grip.dir*64,y:holder.y-55};
   if(s.ats>0||s.adom>0)pos={x:s.x,y:s.y};
-  Object.assign(f,{...pos,...(f.cid==='eren'?erenReadState(s):{}),erenGrab:s.eb&&typeof s.eb.by==='string'?erenReadState(s).erenGrab:null,r,vx:s.vx,vy:s.vy,f:s.f,a:s.a,ch:s.ch,ct:s.ct,cs:s.cs,stn:s.stn,dg:s.dg,ivf:s.iv,kb:s.kb,w:s.w||null,sh:s.sh,sph:s.sph,castStyle:s.acs==='charge'?'charge':'',rise:s.ri,arm:s.am||0,cid:s.cid||f.cid,d:s.d,s:s.s,ko:s.ko,g:s.g,rage:s.rg||0,rageT:s.rt||0,senku:s.sk||0,senkuWind:s.sw||0,energy:s.ae||0,form:s.af||0,modeT:s.at||0,fatigue:s.az||0,cloneT:s.an||0,infinityCd:s.ai||0,slowT:s.asl||0,domainT:s.adom||0,timeStopT:s.ats||0,timeStopSelfT:s.atsf||0,orbColor:s.aoc||'blue',gear:s.gr||1,gearM:s.gm||0,gearT:s.gt||0,tired:s.td?1:0,bowUp:!!s.bu,bullets:s.bl??f.bullets,reloadT:s.rl||0,stats:s.stats||f.stats});
-  f.mv=mkMv(s.mk,s.w);animeRemoteMove(f);if(f.cid==='rubber'&&f.mv)decorateRubber(f.mv,f);
+  Object.assign(f,{...pos,...(f.cid==='eren'?erenState:{}),erenGrab:grip||null,r,vx:s.vx,vy:s.vy,f:s.f,a:s.a,ch:s.ch,ct:s.ct,cs:s.cs,stn:s.stn,dg:s.dg,ivf:s.iv,kb:s.kb,w:s.w||null,sh:s.sh,sph:s.sph,castStyle:s.acs==='charge'?'charge':'',rise:s.ri,arm:s.am||0,cid:s.cid||f.cid,d:s.d,s:s.s,ko:s.ko,g:s.g,rage:s.rg||0,rageT:s.rt||0,senku:s.sk||0,senkuWind:s.sw||0,energy:s.ae||0,form:s.af||0,modeT:s.at||0,fatigue:s.az||0,cloneT:s.an||0,infinityCd:s.ai||0,slowT:s.asl||0,domainT:s.adom||0,timeStopT:s.ats||0,timeStopSelfT:s.atsf||0,orbColor:s.aoc||'blue',gear:s.gr||1,gearM:s.gm||0,gearT:s.gt||0,tired:s.td?1:0,bowUp:!!s.bu,bullets:s.bl??f.bullets,reloadT:s.rl||0,stats:s.stats||f.stats});
+  f.mv=mkMv(s.mk,s.w);if(erenTitan(f)&&f.erenHard>0&&f.mv?.kind==='titanPunch')f.mv.end=42;animeRemoteMove(f);if(f.cid==='rubber'&&f.mv)decorateRubber(f.mv,f);
   if(f.mv&&s.a>0&&!s.ats&&!s.adom&&!freezeT){const advance=Math.min(4,Math.max(0,(now-f.off-s.ts)/FIXED_MS));f.a=Math.min(f.mv.end,s.a+advance*(s.asl>0?.38:1));}
   if(s.o&&!f.out){
    if(f.shadowClone)shadowClonePop(f,false);

@@ -3,19 +3,19 @@ import assert from 'node:assert/strict';
 import {game} from './helpers/game.mjs';
 const setup=`frameCount=0;startBattleCommon([{id:myId,cid:'eren',owner:myId,label:'EREN',cpu:0},{id:'enemy',cid:'karate',owner:myId,label:'Enemy',cpu:1}],'std',false,3);bt.phase='play';const p=byId(myId),t=byId('enemy');p.x=400;p.y=390;p.inv=0;t.x=455;t.y=390;t.inv=0;`;
 function env(){const g=game();g.run(setup);return g;}
-test('Eren is selectable in special roster and all thirteen attacks are registered',()=>{
+test('Eren is selectable in special roster and all nine attacks are registered',()=>{
  const g=env();assert.ok(g.run('cpuCharacterPool("special").includes("eren")'));
- assert.equal(g.run('Object.keys(EREN_MOVES).length'),13);
+ assert.equal(g.run('Object.keys(EREN_MOVES).length'),9);
  for(const titan of [false,true])for(const direction of ['neutral','side','up','down']){
   g.run(`erenReset(p);p.erenForm=${titan?1:0};p.erenTime=1080;p.erenGauge=100;p.spc=0;p.prev=blankInput();
    erenSpecial(p,{neutralSpecial:${direction==='neutral'},u:${direction==='up'},d:${direction==='down'},sideSpecial:${direction==='side'?1:0}});`);
   assert.ok(g.run('p.erenForm||p.erenWire||p.erenHard||p.mv||p.spc>0'),`${titan}/${direction}`);
  }
 });
-test('dual blades hit twice, but gain only eight gauge per swing and target',()=>{
+test('dual blades hit twice, but gain only six gauge per swing and target',()=>{
  const g=env();g.run(`fireAttack(p,1);p.a=3;meleeCheck(p);const first=t.d;
  p.hit={};p.a=8;meleeCheck(p);`);
- assert.equal(g.run('t.d'),14);assert.equal(g.run('first'),7);assert.equal(g.run('p.erenGauge'),8);
+ assert.equal(g.run('t.d'),10);assert.equal(g.run('first'),5);assert.equal(g.run('p.erenGauge'),6);
 });
 test('received damage gains gauge, idle time does not, titan cannot refill',()=>{
  const g=env();g.run('for(let i=0;i<200;i++)erenTick(p);');assert.equal(g.run('p.erenGauge'),0);
@@ -46,14 +46,18 @@ test('titan body includes feet and head; nape is small, high and behind',()=>{
  g.run(`resolveProj({o:t.id,x:381,y:219,vx:1,dir:1,dm:10,k0:1,ks:0,up:.2},p);`);assert.equal(g.run('p.d'),12);
 });
 test('titan punches reach small fighters at its feet; enemy melee can hit its torso',()=>{
- const g=env();g.run('p.erenForm=1;erenMove(p,"titanPunch");p.a=11;t.x=480;meleeCheck(p);');assert.equal(g.run('t.d'),9);
+ const g=env();g.run('p.erenForm=1;erenMove(p,"titanPunch");p.a=11;t.x=480;meleeCheck(p);');assert.equal(g.run('t.d'),14);
  g.run('t.x=430;t.y=270;t.f=-1;fireAttack(t,1);t.a=t.mv.act0;meleeCheck(t);');assert.ok(g.run('p.d>0'));
 });
-test('counter hardening reduces damage by 30% without disabling attacks, expires and cools down',()=>{
- const g=env();g.run('p.erenForm=1;p.erenTime=1080;p.ct=1;erenTick(p);fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'titanSmash');assert.equal(g.run('p.erenHard'),35);
+test('down special hardens for 120 ticks, reduces damage, limits attacks and cools for 360 ticks',()=>{
+ const g=env();g.run('p.erenForm=1;p.erenTime=1080;erenSpecial(p,{d:true});');
+ assert.equal(g.run('p.erenHard'),120);assert.equal(g.run('p.erenHardCd'),360);
+ assert.ok(g.run('fighterConfig(p).spd<.82'));g.run('fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'titanPunch');assert.equal(g.run('p.mv.end'),42);
  g.run('applyHit(p,{dm:20,k0:1,ks:0,up:.2,f:1},false,t.id);');assert.equal(g.run('p.d'),14);
- g.run('p.ct=0;for(let i=0;i<35;i++)erenTick(p);');assert.equal(g.run('p.erenHard'),0);assert.equal(g.run('p.erenHardCd'),144);
+ g.run('for(let i=0;i<120;i++)erenTick(p);');assert.equal(g.run('p.erenHard'),0);assert.equal(g.run('p.erenHardCd'),240);
+ g.run('erenSpecial(p,{d:true});');assert.equal(g.run('p.erenHard'),0);
 });
+
 test('grab holds one target then throws once; duplicate token and stale owner are rejected',()=>{
  const g=env();g.run('p.erenForm=1;p.erenTime=1080;erenMove(p,"titanGrab");const A={id:p.id,mv:p.mv};erenGrabStart(A,t);');
  assert.ok(g.run('!!t.erenGrab'));
@@ -113,9 +117,9 @@ test('next stock retains at most 50 earned gauge; final stock resets to zero',()
  g.run('p.erenGauge=90;p.s=1;koFighter(p);');assert.equal(g.run('p.erenGauge'),0);
 });
 test('polished moves give human and titan different finishers, keeping timed vulnerability',()=>{
- const g=env();g.run('fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'erenSpin');assert.equal(g.run('p.mv.dm'),20);
+ const g=env();g.run('fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'erenSpin');assert.equal(g.run('p.mv.dm'),16);
  g.run('p.erenGauge=100;erenTransform(p);');assert.equal(g.run('p.inv'),90);
- g.run('freezeT=0;fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'titanSmash');assert.equal(g.run('p.mv.dm'),34);
+ g.run('freezeT=0;fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'titanSmash');assert.equal(g.run('p.mv.dm'),28);
  assert.ok(g.run('p.mv.end>p.mv.act1+20'));
  g.run('clearActs(p);for(let i=0;i<90;i++)stepFighter(p,blankInput());');assert.equal(g.run('isInvuln(p)'),false);
 });
@@ -124,28 +128,29 @@ test('wire combat keeps tether acceleration during an actual moving slash',()=>{
  assert.equal(g.run('p.mv.kind'),'erenWireCut');assert.ok(g.run('Math.hypot(p.x-x,p.y-y)>100'));
  assert.ok(g.run('t.d>0'));assert.ok(g.run('!!p.erenWire'));
 });
-test('tether slashes hit three times without duplicate gauge gain; titan punches combo twice',()=>{
- const g=env();g.run('erenWire(p);erenAttack(p,1);for(const frame of [2,6,10]){p.a=frame;p.hit={};meleeCheck(p);}');
- assert.equal(g.run('t.d'),18);assert.equal(g.run('p.erenGauge'),8);
- g.run('p.erenForm=1;erenMove(p,"titanPunch");t.d=0;t.x=480;for(const frame of [6,12]){p.a=frame;p.hit={};meleeCheck(p);}');
- assert.equal(g.run('t.d'),22);
+test('tether slashes hit twice and titan fists alternate without duplicate damage',()=>{
+ const g=env();g.run('erenWire(p);erenAttack(p,1);for(const frame of [2,7]){p.a=frame;p.hit={};meleeCheck(p);}');
+ assert.equal(g.run('t.d'),10);assert.equal(g.run('p.erenGauge'),6);
+ g.run('p.erenForm=1;erenMove(p,"titanPunch");t.d=0;t.x=480;const firstArm=erenHandPose(p).second;for(const frame of [6,12]){p.a=frame;meleeCheck(p);}');
+ assert.equal(g.run('t.d'),14);g.run('erenMove(p,"titanPunch");');assert.notEqual(g.run('erenHandPose(p).second'),g.run('firstArm'));
 });
-test('airborne titan down special is a limited stomp; grounded down quakes',()=>{
- const g=env();g.run('p.erenForm=1;p.erenTime=1080;p.g=false;p.y=300;erenSpecial(p,{d:true});const token=p.mv.erenToken;');
- assert.equal(g.run('p.mv.kind'),'titanStomp');assert.equal(g.run('p.vy'),14);
- g.run('p.spc=0;erenSpecial(p,{d:true});');assert.equal(g.run('p.mv.erenToken'),g.run('token'));
- g.run('p.g=true;p.y=390;erenTick(p);p.spc=0;erenSpecial(p,{d:true});');assert.equal(g.run('p.mv.kind'),'titanQuake');
+
+test('hardening also works in the air and cannot become an unlimited guard',()=>{
+ const g=env();g.run('p.erenForm=1;p.erenTime=1080;p.g=false;p.y=300;erenSpecial(p,{d:true});');assert.equal(g.run('p.erenHard'),120);
+ g.run('for(let i=0;i<125;i++)erenTick(p);erenSpecial(p,{d:true});');assert.equal(g.run('p.erenHard'),0);
+ g.run('p.erenHardCd=0;erenSpecial(p,{d:true});');assert.equal(g.run('p.erenHard'),120);
 });
-test('neutral special cuts on the ground without requiring any terrain anchor',()=>{
- const g=env();g.run('stage={w:800,h:450,plats:[]};erenSpecial(p,{neutralSpecial:true});');
- assert.equal(g.run('p.mv.kind'),'erenFlurry');assert.equal(g.run('p.erenWire'),null);
- g.run('for(const frame of [2,6,10,14]){p.a=frame;p.hit={};meleeCheck(p);}');assert.equal(g.run('t.d'),20);
- assert.equal(g.run('p.erenGauge'),8);
+
+test('neutral special is a terrain-bound wire hook; missing anchors cannot create movement or attacks',()=>{
+ const g=env();g.run('erenSpecial(p,{neutralSpecial:true});');assert.ok(g.run('!!p.erenWire'));assert.equal(g.run('p.mv'),null);
+ g.run('erenReset(p);p.spc=0;stage={w:800,h:450,plats:[]};p.vx=p.vy=0;erenSpecial(p,{neutralSpecial:true});');
+ assert.equal(g.run('p.erenWire'),null);assert.equal(g.run('p.mv'),null);assert.equal(g.run('p.vx+p.vy'),0);assert.equal(g.run('p.erenGas'),100);
 });
+
 test('side special launches toward a forward anchor and cuts for 30 frames with a punishable recovery',()=>{
  const g=env();g.run('p.f=1;erenSpecial(p,{sideSpecial:1});');
  assert.ok(g.run('p.erenWire.y<p.y'));assert.equal(g.run('p.mv.kind'),'erenRaid');
- assert.equal(g.run('p.mv.act1-p.mv.act0+1'),30);assert.ok(g.run('p.mv.multi>0&&p.mv.end>p.mv.act1+10'));
+ assert.equal(g.run('p.mv.act1-p.mv.act0+1'),30);assert.ok(g.run('!p.mv.multi&&p.mv.end>p.mv.act1+10'));
  g.run('t.ct=CT_ON;t.f=-1;p.a=3;t.x=p.x+35;meleeCheck(p);');assert.equal(g.run('fzType'),'counter');
 });
 test('committed titan attacks tank ordinary hits but still take damage and heavy knockback',()=>{
@@ -178,15 +183,16 @@ test('MAX transformation breaks hitstun, bursts nearby enemies once and respects
  }
  const h=env();h.run(`p.erenGauge=100;p.timeStopT=20;stepFighter(p,{...blankInput(),gd:true,sc:1});`);assert.equal(h.run('p.erenForm'),0);
 });
-test('giant sweep and quake damage multiple targets with distinct forward and all-around coverage',()=>{
- for(const [kind,positions]of [['titanSweep',[70,150]],['titanQuake',[-150,150]]]){
-  const g=env();g.run(`p.erenForm=1;p.erenTime=1080;p.f=1;t.x=p.x+${positions[0]};
- const third=makeFighter({id:'third',cid:'karate',owner:myId,label:'Third'},2);third.x=p.x+${positions[1]};third.y=p.y;third.inv=0;fighters.push(third);
- erenMove(p,'${kind}');p.a=p.mv.act0;meleeCheck(p);meleeCheck(p);`);
-  assert.equal(g.run('t.d'),kind==='titanSweep'?26:22);assert.equal(g.run('third.d'),g.run('t.d'));
-  assert.equal(g.run('isArmored(p)'),true);
- }
+test('giant attacks use dedicated fist geometry, hit multiple enemies and remain counterable',()=>{
+ const g=env();g.run(`p.erenForm=1;p.erenTime=1080;p.f=1;t.x=p.x+100;
+ const third=makeFighter({id:'third',cid:'karate',owner:myId,label:'Third'},2);third.x=p.x+120;third.y=p.y;third.inv=0;fighters.push(third);
+ erenMove(p,'titanSmash');p.a=p.mv.act0;meleeCheck(p);meleeCheck(p);`);
+ assert.equal(g.run('t.d'),28);assert.equal(g.run('third.d'),28);
+ assert.equal(g.run('erenAttackShape(p).x'),510);assert.equal(g.run('erenAttackShape(p).r'),42);
+ const h=env();h.run(`p.erenForm=1;p.erenTime=1080;p.f=1;erenSpecial(p,{neutralSpecial:true});`);assert.equal(h.run('p.mv.kind'),'titanGrab');
+ h.run('t.f=-1;t.ct=CT_ON;p.a=12;meleeCheck(p);');assert.equal(h.run('!!t.erenGrab'),false);assert.equal(h.run('fzType'),'counter');
 });
+
 test('gas snapshots are bounded and available to remote HUDs',()=>{
  const g=env();g.run('p.erenGas=44;const restored=erenReadState(stateOf(p));');assert.equal(g.run('restored.erenGas'),44);
  assert.equal(g.run('erenReadState({eo:Infinity}).erenGas'),0);assert.equal(g.run('erenReadState({eo:999}).erenGas'),100);
@@ -212,11 +218,59 @@ test('edge rehook searches the requested direction even when the previous slash 
  assert.equal(g.run('forward'),null);assert.equal(g.run('p.f'),-1);assert.ok(g.run('p.erenSwing>old'));assert.ok(g.run('p.erenWire.x<p.x'));
 });
 test('wire hits refund gas once per target and swing, without rewarding repeated multi-hit receipts',()=>{
- const g=env();g.run(`p.erenGas=40;erenWire(p);erenAttack(p,1);for(const frame of [2,6,10]){p.a=frame;p.hit={};meleeCheck(p);}`);
- assert.equal(g.run('t.d'),18);assert.equal(g.run('p.erenGas'),32);
+ const g=env();g.run(`p.erenGas=40;erenWire(p);erenAttack(p,1);for(const frame of [2,7]){p.a=frame;p.hit={};meleeCheck(p);}`);
+ assert.equal(g.run('t.d'),10);assert.equal(g.run('p.erenGas'),32);
  g.run(`playFx({res:'hit',a:p.id,t:t.id,erenToken:p.mv.erenToken,x:t.x,y:t.y,kb:3});`);assert.equal(g.run('p.erenGas'),32);
 });
 test('domain control lock prevents emergency transformation and stops active wire steering',()=>{
  const g=env();g.run(`erenWire(p);p.domainT=20;p.erenGauge=100;stepFighter(p,{...blankInput(),gd:true,sc:1});`);
  assert.equal(g.run('p.erenForm'),0);assert.equal(g.run('p.erenWire'),null);assert.equal(g.run('p.erenGlide'),0);
+});
+test('respawn issues a new attack token and an old victim can be grabbed again',()=>{
+ const g=env();g.run(`p.erenForm=1;p.erenTime=1080;erenMove(p,'titanGrab');const first=p.mv.erenToken;
+ erenGrabStart({id:p.id,mv:p.mv},t);t.erenGrab=null;erenReset(p);p.erenForm=1;p.erenTime=1080;erenMove(p,'titanGrab');const second=p.mv.erenToken;erenGrabStart({id:p.id,mv:p.mv},t);`);
+ assert.notEqual(g.run('first'),g.run('second'));assert.ok(g.run('!!t.erenGrab'));
+ g.run('t.erenGrab=null;erenGrabStart({id:p.id,mv:{...p.mv,erenToken:first}},t);');assert.equal(g.run('t.erenGrab'),null);
+});
+test('grab respects allied clones, enemy invulnerability and attacker interruption',()=>{
+ const g=env();g.run(`p.erenForm=1;p.erenTime=1080;erenMove(p,'titanGrab');
+ const clone=makeFighter({id:'ally-clone',cid:'naruto',owner:myId,label:'Clone',team:1,cpu:1},2);clone.shadowClone=true;clone.shadowOwner='naruto';clone.x=455;clone.y=390;clone.inv=0;fighters.push(clone);
+ battleTeamMode=true;p.team=clone.team=1;erenGrabStart({id:p.id,mv:p.mv},clone);`);
+ assert.equal(g.run('clone.out'),false);
+ g.run('battleTeamMode=false;erenGrabStart({id:p.id,mv:p.mv},clone);');assert.equal(g.run('clone.out'),true);
+ g.run('erenGrabStart({id:p.id,mv:p.mv},t);p.timeStopT=20;erenGrabTick(t);');assert.equal(g.run('t.erenGrab'),null);assert.equal(g.run('t.d'),0);
+});
+test('delayed hit receipts retain the original attack gain after a different action starts',()=>{
+ const g=env();g.run(`erenMove(p,'erenSpin');const token=p.mv.erenToken;erenMove(p,'erenBlades');
+ playFx({res:'hit',a:p.id,t:t.id,erenToken:token,x:t.x,y:t.y,kb:3});
+ playFx({res:'hit',a:p.id,t:t.id,erenToken:token,x:t.x,y:t.y,kb:3});`);
+ assert.equal(g.run('p.erenGauge'),10);
+ g.run(`playFx({res:'hit',a:p.id,t:t.id,erenToken:'unknown',x:t.x,y:t.y,kb:3});`);assert.equal(g.run('p.erenGauge'),10);
+});
+test('network melee nape contact does not depend on the attacker animation snapshot',()=>{
+ const g=env();g.run(`p.erenForm=1;p.erenTime=1080;p.f=1;p.inv=0;t.mv=null;
+ const A={id:t.id,x:350,f:1,mv:{kind:'normal',type:'normal',dm:10,k0:1,ks:0,up:.2},contact:{x:381,y:219,r:1}};
+ handleGameplayEvent({k:'mh',by:t.owner,to:p.id,a:t.id,ax:A.x,f:A.f,mv:A.mv,contact:A.contact});`);assert.equal(g.run('p.d'),12);
+ g.run(`p.f=1;resolveMelee({...A,contact:{x:419,y:219,r:1}},p);`);assert.equal(g.run('p.d'),22);
+});
+test('reversion steam and 60 tick fatigue end cleanly and input becomes usable again',()=>{
+ const g=env();g.run(`p.erenForm=1;p.erenTime=1;erenTick(p);`);assert.equal(g.run('p.erenExit'),24);assert.equal(g.run('p.erenFatigue'),60);
+ g.run('for(let i=0;i<60;i++)erenTick(p);');assert.equal(g.run('p.erenExit'),0);assert.equal(g.run('p.erenFatigue'),0);
+ g.run('fireAttack(p,1);');assert.equal(g.run('p.mv.kind'),'erenBlades');
+});
+test('held fighters align their torso with the giant hand, and a remote spectator keeps the same grip',()=>{
+ const g=env();g.run(`p.erenForm=1;p.erenTime=1080;erenMove(p,'titanGrab');erenGrabStart({id:p.id,mv:p.mv},t);erenGrabTick(t);`);
+ assert.equal(g.run('p.y-(t.y-30)'),85);assert.equal(g.run('t.x-p.x'),64);
+ g.run(`online=true;t.owner='remote';t.remote=true;t.off=0;t.netSnap=true;
+ t.buf=[{...stateOf(t),ts:Date.now()-100,sq:1,rd:curRound}];t.x=100;t.y=100;updateRemote();`);
+ assert.equal(g.run('t.x-p.x'),64);assert.equal(g.run('p.y-(t.y-30)'),85);
+});
+test('all stages keep giant feet planted on existing one-way platforms after transforming',()=>{
+ const g=env();g.run('t.x=-500;');
+ for(const map of Array.from(g.run('Object.keys(MAPS)'))){
+  g.run(`stage=MAPS['${map}'];erenReset(p);p.x=stage.plats[0].x+stage.plats[0].w/2;p.y=stage.plats[0].y;p.g=true;p.groundPl=0;p.inv=0;p.erenGauge=100;var plantedY=p.y;erenTransform(p);freezeT=0;for(let i=0;i<30;i++)stepFighter(p,blankInput());`);
+  assert.equal(g.run('p.y'),g.run('plantedY'),map);assert.equal(g.run('p.g'),true,map);
+  g.run('p.rec=false;p.erenWireCd=0;erenRevert(p);p.erenFatigue=0;erenWire(p,true);var w=p.erenWire;');
+  assert.ok(g.run('!w||w.x>=stage.plats[w.pl].x&&w.x<=stage.plats[w.pl].x+stage.plats[w.pl].w&&w.y===stage.plats[w.pl].y'),map);
+ }
 });

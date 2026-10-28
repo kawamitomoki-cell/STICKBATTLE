@@ -106,7 +106,7 @@ function handleGameplayEvent(e) {
     return;
   }
   if(['mh','ph'].includes(e.k)){const h=e.k==='mh'?e.mv:e.q;if(!h||!['dm','k0','ks','up'].every(k=>Number.isFinite(h[k])))return;}
-  if (e.k === 'mh') { const t = byId(e.to); if (t && isLocal(t)) resolveMelee({ id: e.a, x: e.ax, f: e.f, c: e.c, mv: e.mv }, t); }
+  if (e.k === 'mh') { const t = byId(e.to); if (t && isLocal(t)) resolveMelee({ id: e.a, x: e.ax, f: e.f, c: e.c, mv: e.mv, contact:e.contact }, t); }
   else if (e.k === 'ph') { const t = byId(e.to); if (t && isLocal(t)) resolveProj(e.q, t); }
   else if (e.k === 'fx') playFx(e, true);
   else if (e.k === 'ctr') doCounter(e);

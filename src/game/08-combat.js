@@ -15,7 +15,8 @@ function meleeCheck(a) {
   if(a.timeStopT>0)return;
   if (mv.noHit) return;
   const asz = fighterSize(a);
-  const hx = a.x + a.f * mv.reach * asz, hy = a.y - mv.yo * asz, R = mv.R * asz;
+  const giantHit=erenTitan(a)?erenAttackShape(a):null;
+  const hx = giantHit?.x??a.x+a.f*mv.reach*asz, hy=giantHit?.y??a.y-mv.yo*asz, R=giantHit?.r??mv.R*asz;
   for (const t of fighters) {
     if(mv.kind==='titanGrab'&&Object.keys(a.hit).length)break;
     if (t === a || t.out || a.hit[t.id] || sameTeam(a, t)) continue;
@@ -26,15 +27,15 @@ function meleeCheck(a) {
       const u = constrain(((t.x - sx) * dx + (ty - sy) * dy) / L2, 0, 1);
       touching = Math.hypot(t.x - (sx + dx * u), ty - (sy + dy * u)) < R + 16 * tsz;
     } else touching = Math.hypot(hx - t.x, hy - (t.y - 30 * tsz)) < R + 16 * tsz;
-    if(erenTitan(t)){const b=erenBody(t);const xx=mv.line?constrain(t.x,Math.min(a.x,hx),Math.max(a.x,hx)):hx;touching=erenBodyHit(t,xx,hy,R);}
+    if(erenTitan(t)){const xx=mv.line?constrain(t.x,Math.min(a.x,hx),Math.max(a.x,hx)):hx;touching=erenBodyHit(t,xx,hy,R);}
     if (touching) {
       a.hit[t.id] = true;
       const oraFinish=mv.kind==='ora'&&a.a>=mv.act1-1;
-      const A = { id: a.id, x: Math.round(a.x), f: a.f, c: a.c,
+      const A = { contact:erenTitan(t)?{x:hx,y:hy,r:R}:null, id: a.id, x: Math.round(a.x), f: a.f, c: a.c,
                   mv: { erenToken:mv.erenToken||null, type: oraFinish?'heavy':mv.type, kind: oraFinish?'orafinish':mv.kind, style:mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), dm: Math.round((oraFinish?14.5:mv.dm) * 10) / 10, k0: Math.round((oraFinish?15.0:mv.k0) * 10) / 10, ks: oraFinish?.115:mv.ks, up: oraFinish?.48:mv.up, ko: !!mv.ko, blockOnly: !!mv.blockOnly, ragePunch: !!mv.ragePunch, pierce: !!mv.pierce, minKb:oraFinish?15.5:(mv.minKb||0) } };
       if (isLocal(t)) resolveMelee(A, t);
       else {
-        send({ k: 'mh', to: t.id, a: a.id, ax: A.x, f: a.f, c: a.c, mv: A.mv });
+        send({ k: 'mh', to: t.id, a: a.id, ax: A.x, f: a.f, c: a.c, mv: A.mv, contact:A.contact });
         // 予測：返事を待たずに手応えを出す
         const front = fromFront(t, a.x) || CC(t.cid).back;
         const willCounter = mv.type === 'heavy' && mv.kind !== 'upper' && !AXE_KINDS.includes(mv.kind) && inCounter(t) && front;

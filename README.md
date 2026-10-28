@@ -45,4 +45,6 @@ Develop changes on a work branch and run the build checks and tests before publi
 
 ### Eren
 
-Current controls, design decisions and validation: [エレン再設計](docs/EREN_FREEDOM_REWORK.md).
+Review branch controls, specification audit and validation: [エレン仕様対応](docs/EREN_SPEC_REVIEW.md).
+
+The live game still uses the previous [立体機動再設計](docs/EREN_FREEDOM_REWORK.md); this review branch has not been merged into `main`.
