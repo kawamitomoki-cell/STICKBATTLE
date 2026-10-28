@@ -91,7 +91,10 @@ async function joinCommon() {
   pRef.on('child_changed', onP);
   pRef.on('child_removed', s => {
     const f = byId(s.key);
-    if (f && f.remote && battleSessionActive() && !f.out) { f.out = true; if (!elim.includes(f.id)) elim.push(f.id); }
+    if (f && f.remote && battleSessionActive() && !f.out) {
+      if(f.shadowClone)shadowClonePop(f,false);
+      else{f.out=true;if(!elim.includes(f.id))elim.push(f.id);}
+    }
   });
   const iRef = roomRef.child('items');
   iRef.on('child_added', s => {

@@ -1515,10 +1515,12 @@ function sendLocalPolished(){
  }
 }
 function onPPolished(s){
- let f=byId(s.key);const v=s.val();
- if(!f&&v?.sc===1&&v.rd===curRound)f=shadowCloneReceiveSnapshot(s.key,v);
- if(!f||!f.remote)return;
+ const v=s.val();
+ // Validate before creating a remote companion: rejected data must not mutate the roster.
  if(!v||v.rd!==curRound||!['x','y','vx','r','d','s','ts'].every(k=>Number.isFinite(v[k])))return;
+ let f=byId(s.key);
+ if(!f&&v.sc===1)f=shadowCloneReceiveSnapshot(s.key,v);
+ if(!f||!f.remote)return;
  if(Number.isFinite(v.sq)){if(v.sq<=(f.netLastSeq??-1))return;f.netLastSeq=v.sq;}
  else if(f.buf.length&&v.ts<=f.buf[f.buf.length-1].ts)return;
  const now=Date.now(),prev=f.buf[f.buf.length-1],lat=now-v.ts;
@@ -1553,7 +1555,10 @@ function updateRemotePolished(){
   Object.assign(f,{...pos,r,vx:s.vx,vy:s.vy,f:s.f,a:s.a,ch:s.ch,ct:s.ct,cs:s.cs,stn:s.stn,dg:s.dg,ivf:s.iv,kb:s.kb,w:s.w||null,sh:s.sh,sph:s.sph,castStyle:s.acs==='charge'?'charge':'',rise:s.ri,arm:s.am||0,cid:s.cid||f.cid,d:s.d,s:s.s,ko:s.ko,g:s.g,rage:s.rg||0,rageT:s.rt||0,senku:s.sk||0,senkuWind:s.sw||0,energy:s.ae||0,form:s.af||0,modeT:s.at||0,fatigue:s.az||0,cloneT:s.an||0,infinityCd:s.ai||0,slowT:s.asl||0,domainT:s.adom||0,timeStopT:s.ats||0,timeStopSelfT:s.atsf||0,orbColor:s.aoc||'blue',gear:s.gr||1,gearM:s.gm||0,gearT:s.gt||0,tired:s.td?1:0,bowUp:!!s.bu,bullets:s.bl??f.bullets,reloadT:s.rl||0,stats:s.stats||f.stats});
   f.mv=mkMv(s.mk,s.w);animeRemoteMove(f);if(f.cid==='rubber'&&f.mv)decorateRubber(f.mv,f);
   if(f.mv&&s.a>0&&!s.ats&&!s.adom&&!freezeT){const advance=Math.min(4,Math.max(0,(now-f.off-s.ts)/FIXED_MS));f.a=Math.min(f.mv.end,s.a+advance*(s.asl>0?.38:1));}
-  if(s.o&&!f.out){f.out=true;if(!elim.includes(f.id))elim.push(f.id);}
+  if(s.o&&!f.out){
+   if(f.shadowClone)shadowClonePop(f,false);
+   else{f.out=true;if(!elim.includes(f.id))elim.push(f.id);}
+  }
   while(f.buf.length>2&&f.buf[1].ts<rt-150)f.buf.shift();
  }
 }
