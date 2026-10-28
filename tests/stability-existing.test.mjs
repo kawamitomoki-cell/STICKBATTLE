@@ -1,17 +1,10 @@
+import {game as gameRuntime} from './helpers/game.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 const read=p=>readFileSync(new URL('../src/game/'+p,import.meta.url),'utf8');
-function game(){
- const ctx=vm.createContext({URLSearchParams,location:{search:''},console,Date,
-  constrain:(v,a,b)=>Math.max(a,Math.min(b,v)),
-  sfxGame(){},modeHeader(){},sfxPunch(){},sfxSwing(){},sfxSlash(){},sfxWindup(){},tone(){},noiseHit(){},sfxRubber(){},
-  burst(){},ring(){},sfxHit(){},writeEvent(){},sfxNo(){}});
- for(const file of ['01-game-data.js','01b-naruto-shadow-clone.js','05-network-sync.js','06-game-modes.js','07-movement.js','08-combat.js'])vm.runInContext(read(file),ctx);
- vm.runInContext('modeHeader=()=>{};',ctx);
- return code=>vm.runInContext(code,ctx);
-}
+function game(){return gameRuntime().run;}
 test('kumite counts the real opponent once across waves, ignoring live and defeated clones',()=>{
  const run=game();
  run(`offlineMode='kumite';const me=makeFighter({id:myId,cid:'naruto',owner:myId},0);
@@ -34,7 +27,7 @@ test('malformed remote clone snapshots cannot reserve a clone slot',()=>{
 });
 test('all 17 characters initialize and produce finite normal and charged melee moves',()=>{
  const run=game();
- assert.equal(run('Object.keys(CHARS).length'),17);
+ assert.equal(run('Object.keys(CHARS).length'),18);
  for(const cid of run('Object.keys(CHARS)')){
   for(const charge of [0,50]){
    run(`fighters=[makeFighter({id:myId,cid:${JSON.stringify(cid)},owner:myId},0)];fireAttack(fighters[0],${charge});`);

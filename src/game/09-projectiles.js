@@ -2,7 +2,7 @@
 // ⑩ 飛び道具・爆弾・地雷・武器
 // ========================================================
 function spawnProj(p, kind) {
-  const sz = CC(p.cid).size;
+  const sz = fighterSize(p);
   const q = { pid: p.id + '_' + (objSeq++), o: p.id, kind, x: Math.round(p.x + p.f * 26 * sz), y: Math.round(p.y - 36 * sz), rot: 0 };
   if (kind === 'hado')   Object.assign(q, { vx: p.f * 5, life: 150, r: 14, dm: 7, k0: 6, ks: 0.06, up: 0.5 });
   if (kind === 'shuri')  Object.assign(q, { vx: p.f * 14, life: 22, r: 8, dm: 4, k0: 3.5, ks: 0.03, up: 0.35 });
@@ -22,7 +22,7 @@ function fireGun(p) {
 }
 
 function throwBomb(p) {
-  const sz = CC(p.cid).size;
+  const sz = fighterSize(p);
   const b = { bid: p.id + '_' + (objSeq++), o: p.id, x: Math.round(p.x + p.f * 16), y: Math.round(p.y - 40 * sz),
               vx: Math.round((p.f * 11 + p.vx * 0.4) * 10) / 10, vy: -3, t: 0 };
   bombs.push(b); send({ k: 'bomb', b: { ...b } });
@@ -90,7 +90,7 @@ function stepProjs() {
         q.resolved = true;
         for (const t of fighters) {
           if (t.id === q.o || t.out || sameTeam(byId(q.o), t)) continue;
-          const tsz = CC(t.cid).size;
+          const tsz = fighterSize(t);
           const dx = (t.x - q.x) * q.dir;
           const dy = Math.abs((t.y - 32 * tsz) - q.y);
           if (dx >= 12 && dx <= q.range && dy <= 54 + 12 * tsz) {
@@ -107,7 +107,7 @@ function stepProjs() {
     if (!gone && q.local) {
       if (q.kind !== 'senku') for (const f of fighters) {
         if (f.id === q.o || f.out || sameTeam(byId(q.o), f) || f.w !== 'sword' || !isActive(f)) continue;
-        const sz = CC(f.cid).size;
+        const sz = fighterSize(f);
         if (Math.hypot(q.x - (f.x + f.f * f.mv.reach * sz), q.y - (f.y - 34 * sz)) < f.mv.R * sz + q.r) {
           gone = true;
           fxSlash(q.x, q.y);
@@ -118,12 +118,12 @@ function stepProjs() {
       if (!gone) {
         for (const t of fighters) {
           if (t.id === q.o || t.out || sameTeam(byId(q.o), t)) continue;
-          const sz = CC(t.cid).size;
-          if (Math.abs(q.x - t.x) < 14 * sz + q.r && q.y > t.y - 64 * sz - q.r && q.y < t.y + q.r) {
+          const sz = fighterSize(t);
+          if (erenTitan(t)?erenBodyHit(t,q.x,q.y,q.r):Math.abs(q.x - t.x) < 14 * sz + q.r && q.y > t.y - 64 * sz - q.r && q.y < t.y + q.r) {
             if (isInvuln(t)) continue;
             if (q.pierce) { q.hitIds = q.hitIds || {}; if (q.hitIds[t.id]) continue; q.hitIds[t.id] = 1; }
             else gone = true;
-            const Q = { o: q.o, x: Math.round(q.x), vx: q.vx, dir:q.dir || Math.sign(q.vx) || 1, dm: q.dm, k0: q.k0, ks: q.ks, up: q.up, senku: false };
+            const Q = { y:q.y,r:q.r,o: q.o, x: Math.round(q.x), vx: q.vx, dir:q.dir || Math.sign(q.vx) || 1, dm: q.dm, k0: q.k0, ks: q.ks, up: q.up, senku: false };
             if (isLocal(t)) resolveProj(Q, t);
             else {
               send({ k: 'ph', to: t.id, q: Q });
@@ -159,7 +159,7 @@ function stepBombs() {
     let hit = false;
     for (const f of fighters) {
       if (!isLocal(f) || f.out || f.id === b.o || sameTeam(byId(b.o), f) || isInvuln(f)) continue;
-      const sz = CC(f.cid).size;
+      const sz = fighterSize(f);
       if (Math.abs(b.x - f.x) < 16 * sz + 8 && b.y > f.y - 64 * sz && b.y < f.y + 4) { hit = true; break; }
     }
     if (hit) {
@@ -205,7 +205,7 @@ function explode(x, y, R, ownerId) {
   sfxBoom();
   for (const f of fighters) {
     if (!isLocal(f) || f.out || isInvuln(f) || (f.id !== ownerId && sameTeam(byId(ownerId), f))) continue;
-    if (Math.hypot(f.x - x, (f.y - 30 * CC(f.cid).size) - y) < R) {
+    if (erenTitan(f)?erenBodyHit(f,x,y,R):Math.hypot(f.x - x, (f.y - 30 * fighterSize(f)) - y) < R) {
       const h = { dm: 14, k0: 9, ks: 0.085, up: 0.9, f: Math.sign(f.x - x) || 1 };
       if (f.id === ownerId && f.cid === 'bomber') { h.dm *= 0.5; h.k0 *= 0.6; }
       if(rageOn(f)){f.d+=h.dm;addDealt(ownerId,h.dm);gainRage(f,h.dm);}

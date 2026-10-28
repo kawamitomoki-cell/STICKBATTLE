@@ -251,7 +251,7 @@ function buildMenus() {
   };
 }
 // Presentation and accessibility settings: no physics or combat parameters are modified.
-const prefs = {volume:.55,music:false,shake:true,left:false,controls:'auto'};
+const prefs = {volume:.55,music:false,shake:true,left:false,controls:'auto',lowFlash:false};
 try { const saved=JSON.parse(localStorage.getItem('sbo.preferences')||'{}'); for(const k of Object.keys(prefs))if(typeof saved[k]===typeof prefs[k])prefs[k]=saved[k];prefs.volume=Math.max(0,Math.min(1,prefs.volume)); } catch(_) {}
 
 // ========================================================
@@ -529,7 +529,7 @@ const settingsDialog=document.getElementById('settings-dialog');let settingsPaus
 document.getElementById('b-settings').onclick=()=>{resetTouch();settingsPaused=scene==='battle'&&!online;if(settingsPaused)scene='pause';settingsDialog.showModal();};
 settingsDialog.addEventListener('close',()=>{resetTouch();if(settingsPaused){scene='battle';simAcc=0;}settingsPaused=false;});
 document.getElementById('settings-close').onclick=()=>settingsDialog.close();
-for(const key of ['volume','music','shake','left']){const el=document.getElementById('pref-'+key);if(key==='volume')el.value=prefs.volume;else el.checked=prefs[key];el.oninput=()=>{prefs[key]=key==='volume'?Number(el.value):el.checked;applyPrefs();};}
+for(const key of ['volume','music','shake','left','lowFlash']){const el=document.getElementById('pref-'+key);if(key==='volume')el.value=prefs.volume;else el.checked=prefs[key];el.oninput=()=>{prefs[key]=key==='volume'?Number(el.value):el.checked;applyPrefs();};}
 applyPrefs();
 document.addEventListener('click',e=>{if(e.target.closest('button')&&actx)tone(600,880,.035,.035,'sine');});
 
@@ -679,9 +679,9 @@ let hudKey='';
 function setTxt(el,v){if(el&&el.textContent!==v)el.textContent=v;}
 function setVar(el,k,v){if(el&&el['_'+k]!==v){el['_'+k]=v;el.style.setProperty(k,v);}}
 function drawHUD(){const rosterFighters=fighters.filter(f=>!f.shadowClone);
- const roster=document.getElementById('battle-roster');const key=(battleTeamMode?'T':'F')+'|'+rosterFighters.map(p=>p.id+':'+p.cid+':'+p.c+':'+p.team+':'+(p.cid==='rubber'?p.gear:isAnime(p)?(p.form||0)+':'+(p.modeT>0):0)).join('|');
+ const roster=document.getElementById('battle-roster');const key=(battleTeamMode?'T':'F')+'|'+rosterFighters.map(p=>p.id+':'+p.cid+':'+p.c+':'+p.team+':'+(p.cid==='eren'?p.erenForm:p.cid==='rubber'?p.gear:isAnime(p)?(p.form||0)+':'+(p.modeT>0):0)).join('|');
  if(key!==hudKey){hudKey=key;roster.style.setProperty('--columns',Math.min(4,rosterFighters.length));
-  roster.innerHTML=rosterFighters.map(p=>`<div class="hud-card ${p.id===myId?'me ':''}${rosterFighters.length>4?'crowded':''}" style="--team:${battleTeamMode?teamColor(p.team):p.c}"><div class="hud-portrait">${portrait(p.cid,p.gear,p.form,p.modeT>0)}</div><div class="hud-info"><div class="hud-name"></div><div class="hud-damage"></div></div><div class="hud-stocks"></div><div class="hud-skill"></div><div class="hud-meter"></div></div>`).join('');
+  roster.innerHTML=rosterFighters.map(p=>`<div class="hud-card ${p.id===myId?'me ':''}${rosterFighters.length>4?'crowded':''}" style="--team:${battleTeamMode?teamColor(p.team):p.c}"><div class="hud-portrait">${portrait(p.cid,p.gear,p.cid==='eren'?p.erenForm:p.form,p.modeT>0)}</div><div class="hud-info"><div class="hud-name"></div><div class="hud-damage"></div></div><div class="hud-stocks"></div><div class="hud-skill"></div><div class="hud-meter"></div></div>`).join('');
  }
  rosterFighters.forEach((p,i)=>{const el=roster.children[i];if(!el)return;el.classList.toggle('out',p.out);setTxt(el.querySelector('.hud-name'),(battleTeamMode?teamName(p.team)+' / ':'')+(p.id===myId?'P1 / ':p.cpu?'CPU / ':'')+p.label);
  const d=el.querySelector('.hud-damage');setTxt(d,Math.round(p.d)+'%');d._c=d._c||'';const dc=p.d<60?'#fff9e9':p.d<110?'#ffc363':'#ff6453';if(d._c!==dc){d._c=dc;d.style.color=dc;}
@@ -1229,7 +1229,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_SHADOW_CLONE_TWO_V30';
+const NET_PROTOCOL='SBO_NET_EREN_V31';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -1261,8 +1261,9 @@ function enqueueCinematic(kind,data,cid){
  cinQueue.push({kind,data});pumpCinematics();return true;
 }
 function validCinematic(kind,d){
- if(!d||!['senku','counter','ko','rage','gear','animeform','domain','timestop'].includes(kind))return false;
+ if(!d||!['senku','counter','ko','rage','gear','animeform','domain','timestop','titan'].includes(kind))return false;
  if(!Number.isFinite(d.x)||!Number.isFinite(d.y))return false;
+ if(kind==='titan')return byId(d.id)?.cid==='eren';
  if(kind==='senku')return typeof d.eid==='string'&&!!byId(d.id)&&(d.dir===1||d.dir===-1);
  if(kind==='rage')return !!byId(d.id);
  if(kind==='domain')return !!byId(d.id)&&byId(d.id).cid==='gojo';
@@ -1292,7 +1293,8 @@ function pumpCinematics(){
  const cmd=cinQueue.shift();if(!cmd)return;
  activeCinematic={...cmd,started:performance.now()};cinDispatching=true;
  try{
-  if(cmd.kind==='senku')receiveSenku(cmd.data);
+  if(cmd.kind==='titan')erenCutin(cmd.data);
+  else if(cmd.kind==='senku')receiveSenku(cmd.data);
   else if(cmd.kind==='counter')doCounter(cmd.data);
   else if(cmd.kind==='rage')doRageTransform(cmd.data,true);
   else if(cmd.kind==='gear')doGearShift(cmd.data);
@@ -1454,7 +1456,7 @@ function projectSnapshot(s,ms){
  return{x,y};
 }
 function importantStateChange(a,b){
- return !a||a.s!==b.s||a.o!==b.o||a.mk!==b.mk||a.af!==b.af||
+ return !a||a.ef!==b.ef||a.eh!==b.eh||a.s!==b.s||a.o!==b.o||a.mk!==b.mk||a.af!==b.af||
   a.ats!==b.ats||a.atsf!==b.atsf||a.adom!==b.adom||a.acs!==b.acs||a.gr!==b.gr||
   a.iv!==b.iv||a.w!==b.w||a.g!==b.g||a.f!==b.f||a.stn!==b.stn;
 }
@@ -1552,7 +1554,7 @@ function updateRemotePolished(){
   // Gameplay/animation uses the newest state; only world position is delayed for interpolation.
   const s=latest;
   if(s.ats>0||s.adom>0)pos={x:s.x,y:s.y};
-  Object.assign(f,{...pos,r,vx:s.vx,vy:s.vy,f:s.f,a:s.a,ch:s.ch,ct:s.ct,cs:s.cs,stn:s.stn,dg:s.dg,ivf:s.iv,kb:s.kb,w:s.w||null,sh:s.sh,sph:s.sph,castStyle:s.acs==='charge'?'charge':'',rise:s.ri,arm:s.am||0,cid:s.cid||f.cid,d:s.d,s:s.s,ko:s.ko,g:s.g,rage:s.rg||0,rageT:s.rt||0,senku:s.sk||0,senkuWind:s.sw||0,energy:s.ae||0,form:s.af||0,modeT:s.at||0,fatigue:s.az||0,cloneT:s.an||0,infinityCd:s.ai||0,slowT:s.asl||0,domainT:s.adom||0,timeStopT:s.ats||0,timeStopSelfT:s.atsf||0,orbColor:s.aoc||'blue',gear:s.gr||1,gearM:s.gm||0,gearT:s.gt||0,tired:s.td?1:0,bowUp:!!s.bu,bullets:s.bl??f.bullets,reloadT:s.rl||0,stats:s.stats||f.stats});
+  Object.assign(f,{...pos,...(f.cid==='eren'?erenReadState(s):{}),erenGrab:s.eb&&typeof s.eb.by==='string'?erenReadState(s).erenGrab:null,r,vx:s.vx,vy:s.vy,f:s.f,a:s.a,ch:s.ch,ct:s.ct,cs:s.cs,stn:s.stn,dg:s.dg,ivf:s.iv,kb:s.kb,w:s.w||null,sh:s.sh,sph:s.sph,castStyle:s.acs==='charge'?'charge':'',rise:s.ri,arm:s.am||0,cid:s.cid||f.cid,d:s.d,s:s.s,ko:s.ko,g:s.g,rage:s.rg||0,rageT:s.rt||0,senku:s.sk||0,senkuWind:s.sw||0,energy:s.ae||0,form:s.af||0,modeT:s.at||0,fatigue:s.az||0,cloneT:s.an||0,infinityCd:s.ai||0,slowT:s.asl||0,domainT:s.adom||0,timeStopT:s.ats||0,timeStopSelfT:s.atsf||0,orbColor:s.aoc||'blue',gear:s.gr||1,gearM:s.gm||0,gearT:s.gt||0,tired:s.td?1:0,bowUp:!!s.bu,bullets:s.bl??f.bullets,reloadT:s.rl||0,stats:s.stats||f.stats});
   f.mv=mkMv(s.mk,s.w);animeRemoteMove(f);if(f.cid==='rubber'&&f.mv)decorateRubber(f.mv,f);
   if(f.mv&&s.a>0&&!s.ats&&!s.adom&&!freezeT){const advance=Math.min(4,Math.max(0,(now-f.off-s.ts)/FIXED_MS));f.a=Math.min(f.mv.end,s.a+advance*(s.asl>0?.38:1));}
   if(s.o&&!f.out){

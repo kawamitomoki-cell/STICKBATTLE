@@ -560,9 +560,10 @@ function animeProjStep(q){
  if(!q.beam)q.x+=q.vx;
  if(q.local&&q.life>0){for(const t of fighters){if(t.id===q.o||t.out||sameTeam(a,t)||q.hitIds?.[t.id]||isInvuln(t))continue;
   const y=t.y-32,dx=(t.x-q.x)*q.dir;
-  const touching=q.beam?(dx>=-10&&dx<=q.range&&Math.abs(y-q.y)<q.r+20):(t.x>=Math.min(oldx,q.x)-q.r-14&&t.x<=Math.max(oldx,q.x)+q.r+14&&Math.abs(y-q.y)<q.r+25);
+  let touching=q.beam?(dx>=-10&&dx<=q.range&&Math.abs(y-q.y)<q.r+20):(t.x>=Math.min(oldx,q.x)-q.r-14&&t.x<=Math.max(oldx,q.x)+q.r+14&&Math.abs(y-q.y)<q.r+25);
+  if(erenTitan(t)){const xx=q.beam?constrain(t.x,Math.min(q.x,q.x+q.dir*q.range),Math.max(q.x,q.x+q.dir*q.range)):constrain(t.x,Math.min(oldx,q.x),Math.max(oldx,q.x));touching=erenBodyHit(t,xx,q.y,q.r);}
   if(!touching)continue;q.hitIds=q.hitIds||{};q.hitIds[t.id]=1;
-  const Q={o:q.o,x:q.x,vx:q.vx,dir:q.dir,dm:q.dm,k0:q.k0,ks:q.ks,up:q.up,animeKind:q.kind,bypassInfinity:q.kind==='purple'||q.beam};
+  const Q={y:q.y,r:q.r,o:q.o,x:q.x,vx:q.vx,dir:q.dir,dm:q.dm,k0:q.k0,ks:q.ks,up:q.up,animeKind:q.kind,bypassInfinity:q.kind==='purple'||q.beam};
   if(isLocal(t))resolveProj(Q,t);else send({k:'ph',to:t.id,q:Q});
   if(!q.beam&&q.kind!=='purple'){q.life=0;send({k:'pg',pid:q.pid});break;}
  }}
@@ -1123,12 +1124,12 @@ function rosterSections(container,choose){
 
  // 表示順を固定。承太郎が確実に選択画面へ出るよう、SECRET欄の先頭側に配置する。
  const standardOrder=['karate','bomber','ninja','sumo','boxer','yankee','swordsman','lancer','gunman','archer','berserker'];
- const secretOrder=['rubber','jotaro','goku','gojo','tanjiro','naruto'];
+ const secretOrder=['rubber','jotaro','goku','gojo','tanjiro','naruto','eren'];
 
  for(const secret of [false,true]){
   const section=document.createElement('section');
   section.className=secret?'roster-group secret-roster':'roster-group';
-  section.innerHTML=`<header><b>${secret?'SPECIAL FIGHTERS':'STANDARD FIGHTERS'}</b><span>${secret?'ルフィ・承太郎・悟空・五条・炭治郎・ナルト':'通常キャラクター'}</span></header><div class="roster-cards"></div>`;
+  section.innerHTML=`<header><b>${secret?'SPECIAL FIGHTERS':'STANDARD FIGHTERS'}</b><span>${secret?'ルフィ・承太郎・悟空・五条・炭治郎・ナルト・エレン':'通常キャラクター'}</span></header><div class="roster-cards"></div>`;
   const grid=section.lastElementChild;
   const ids=(secret?secretOrder:standardOrder).filter(id=>CHARS[id]);
 

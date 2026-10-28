@@ -4,7 +4,7 @@
 const TIMERS = ['inv', 'cd', 'cs', 'ctc', 'dgc', 'sh', 'plk', 'spc', 'rise', 'arm', 'dropT'];
 
 function rageOn(p) { return !!p && p.cid === 'yankee' && p.rageT > 0; }
-function weightFactor(p) { return CC(p.cid).wt * (rageOn(p) ? RAGE_WT : 1) * gearStat(p).wt; }
+function weightFactor(p) { return fighterConfig(p).wt * (rageOn(p) ? RAGE_WT : 1) * gearStat(p).wt; }
 function addRage(p, amount) {
   if (!p || p.cid !== 'yankee' || p.rageT > 0 || !isLocal(p) || p.rage >= RAGE_MAX) return;
   const before = p.rage;
@@ -39,7 +39,7 @@ function isArmored(p) { return p.ch > 0 || p.arm > 0 || (p.cid === 'rubber' && p
 function inCounter(p) { return p.ct >= CT_ON && p.ct <= CT_OFF + CC(p.cid).ctx; }
 function isActive(p) { return p.mv && p.a >= p.mv.act0 && p.a <= p.mv.act1; }
 const AXE_KINDS = ['axeheavy', 'axeup'];
-const armorCut = (t, dm) => t && t.cid === 'berserker' ? dm * 0.5 : dm; // 狂戦士の鎧：被ダメ半減
+const armorCut = (t, dm) => (t && t.cid === 'berserker' ? dm * 0.5 : dm)*(t?.cid==='eren'&&t.erenHard>0?.7:1); // 狂戦士の鎧：被ダメ半減
 const fromFront = (t, ax) => Math.abs(ax - t.x) < 6 || Math.sign(ax - t.x) === t.f;
 
 function gainKO(p, n) {
@@ -62,7 +62,7 @@ function chargeTick(p, inp) {
 
 function fireAttack(p, ch) {
   if(animeBasic(p,ch))return;
-  const C = CC(p.cid);
+  const C = fighterConfig(p);
   let mv;
   if (p.cid==='gojo' && ch >= CH_FULL) {
     // 五条の最大溜め攻撃は確定黒閃。通常の溜め斬りではなく、黒赤の踏み込み打撃になる。
@@ -95,7 +95,7 @@ function fireAttack(p, ch) {
 
 function startSpecial(p) {
   if (p.spc > 0 && !['boxer','yankee','swordsman','lancer','gunman'].includes(p.cid)) { if (!p.cpu) sfxNo(); return; }
-  const C = CC(p.cid);
+  const C = fighterConfig(p);
   if(p.cid==='archer'){p.sph=1;sfxBowDraw();return;}
   if(p.cid==='berserker'){startAxe(p,false);return;}
   if (p.cid === 'karate') {
@@ -162,7 +162,7 @@ function fireGunmanShot(p) {
 
 // 上＋特殊：キャラごとの上必殺技（空中で1回まで、着地で回復）
 function upSpecial(p, dir) {
-  const C = CC(p.cid);
+  const C = fighterConfig(p);
   const noJump = ['archer','berserker'].includes(p.cid);
   if(['archer','berserker'].includes(p.cid)&&p.spc>0)return;
   p.rec = true; p.hit = {};
@@ -245,7 +245,7 @@ function stepFighter(p, inp) {
   if(domainLocked){p.domainT--;inp=blankInput();}
   p.prev = { ...inp };
   if (p.out) return;
-  const C = CC(p.cid);
+  const C = fighterConfig(p);
   const jp = inp.jc !== prev.jc, ap = inp.ac !== prev.ac, ar = inp.rc !== prev.rc;
   const cp = inp.cc !== prev.cc, sp = inp.sc !== prev.sc, xp = inp.xc !== prev.xc;
   const dp = inp.dc !== prev.dc;
@@ -335,7 +335,8 @@ function stepFighter(p, inp) {
       }
     }
     if (!acted && sp && p.a === 0 && p.ch === 0 && p.sph === 0) {
-      if(isAnime(p)){p.dropReq=0;animeStart(p,inp,!!inp.u&&!inp.neutralSpecial);}
+      if(p.cid==='eren'){p.dropReq=0;erenSpecial(p,inp);}
+      else if(isAnime(p)){p.dropReq=0;animeStart(p,inp,!!inp.u&&!inp.neutralSpecial);}
       else if (inp.u&&!inp.neutralSpecial) { if (!p.rec) upSpecial(p, dir); else if (!p.cpu) sfxNo(); }
       else if (p.cid === 'rubber' && (inp.gd || (inp.d&&!inp.neutralSpecial))) { p.dropReq = 0; gearShift(p); }
       else if (p.cid === 'rubber' && (inp.sideSpecial||(!inp.neutralSpecial&&dir))) rubberSide(p, inp.sideSpecial||dir);

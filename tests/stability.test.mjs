@@ -40,10 +40,10 @@ test('clone knockout snapshot retires it without recording a roster elimination'
  assert.equal(g.run("!!byId('sclone_peer_1')"),false);
 });
 
-const roster=['karate','bomber','ninja','sumo','boxer','yankee','swordsman','lancer','gunman','archer','rubber','berserker','goku','gojo','tanjiro','naruto','jotaro'];
-test('roster contains all 17 existing characters and CPU pools partition it',()=>{
+const roster=['karate','bomber','ninja','sumo','boxer','yankee','swordsman','lancer','gunman','archer','rubber','berserker','goku','gojo','tanjiro','naruto','jotaro','eren'];
+test('roster contains all 18 characters and CPU pools partition it',()=>{
  const g=game();assert.deepEqual(Array.from(g.run('Object.keys(CHARS)')),roster);
- assert.equal(g.run('new Set([...cpuCharacterPool("normal"),...cpuCharacterPool("special")]).size'),17);
+ assert.equal(g.run('new Set([...cpuCharacterPool("normal"),...cpuCharacterPool("special")]).size'),18);
 });
 for(const cid of roster)test(`${cid}: move, jump, normal/charged attack and directional specials simulate`,()=>{
  const g=game();g.run(battle+`byId(myId).cid=${JSON.stringify(cid)};animeInit(byId(myId));`);
@@ -54,11 +54,11 @@ for(const cid of roster)test(`${cid}: move, jump, normal/charged attack and dire
  g.run('clearActs(p);fireAttack(p,1);');assert.ok(g.run('!!p.mv&&p.a>0&&Number.isFinite(p.mv.dm)'));
  g.run('clearActs(p);fireAttack(p,CH_FULL);');assert.ok(g.run('!!p.mv&&p.a>0&&Number.isFinite(p.mv.dm)'));
  for(const direction of ['neutral','up','side','down']){
-  g.run(`respawn(p);p.x=stage.w/2;p.y=stage.plats[0].y;p.g=true;p.inv=0;p.spc=0;p.cd=0;p.energy=100;p.ko=100;p.rage=100;p.senku=100;p.gearM=100;
+  g.run(`respawn(p);p.x=stage.w/2;p.y=stage.plats[0].y;p.g=true;p.inv=0;p.spc=0;p.cd=0;p.energy=100;p.erenGauge=100;p.ko=100;p.rage=100;p.senku=100;p.gearM=100;
    input=blankInput();p.prev=blankInput();input.sc=1;input.s=true;
    input.u=${direction==='up'};input.d=${direction==='down'};input.r=${direction==='side'};
    stepFighter(p,input);
-   var specialStarted=!!(p.mv||p.spc>0||p.sph>0||p.rageT>0||p.gear>1||p.modeT>0||p.domainT>0||p.timeStopSelfT>0||p.rec||senkuActive);
+   var specialStarted=!!(p.mv||p.spc>0||p.sph>0||p.rageT>0||p.gear>1||p.modeT>0||p.domainT>0||p.timeStopSelfT>0||p.rec||senkuActive||p.erenForm||p.erenWire);
    for(let i=0;i<36;i++)stepFighter(p,input);
    input.s=false;stepFighter(p,input);`);
   assert.ok(g.run('[p.x,p.y,p.vx,p.vy,p.d,p.energy].every(Number.isFinite)'),direction);

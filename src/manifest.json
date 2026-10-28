@@ -21,6 +21,7 @@
     "src/game/10-cpu-ai.js",
     "src/game/11-render.js",
     "src/game/12-input.js",
-    "src/game/13-ui-and-menus.js"
+    "src/game/13-ui-and-menus.js",
+    "src/game/14-eren.js"
   ]
 }

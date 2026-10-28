@@ -14,22 +14,24 @@ function meleeCheck(a) {
   const mv = a.mv;
   if(a.timeStopT>0)return;
   if (mv.noHit) return;
-  const asz = CC(a.cid).size;
+  const asz = fighterSize(a);
   const hx = a.x + a.f * mv.reach * asz, hy = a.y - mv.yo * asz, R = mv.R * asz;
   for (const t of fighters) {
+    if(mv.kind==='titanGrab'&&Object.keys(a.hit).length)break;
     if (t === a || t.out || a.hit[t.id] || sameTeam(a, t)) continue;
-    const tsz = CC(t.cid).size;
+    const tsz = fighterSize(t);
     let touching;
     if (mv.line) {
       const sx = a.x, sy = hy, dx = hx - sx, dy = 0, L2 = dx * dx + dy * dy || 1, ty = t.y - 30 * tsz;
       const u = constrain(((t.x - sx) * dx + (ty - sy) * dy) / L2, 0, 1);
       touching = Math.hypot(t.x - (sx + dx * u), ty - (sy + dy * u)) < R + 16 * tsz;
     } else touching = Math.hypot(hx - t.x, hy - (t.y - 30 * tsz)) < R + 16 * tsz;
+    if(erenTitan(t)){const b=erenBody(t);const xx=mv.line?constrain(t.x,Math.min(a.x,hx),Math.max(a.x,hx)):hx;touching=erenBodyHit(t,xx,hy,R);}
     if (touching) {
       a.hit[t.id] = true;
       const oraFinish=mv.kind==='ora'&&a.a>=mv.act1-1;
       const A = { id: a.id, x: Math.round(a.x), f: a.f, c: a.c,
-                  mv: { type: oraFinish?'heavy':mv.type, kind: oraFinish?'orafinish':mv.kind, style:mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), dm: Math.round((oraFinish?14.5:mv.dm) * 10) / 10, k0: Math.round((oraFinish?15.0:mv.k0) * 10) / 10, ks: oraFinish?.115:mv.ks, up: oraFinish?.48:mv.up, ko: !!mv.ko, blockOnly: !!mv.blockOnly, ragePunch: !!mv.ragePunch, pierce: !!mv.pierce, minKb:oraFinish?15.5:(mv.minKb||0) } };
+                  mv: { erenToken:mv.erenToken||null, type: oraFinish?'heavy':mv.type, kind: oraFinish?'orafinish':mv.kind, style:mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), dm: Math.round((oraFinish?14.5:mv.dm) * 10) / 10, k0: Math.round((oraFinish?15.0:mv.k0) * 10) / 10, ks: oraFinish?.115:mv.ks, up: oraFinish?.48:mv.up, ko: !!mv.ko, blockOnly: !!mv.blockOnly, ragePunch: !!mv.ragePunch, pierce: !!mv.pierce, minKb:oraFinish?15.5:(mv.minKb||0) } };
       if (isLocal(t)) resolveMelee(A, t);
       else {
         send({ k: 'mh', to: t.id, a: a.id, ax: A.x, f: a.f, c: a.c, mv: A.mv });
@@ -49,7 +51,7 @@ function meleeCheck(a) {
 
 function resolveMelee(A, t) {
   const attacker = byId(A.id); if (attacker && sameTeam(attacker, t)) return;
-  const mv = A.mv, ty = t.y - 30 * CC(t.cid).size;
+  const mv = A.mv, ty = t.y - 30 * fighterSize(t);
  if(t.shadowClone){shadowClonePop(t);return;}
   if (isInvuln(t)) { if (t.dg > 0) emitFx({ res: 'evade', t: t.id, a: A.id, x: t.x, y: t.y - 110 }); return; }
   if(animeInfinity(t,mv.type,A.id,mv.kind==='upper'))return;
@@ -60,16 +62,16 @@ function resolveMelee(A, t) {
   const bk = !mv.pierce && !mv.ko && mv.kind !== 'upper' && t.ct > 0 && (mv.type === 'normal' || !front || AXE_KINDS.includes(mv.kind));
   if (!bk && mv.type === 'normal' && isArmored(t)) {
     armorHit(t, h, A.id);
-    emitFx({ res: 'armor', t: t.id, a: A.id, x: t.x, y: ty, gain: 4 });
+    emitFx({ erenToken:mv.erenToken||null,res: 'armor', t: t.id, a: A.id, x: t.x, y: ty, gain: 4 });
     return;
   }
   const kb = applyHit(t, h, bk, A.id);
-  emitFx({ res: 'hit', t: t.id, a: A.id, x: t.x, y: ty, kb: Math.round(kb * 10) / 10, bk: bk ? 1 : 0, up: ['upper','gdragon','gblackflash'].includes(mv.kind) || mv.style==='blackflash' ? 1 : 0, style: mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), moveKind:mv.kind, c: t.c, gain: 8, axe:mv.kind==='axeheavy'||mv.kind==='axeup' });
+  emitFx({ erenToken:mv.erenToken||null,res: 'hit', t: t.id, a: A.id, x: t.x, y: ty, kb: Math.round(kb * 10) / 10, bk: bk ? 1 : 0, up: ['upper','gdragon','gblackflash'].includes(mv.kind) || mv.style==='blackflash' ? 1 : 0, style: mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), moveKind:mv.kind, c: t.c, gain: 8, axe:mv.kind==='axeheavy'||mv.kind==='axeup' });
 }
 
 function resolveProj(Q, t) {
   const owner = byId(Q.o); if (owner && sameTeam(owner, t)) return;
-  const ty = t.y - 34 * CC(t.cid).size;
+  const ty = t.y - 34 * fighterSize(t);
  if(t.shadowClone){shadowClonePop(t);return;}
   if (isInvuln(t)) { if (t.dg > 0) emitFx({ res: 'evade', t: t.id, a: Q.o, x: t.x, y: t.y - 110 }); return; }
   if (t.projectileSlipT>0) { emitFx({res:'evade',t:t.id,a:Q.o,x:t.x,y:t.y-90}); return; }
@@ -178,7 +180,7 @@ function playFx(e, remote) {
 function startCounter(A, t, mv) {
   if (t.stats) t.stats.counters++;
   const e = { k: 'ctr', att: A.id, cnt: t.id, dm: 6 + mv.dm * 0.4, kb0: 9 + mv.k0 * 0.45,
-              dir: Math.sign(A.x - t.x) || -A.f, x: Math.round((A.x + t.x) / 2), y: Math.round(t.y - 34 * CC(t.cid).size) };
+              dir: Math.sign(A.x - t.x) || -A.f, x: Math.round((A.x + t.x) / 2), y: Math.round(t.y - 34 * fighterSize(t)) };
   doCounter(e);
 }
 
