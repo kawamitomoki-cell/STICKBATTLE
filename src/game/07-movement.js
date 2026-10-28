@@ -299,12 +299,13 @@ function stepFighter(p, inp) {
     p.r *= 0.5;
     const dir = (inp.r ? 1 : 0) - (inp.l ? 1 : 0);
     const axeLocked=p.a>0&&p.mv&&['axeheavy','axeup'].includes(p.mv.kind);
-    const slow = animeLocked(p)?0:axeLocked?0.06:(p.cid==='archer'&&p.sph>0)?0.7:p.ch > 0 ? 0.35 : (p.cid === 'lancer' && p.sph > 0 ? 0.12 : (p.a > 0 ? 0.5 : 1));
+    const slow = animeLocked(p)?0:axeLocked?0.06:(p.cid==='archer'&&p.sph>0)?0.7:p.ch > 0 ? 0.35 : (p.cid === 'lancer' && p.sph > 0 ? 0.12 : (p.a > 0 ? (p.cid==='eren'?0.85:0.5) : 1));
     const moveSpd = animeStats(p).spd * C.spd * (rageOn(p) ? RAGE_SPD : 1) * gearStat(p).spd * (p.tired > 0 ? 0.5 : 1);
     if(animeLocked(p))p.vx=0;
-    p.vx += dir * (p.g ? 1.0 : 0.65) * slow * moveSpd;
+    const erenGliding=p.cid==='eren'&&!p.g&&p.erenGlide>0;
+    p.vx += dir * (p.g ? 1.0 : erenGliding ? 1.6 : 0.65) * slow * moveSpd;
     const rushing = p.mv && p.mv.rush && p.a >= p.mv.act0 && p.a <= p.mv.act1;
-    p.vx *= rushing ? 0.95 : (p.g ? 0.80 : 0.90);
+    p.vx *= p.cid==='eren'&&p.erenWire?0.99:erenGliding?(dir?0.96:0.84):rushing?0.95:(p.g?0.80:0.90);
     if (dir !== 0 && p.a === 0) p.f = dir;
 
     // S / ↓ / Proコンの下入力だけで上段足場をすり抜ける。最下段は床扱い。

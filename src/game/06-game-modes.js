@@ -169,7 +169,7 @@ function trainingReset(gauge=false){
   f.x=f===p?stage.w*.33:stage.w*.67;f.y=stage.plats[0].y;
   f.g=true;f.vx=0;f.vy=0;f.kb=0;
  }
- if(gauge){p.energy=100;p.ko=100;p.rage=100;p.senku=100;p.gearM=100;}
+ if(gauge){p.energy=100;p.ko=100;p.rage=100;p.senku=100;p.gearM=100;if(p.cid==='eren'){p.erenGauge=100;p.erenGas=100;}}
 }
 function setTrainingAi(mode){trainingAiMode=mode%3;document.getElementById('train-ai').textContent=['CPU：停止','CPU：通常','CPU：最強'][trainingAiMode];}
 function configureExtraCpuOptions(){

@@ -1,6 +1,6 @@
 # STICK BATTLE ONLINE
 
-[Play](https://kawamitomoki-cell.github.io/STICKBATTLE/)
+[Play](https://mobumobupurin.github.io/Stick_Battle/)
 
 This is the maintained source layout for the existing browser game.
 
@@ -41,4 +41,8 @@ Renamed MP3s are decoded from the embedded audio originally in `index.html` (sou
 
 ### Rollout
 
-Review/test the refactor branch before merging; `main` continues serving the previous live game. After merge, GitHub Pages will still load `index.html` at the same URL. Run browser gameplay and multiplayer tests before release.
+Develop changes on a work branch and run the build checks and tests before publishing. GitHub Pages serves `index.html` from `main`. When the network protocol changes, all players must reload and create a new room.
+
+### Eren
+
+Current controls, design decisions and validation: [エレン再設計](docs/EREN_FREEDOM_REWORK.md).

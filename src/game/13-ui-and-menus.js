@@ -164,7 +164,7 @@ function buildMenus() {
   document.getElementById('bracket-close').onclick=()=>document.getElementById('bracket-dialog').close();
   document.getElementById('tour-network').onclick=()=>{requestedOnlineMode='tournament';show('sc-online');};
   document.getElementById('train-reset').onclick=()=>trainingReset(false);
-  document.getElementById('train-gauge').onclick=()=>{const p=byId(myId);if(p){p.energy=100;p.ko=100;p.rage=100;p.senku=100;p.gearM=100;}};
+  document.getElementById('train-gauge').onclick=()=>{const p=byId(myId);if(p){p.energy=100;p.ko=100;p.rage=100;p.senku=100;p.gearM=100;if(p.cid==='eren'){p.erenGauge=100;p.erenGas=100;}}};
   document.getElementById('train-ai').onclick=()=>setTrainingAi(trainingAiMode+1);
   document.getElementById('champion-next').onclick=()=>{if(online){if(isHost&&roomRef)roomRef.child('gm').update({ph:'lobby',tour:null});else if(confirm('トーナメント部屋から退出しますか？'))leaveRoom();}else{offlineTour=null;show('sc-extra');}};
   document.getElementById('go-online').onclick = () => {requestedOnlineMode='normal';show('sc-online');};
@@ -1229,7 +1229,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_EREN_ASSAULT_V34';
+const NET_PROTOCOL='SBO_NET_EREN_FREEDOM_V35';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;

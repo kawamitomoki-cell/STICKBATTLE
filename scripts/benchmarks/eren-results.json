@@ -4,40 +4,40 @@
     "wins": 2,
     "losses": 0,
     "timeouts": 0,
-    "transformations": 1,
-    "damage": 383,
-    "taken": 152.7,
-    "simMs": 119.477951
+    "transformations": 0,
+    "damage": 226,
+    "taken": 115,
+    "simMs": 374.78090499999996
   },
   {
     "opponent": "bomber",
-    "wins": 2,
-    "losses": 0,
-    "timeouts": 0,
-    "transformations": 1,
-    "damage": 290.7,
-    "taken": 294.6,
-    "simMs": 145.03436300000004
-  },
-  {
-    "opponent": "ninja",
-    "wins": 1,
-    "losses": 1,
-    "timeouts": 0,
-    "transformations": 1,
-    "damage": 226.6,
-    "taken": 263.6,
-    "simMs": 101.98002400000001
-  },
-  {
-    "opponent": "sumo",
     "wins": 1,
     "losses": 1,
     "timeouts": 0,
     "transformations": 0,
-    "damage": 372,
-    "taken": 113.1,
-    "simMs": 91.57178899999991
+    "damage": 226,
+    "taken": 64,
+    "simMs": 104.83757799999995
+  },
+  {
+    "opponent": "ninja",
+    "wins": 2,
+    "losses": 0,
+    "timeouts": 0,
+    "transformations": 0,
+    "damage": 218,
+    "taken": 66,
+    "simMs": 69.45544399999994
+  },
+  {
+    "opponent": "sumo",
+    "wins": 2,
+    "losses": 0,
+    "timeouts": 0,
+    "transformations": 2,
+    "damage": 334,
+    "taken": 97.20000000000002,
+    "simMs": 99.28307400000006
   },
   {
     "opponent": "boxer",
@@ -45,39 +45,39 @@
     "losses": 0,
     "timeouts": 0,
     "transformations": 0,
-    "damage": 152,
-    "taken": 47.400000000000006,
-    "simMs": 55.933721999999875
+    "damage": 232,
+    "taken": 109.29999999999998,
+    "simMs": 79.80741699999999
   },
   {
     "opponent": "yankee",
     "wins": 2,
     "losses": 0,
     "timeouts": 0,
-    "transformations": 0,
-    "damage": 330,
-    "taken": 40.48,
-    "simMs": 74.81490199999996
+    "transformations": 1,
+    "damage": 602,
+    "taken": 139.6,
+    "simMs": 139.95670099999995
   },
   {
     "opponent": "swordsman",
     "wins": 2,
     "losses": 0,
     "timeouts": 0,
-    "transformations": 1,
-    "damage": 318,
-    "taken": 77.4,
-    "simMs": 96.41120000000001
+    "transformations": 0,
+    "damage": 192,
+    "taken": 134.39999999999998,
+    "simMs": 68.46406700000011
   },
   {
     "opponent": "lancer",
     "wins": 2,
     "losses": 0,
     "timeouts": 0,
-    "transformations": 1,
-    "damage": 354.1,
-    "taken": 12.2,
-    "simMs": 73.43165599999998
+    "transformations": 0,
+    "damage": 320.5,
+    "taken": 73.5,
+    "simMs": 73.52311899999972
   },
   {
     "opponent": "gunman",
@@ -85,39 +85,39 @@
     "losses": 0,
     "timeouts": 0,
     "transformations": 0,
-    "damage": 271.79999999999995,
-    "taken": 133.5,
-    "simMs": 88.66777200000001
+    "damage": 330,
+    "taken": 95.5,
+    "simMs": 82.67350999999985
   },
   {
     "opponent": "archer",
-    "wins": 1,
-    "losses": 1,
-    "timeouts": 0,
-    "transformations": 1,
-    "damage": 252,
-    "taken": 225.6,
-    "simMs": 99.98990199999992
-  },
-  {
-    "opponent": "rubber",
     "wins": 2,
     "losses": 0,
     "timeouts": 0,
     "transformations": 0,
-    "damage": 262,
-    "taken": 95.10000000000001,
-    "simMs": 74.96135299999969
+    "damage": 322,
+    "taken": 236.60000000000002,
+    "simMs": 94.41786200000001
+  },
+  {
+    "opponent": "rubber",
+    "wins": 1,
+    "losses": 1,
+    "timeouts": 0,
+    "transformations": 0,
+    "damage": 358.6,
+    "taken": 171.1,
+    "simMs": 120.43284300000005
   },
   {
     "opponent": "berserker",
-    "wins": 0,
-    "losses": 2,
+    "wins": 1,
+    "losses": 1,
     "timeouts": 0,
     "transformations": 0,
-    "damage": 155.8,
-    "taken": 288,
-    "simMs": 75.33043700000007
+    "damage": 269.3,
+    "taken": 174,
+    "simMs": 97.59464900000012
   },
   {
     "opponent": "goku",
@@ -125,19 +125,19 @@
     "losses": 0,
     "timeouts": 0,
     "transformations": 2,
-    "damage": 377.5,
-    "taken": 122.60000000000001,
-    "simMs": 112.9221070000001
+    "damage": 347.1,
+    "taken": 102.80000000000001,
+    "simMs": 96.8261379999999
   },
   {
     "opponent": "gojo",
     "wins": 2,
     "losses": 0,
     "timeouts": 0,
-    "transformations": 0,
-    "damage": 262,
-    "taken": 42.3,
-    "simMs": 68.81894999999986
+    "transformations": 1,
+    "damage": 238,
+    "taken": 28.4,
+    "simMs": 63.626139000000194
   },
   {
     "opponent": "tanjiro",
@@ -145,28 +145,28 @@
     "losses": 0,
     "timeouts": 0,
     "transformations": 1,
-    "damage": 355.2,
-    "taken": 250.39999999999998,
-    "simMs": 144.42802400000005
+    "damage": 223,
+    "taken": 88.6,
+    "simMs": 62.59310699999992
   },
   {
     "opponent": "naruto",
     "wins": 2,
     "losses": 0,
     "timeouts": 0,
-    "transformations": 1,
-    "damage": 374.8,
-    "taken": 117.1,
-    "simMs": 113.98041199999989
+    "transformations": 0,
+    "damage": 306.6,
+    "taken": 40,
+    "simMs": 76.66698200000019
   },
   {
     "opponent": "jotaro",
-    "wins": 1,
-    "losses": 1,
+    "wins": 2,
+    "losses": 0,
     "timeouts": 0,
     "transformations": 1,
-    "damage": 295.8,
-    "taken": 270.22,
-    "simMs": 126.38773000000015
+    "damage": 358,
+    "taken": 63.3,
+    "simMs": 91.97985400000016
   }
 ]
