@@ -172,11 +172,11 @@ test('clone AI targets an enemy, pursues it, attacks, and disappears on an enemy
  const g=game();g.run(battle+`const owner=byId(myId),enemy=byId('cpu0');owner.energy=100;owner.x=250;owner.y=stage.plats[0].y;
  shadowCloneSummon(owner);const clone=shadowCloneAlive(myId);clone.x=300;clone.y=stage.plats[0].y;
  enemy.x=700;enemy.y=clone.y;aiLv=3;clone.ai.t=1;
- aiStep(clone);`);
+ for(let i=0;i<20;i++)aiStep(clone);`);
  assert.equal(g.run('nearestFoe(clone).id'),'cpu0');assert.equal(g.run('clone.ai.inp.r'),true);
  // Fix the random stream for a reproducible close-range decision, without changing AI code.
- g.run('Math=Object.create(Math);Math.random=()=>.5;enemy.x=clone.x+40;clone.ai.t=1;aiStep(clone);');
- assert.equal(g.run('clone.ai.inp.a||clone.ai.inp.s'),true);
+ g.run('Math=Object.create(Math);Math.random=()=>.5;enemy.x=clone.x+40;clone.ai.t=1;for(let i=0;i<20;i++)aiStep(clone);');
+ assert.equal(g.run('clone.ai.inp.ac>0||clone.ai.inp.sc>0'),true);
  g.run('stepFighter(clone,clone.ai.inp);');assert.ok(g.run('clone.ch>0||clone.sph>0||!!clone.mv'));
  g.run(`resolveMelee({id:enemy.id,x:enemy.x,f:-1,mv:{type:'normal',kind:'normal',dm:6,k0:4.5,ks:.05,up:.6}},clone);`);
  assert.equal(g.run('clone.out'),true);assert.equal(g.run('owner.s'),3);

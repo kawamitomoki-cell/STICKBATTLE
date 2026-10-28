@@ -4364,58 +4364,6 @@ function aiUpSpecial(p,I,A){
  if(!aiUseSpecial(p,I,A,2,'up'))return false;
  A.upCd=55;return true;
 }
-function aiSelectSpecial(p,t,I,A,L,plan,adx,dy){
- if(!aiReady(p))return false;
- const aligned=Math.abs(dy)<78,veryAligned=Math.abs(dy)<55,prob=Math.min(.98,L.spec*1.50*plan.skill+.09);
- const near=adx<plan.near,mid=adx>=plan.near&&adx<plan.shoot;
- if(p.cid==='boxer')return p.ko>=100&&aligned&&adx<78&&aiUseSpecial(p,I,A,2);
- if(p.cid==='yankee')return p.rage>=RAGE_MAX&&p.rageT<=0&&aiUseSpecial(p,I,A,2);
- if(p.cid==='swordsman')return p.senku>=SENKU_MAX&&adx<340&&veryAligned&&aiUseSpecial(p,I,A,2);
- if(p.cid==='rubber'){
-  if(p.gearM>=100&&p.gear<5&&!p.tired)return aiUseSpecial(p,I,A,2,'down');
-  if(mid&&veryAligned&&Math.random()<prob)return aiUseSpecial(p,I,A,2,'side');
-  if(adx<185&&veryAligned&&Math.random()<prob*.60)return aiUseSpecial(p,I,A,2);
-  return false;
- }
- if(isAnime(p)){
-  if(p.cid==='goku'){
-   if(p.energy>=100&&p.form<3)return aiUseSpecial(p,I,A,2,'down');
-   if(adx>210&&p.energy<88&&Math.random()<prob*.65)return aiUseSpecial(p,I,A,35,'down');
-   if(adx>280&&veryAligned&&Math.random()<prob)return aiUseSpecial(p,I,A,65);
-   if(mid&&veryAligned&&Math.random()<prob*.55)return aiUseSpecial(p,I,A,2);
-  }else if(p.cid==='gojo'){
-   if(p.energy>=100&&adx<285)return aiUseSpecial(p,I,A,2,'down');
-   if(veryAligned&&adx<130&&Math.random()<prob)return aiUseSpecial(p,I,A,2,'side');
-   if(veryAligned&&adx<440&&Math.random()<prob)return aiUseSpecial(p,I,A,adx>250?155:adx>160?43:5);
-  }else if(p.cid==='tanjiro'){
-   if(p.energy>=100&&!p.modeT)return aiUseSpecial(p,I,A,2,'down');
-   if(veryAligned&&adx<190&&Math.random()<prob)return aiUseSpecial(p,I,A,2,adx<95?'neutral':'side');
-  }else if(p.cid==='naruto'){
-   if(p.energy>=100&&p.form<2)return aiUseSpecial(p,I,A,2,'down');
-   if(veryAligned&&adx<165&&Math.random()<prob)return aiUseSpecial(p,I,A,2,'side');
-   if(veryAligned&&adx>115&&adx<430&&Math.random()<prob)return aiUseSpecial(p,I,A,2);
-  }else if(p.cid==='jotaro'){
-   if(p.energy>=100)return aiUseSpecial(p,I,A,2,'down');
-   if(veryAligned&&adx<105&&Math.random()<prob)return aiUseSpecial(p,I,A,2);
-   if(veryAligned&&adx<240&&Math.random()<prob)return aiUseSpecial(p,I,A,2,'side');
-  }
-  return false;
- }
- if(p.cid==='gunman'){
-  if(p.bullets<=0){if(p.reloadT<=0)return aiUseSpecial(p,I,A,28);return false;}
-  if(veryAligned&&adx<plan.shoot&&adx>80&&Math.random()<prob)return aiUseSpecial(p,I,A,2);
-  if(p.bullets<=2&&adx>220&&Math.random()<prob*.75)return aiUseSpecial(p,I,A,27);
-  return false;
- }
- if(p.cid==='archer')return veryAligned&&adx>105&&adx<plan.shoot&&Math.random()<prob&&aiUseSpecial(p,I,A,adx>220?42:24);
- if(p.cid==='lancer')return veryAligned&&adx>=90&&adx<290&&Math.random()<prob&&aiUseSpecial(p,I,A,26+Math.floor(Math.random()*23));
- if(p.cid==='bomber')return veryAligned&&adx>=115&&adx<385&&Math.random()<prob&&aiUseSpecial(p,I,A,Math.random()<.24?21:2);
- if(p.cid==='ninja')return veryAligned&&adx>=62&&adx<280&&Math.random()<prob&&aiUseSpecial(p,I,A,2);
- if(p.cid==='karate')return veryAligned&&adx>=100&&adx<345&&Math.random()<prob&&aiUseSpecial(p,I,A,2);
- if(p.cid==='sumo')return veryAligned&&adx<90&&Math.random()<prob&&aiUseSpecial(p,I,A,2);
- if(p.cid==='berserker')return veryAligned&&adx<130&&Math.random()<prob&&aiUseSpecial(p,I,A,2);
- return false;
-}
 function aiNavigationV27(p,t,I,A,L,plan){
  const dy=t.y-p.y,dx=t.x-p.x,adx=Math.abs(dx);
  const upperReady=!p.rec&&A.upCd<=0&&p.kb===0&&p.stn===0&&p.a===0&&p.sph===0;
@@ -4452,85 +4400,144 @@ function aiNavigationV27(p,t,I,A,L,plan){
  }
  return false;
 }
-function aiStep(p){
- const A=p.ai,I=A.inp,L=AI_LV[aiLv]||AI_LV[1],plan=AI_CHARACTER_PLAN[p.cid]||AI_CHARACTER_PLAN.karate;
- A.jumpCd=Math.max(0,(A.jumpCd||0)-1);A.dropCd=Math.max(0,(A.dropCd||0)-1);A.upCd=Math.max(0,(A.upCd||0)-1);
- if(A.hold>0){A.hold--;if(A.hold===0&&I.a){I.a=false;I.rc++;}}
- if(A.shold>0){A.shold--;if(A.shold===0){I.s=false;I.u=false;I.gd=false;I.d=false;I.sideSpecial=0;I.neutralSpecial=false;}}
- if(A.dropHold>0){I.d=true;I.u=false;I.l=false;I.r=false;A.dropHold--;if(A.dropHold===0)I.d=false;A.t=1;return;}
- I.d=false;
- if(p.out)return;
- if(--A.t>0)return;
- A.t=Math.max(2,L.think+Math.floor(Math.random()*Math.max(1,L.think*.6)));
- if(A.hold>0||A.shold>0)return;
- I.l=false;I.r=false;I.u=false;I.sideSpecial=0;I.neutralSpecial=false;
- if(!overGround(p)){
-  I[p.x<stageMid()?'r':'l']=true;
-  if(p.vy>=-2){if(p.jn<jumpsOf(p)&&A.jumpCd===0){I.jc++;A.jumpCd=15;}
-   else if(!p.rec&&A.upCd===0)aiUpSpecial(p,I,A);}
-  A.t=3;return;
- }
- const t=nearestFoe(p);if(!t)return;
- const dx=t.x-p.x,dy=t.y-p.y,adx=Math.abs(dx),aligned=Math.abs(dy)<67,ideal=plan.ideal;
- const danger=nearExplosive(p,115),incoming=incomingProj(p,175);
- if(danger&&Math.random()<L.read){const dir=p.x>=danger.x?1:-1;
-  if(aiCounterAction(p,I,A,dir,true))return;aiAim(I,dir*150);A.t=3;return;}
- if(incoming&&Math.random()<L.read){const dir=p.x>=incoming.x?1:-1;
-  if(aiCounterAction(p,I,A,0,false))return;
-  aiAim(I,dir*120);A.t=3;return;}
- // 戦闘と追跡を両立。上下差がある時は届かない水平攻撃を出さない。
- if(aiNavigationV27(p,t,I,A,L,plan))return;
- // 着地直後に敵が接近していた場合も、高低差が小さければ格闘判断へ。
- const ready=aiReady(p);
- const enemyAttacking=t.mv&&t.a>0&&t.a<=Math.max(t.mv.act0+3,t.mv.act1);
- if(ready&&aligned&&enemyAttacking&&adx<110&&Math.random()<L.read*plan.guard){
-   const normal=t.mv.type==='normal';
-   if(normal&&aiCounterAction(p,I,A,0,false))return;
-   if(!normal&&aiCounterAction(p,I,A,dx>0?-1:1,true))return;
- }
- if(ready&&aligned&&t.ch>=CH_TH&&adx<110&&Math.random()<L.read*.65){
-   if(aiCounterAction(p,I,A,dx>0?-1:1,true))return;
- }
- // キャラクターの得意距離。射撃キャラは後退するが、接近戦の通常技も使う。
- let desired=0;
- if(adx>ideal+(ideal>140?35:16))desired=Math.sign(dx);
- else if(adx<plan.near&&plan.ideal>100)desired=-Math.sign(dx);
- if(p.cid==='gunman'||p.cid==='archer'||p.cid==='bomber'){
-   if(adx<plan.near&&Math.random()<.75)desired=-Math.sign(dx);
-   if(adx>plan.far)desired=Math.sign(dx);
- }
- const sameY=Math.abs(dy)<55;
- // 正面を向いて技を使用。p.f は実際の移動方向入力で更新される。
- if(sameY&&ready&&p.cd===0&&adx<=Math.max(92,plan.shoot)){
-  if(p.f!==Math.sign(dx)&&adx>12){aiAim(I,dx);A.t=2;return;}
-  // 相手が近すぎるときは遠隔技にこだわらず格闘で切り返す。
-  if(adx<plan.near+18){
-   const roll=Math.random();
-   if(roll<L.read*.21&&aiCounterAction(p,I,A,0,false))return;
-   if(roll<.50){aiTap(I,A);A.t=2;return;}
-   if(roll<.78){I.a=true;I.ac++;A.hold=18+Math.floor(Math.random()*29);A.t=3;return;}
-   if(aiSelectSpecial(p,t,I,A,L,plan,adx,dy))return;
-   aiTap(I,A);A.t=2;return;
-  }
-  // 使いどころがよければ必殺技、そうでなければ通常・溜め・移動を選ぶ。
-  if(Math.random()<Math.min(.90,L.spec*1.8+plan.skill*.20)&&aiSelectSpecial(p,t,I,A,L,plan,adx,dy))return;
-  if(adx<Math.max(plan.near+19,81)&&Math.random()<.45){
-   if(Math.random()<plan.charge){I.a=true;I.ac++;A.hold=CH_FULL-4+Math.floor(Math.random()*6);}
-   else aiTap(I,A);
-   A.t=3;return;
-  }
- }
- // 敵と接触して詰まるケース：距離をずらして仕切り直す／ジャンプで背後へ。
- if(adx<26&&aligned&&p.g&&Math.random()<.26){I.jc++;A.jumpCd=15;A.t=3;return;}
- if(desired){aiAim(I,desired*100);if(aiEdgeControl(p,I,p.x+desired*160))A.t=5;}
- if(!desired&&adx<plan.near&&aligned){
-   // 射撃キャラでも近距離の格闘を使う。近接キャラは通常攻撃やカウンターで応戦。
-   if(ready&&p.cd===0){if(Math.random()<.65)aiTap(I,A);else if(!aiCounterAction(p,I,A,0,false))aiTap(I,A);}
- }
- if(aiLv<2&&Math.random()<L.err*.55){I.l=Math.random()<.5;I.r=!I.l;}
- A.t=Math.max(2,Math.floor(L.think*.65));
+// Bounded utility controller. Observations contain public fighter state only;
+// neither human input nor the opponent's AI command is consulted.
+const AI_DIFFICULTY=[
+ {reaction:24,think:12,predict:.25,error:.32,defend:.35},
+ {reaction:18,think:9,predict:.50,error:.22,defend:.55},
+ {reaction:12,think:6,predict:.75,error:.13,defend:.75},
+ {reaction:8,think:4,predict:.90,error:.08,defend:.87}
+];
+// Estimates for special input adapters, not replacements for combat move data.
+// startup includes holding time; range is a conservative tactical envelope.
+const AI_SKILLS={
+ karate:{range:300,startup:6,damage:7,hold:2},
+ ninja:{range:250,startup:4,damage:4,hold:2},
+ bomber:{range:300,startup:8,damage:14,hold:2},
+ sumo:{move:'harite',range:85,startup:9,damage:20,hold:2},
+ boxer:{move:'upper',range:65,startup:7,damage:30,hold:2,ready:p=>p.ko>=100},
+ yankee:{range:220,startup:2,damage:20,hold:2,ready:p=>p.rage>=100&&!p.rageT},
+ swordsman:{range:320,startup:4,damage:26,hold:2,ready:p=>p.senku>=100},
+ lancer:{move:'lancerush',range:240,startup:33,damage:22,hold:26},
+ gunman:{range:400,startup:5,damage:19,hold:2,ready:p=>p.bullets>0&&!p.reloadT},
+ archer:{range:460,startup:29,damage:14,hold:28},
+ berserker:{move:'axeheavy',range:95,startup:24,damage:48,hold:2},
+ rubber:{move:'rpistol',range:155,startup:7,damage:12,hold:2},
+ goku:{range:420,startup:6,damage:9,hold:2},
+ gojo:{range:390,startup:33,damage:7,hold:31},
+ tanjiro:{move:'tcut1',range:90,startup:5,damage:17,hold:2},
+ naruto:{range:400,startup:5,damage:20,hold:2},
+ jotaro:{move:'ora',range:100,startup:5,damage:14,hold:2}
+};
+function aiObserve(p,A,D){
+ const target=nearestFoe(p);if(!target)return null;
+ const samples=A.observations||(A.observations=[]);
+ if(A.targetId!==target.id){A.targetId=target.id;samples.length=0;A.aggression=0;A.evasion=0;}
+ samples.push({id:target.id,x:target.x,y:target.y,vx:target.vx,vy:target.vy,g:target.g,
+  a:target.a,mv:target.mv?{...target.mv}:null,ch:target.ch,ct:target.ct,dg:target.dg,
+  d:target.d,s:target.s,kb:target.kb,ivf:isInvuln(target),cid:target.cid});
+ if(samples.length>D.reaction+1)samples.shift();
+ if(samples.length<=D.reaction)return null;
+ return samples[0];
 }
-
+function aiAttackScore(p,t,m,D){
+ const lead=Math.min(24,m.startup)*D.predict;
+ const x=t.x+t.vx*lead,y=t.y+(t.g?0:t.vy*lead+GRAV*.5*lead*lead);
+ const distance=Math.abs(x-p.x),height=Math.abs(y-p.y);
+ if(height>65||distance>m.range+18||t.ivf)return -Infinity;
+ const recovery=t.mv&&t.a>t.mv.act1?Math.max(0,t.mv.end-t.a):0;
+ const punish=recovery>m.startup?12:0;
+ const risk=t.mv&&t.a<=t.mv.act1?9:0;
+ return 12+m.damage*.35+punish+Math.min(t.d,200)*.025+
+  (t.kb>0?5:0)-Math.max(0,distance-m.range)*.6-m.startup*.25-risk;
+}
+function aiTacticalAction(p,t,A,I,D,plan){
+ const dx=t.x-p.x,dist=Math.abs(dx),side=Math.sign(dx)||p.f;
+ A.aggression=(A.aggression||0)*.94+(t.a>0||t.ch>0?.06:0);
+ A.evasion=(A.evasion||0)*.94+(t.dg>0||t.ct>0?.06:0);
+ // Face using ordinary movement before issuing attacks.
+ if(side!==p.f&&dist>12){aiAim(I,dx);return 'face';}
+ const ready=aiReady(p)&&p.cd===0;
+ const threat=t.mv&&t.a<=t.mv.act1&&Math.abs(t.y-p.y)<75&&
+  dist<(t.mv.reach+t.mv.R+25)*CC(t.cid).size;
+ if(ready&&threat&&Math.random()<D.defend){
+  // Heavy attacks are counterable; normal attacks beat counter stance.
+  const counter=t.mv.type==='heavy'&&!t.mv.pierce&&!t.mv.ko&&!AXE_KINDS.includes(t.mv.kind);
+  if(aiCounterAction(p,I,A,counter?0:-side,!counter))return counter?'counter':'evade';
+ }
+ if(ready){
+  // Safe commitment window for utility abilities, before ranged pokes consume the turn.
+  if(dist>160&&!threat&&p.spc<=0){
+   if(p.cid==='naruto'&&!p.shadowClone&&p.energy>=60&&shadowClonesAlive(p.id).length<NARUTO_CLONE_MAX){aiUseSpecial(p,I,A,34);return 'clone';}
+   if((p.cid==='goku'&&p.energy>=100&&p.form<3||p.cid==='tanjiro'&&p.energy>=100&&!p.modeT||p.cid==='rubber'&&p.gearM>=100&&p.gear<5&&!p.tired)){aiUseSpecial(p,I,A,2,'down');return 'transform';}
+  }
+  if(p.cid==='jotaro'&&p.energy>=100&&dist<200&&p.spc<=0){aiUseSpecial(p,I,A,2,'down');return 'time-stop';}
+  if(p.cid==='gojo'&&p.energy>=100&&dist<250&&p.spc<=0){aiUseSpecial(p,I,A,2,'down');return 'domain';}
+  const candidates=[];
+  const normal=mkMv('normal',p.w),charge=mkMv('charge',p.w),size=CC(p.cid).size;
+  const range=m=>(m.reach+m.R)*size+12;
+  candidates.push({name:'tap',score:aiAttackScore(p,t,{range:range(normal),startup:normal.act0+2,damage:6*CC(p.cid).pow},D)});
+  candidates.push({name:'charge',score:aiAttackScore(p,t,{range:range(charge),startup:CH_FULL+charge.act0,damage:22*CC(p.cid).pow},D)-(A.aggression||0)*8});
+  const skill=AI_SKILLS[p.cid];
+  if(skill&&p.spc<=0&&(!skill.ready||skill.ready(p)))candidates.push({name:'special',score:aiAttackScore(p,t,skill,D)});
+  // Feint against repeated dodge/counter, bounded so it cannot become endless waiting.
+  if((A.evasion||0)>.2&&(A.feintUntil||0)<A.clock-45&&dist<110){A.feintUntil=A.clock+10;return 'feint';}
+  if(A.feintUntil>A.clock)return 'feint';
+  for(const c of candidates)c.score+=Math.random()*D.error*18-(A.lastAction===c.name?3:0);
+  candidates.sort((a,b)=>b.score-a.score);
+  const best=candidates[0];
+  if(best.score>8&&Math.random()>D.error*.3){
+   if(best.name==='tap')aiTap(I,A);
+   else if(best.name==='charge'){I.a=true;I.ac++;A.hold=CH_FULL;}
+   else aiUseSpecial(p,I,A,skill.hold);
+   return best.name;
+  }
+  if(p.cid==='gunman'&&p.bullets<=2&&dist>200&&!p.reloadT){aiUseSpecial(p,I,A,28);return 'reload';}
+ }
+ // Press a recovering/knocked-back target, otherwise hold a character-specific spacing.
+ const ideal=t.kb>0?Math.min(plan.ideal,90):plan.ideal;
+ if(dist>ideal+18)aiAim(I,dx);
+ else if(dist<plan.near&&ideal>100)aiAim(I,-dx);
+ aiEdgeControl(p,I,p.x+(I.r?1:I.l?-1:0)*150);
+ return I.r||I.l?'space':'watch';
+}
+function aiStep(p){
+ const A=p.ai,I=A.inp,D=AI_DIFFICULTY[aiLv]||AI_DIFFICULTY[1];
+ A.clock=(A.clock||0)+1;
+ const t=aiObserve(p,A,D);
+ for(const key of ['jumpCd','dropCd','upCd'])A[key]=Math.max(0,(A[key]||0)-1);
+ if(A.hold>0&&!--A.hold&&I.a){I.a=false;I.rc++;}
+ if(A.shold>0&&!--A.shold){I.s=I.u=I.gd=I.d=false;I.sideSpecial=0;I.neutralSpecial=false;}
+ if(p.out||p.timeStopT>0||p.domainT>0)return;
+ if(A.dropHold>0){A.dropHold--;I.d=true;I.l=I.r=false;return;}
+ I.d=false;
+ if(--A.t>0)return;
+ A.t=D.think;
+ if(A.hold>0||A.shold>0)return;
+ I.l=I.r=I.u=false;I.sideSpecial=0;I.neutralSpecial=false;
+ // Self-preservation uses own state, not delayed knowledge of the opponent.
+ if(!overGround(p)){
+  aiAim(I,stageMid()-p.x);
+  if(p.vy>=-2&&A.jumpCd===0){
+   if(p.jn<jumpsOf(p)){I.jc++;A.jumpCd=15;}
+   else if(!['archer','berserker'].includes(p.cid))aiUpSpecial(p,I,A);
+  }
+  A.lastAction='recover';return;
+ }
+ if(!t)return;
+ const plan=AI_CHARACTER_PLAN[p.cid]||AI_CHARACTER_PLAN.karate;
+ // Only existing rising attacks with a hit volume are used as anti-air.
+ if(t.y<p.y-25&&t.y>p.y-100&&Math.abs(t.x-p.x)<55&&['karate','boxer','swordsman','lancer','tanjiro'].includes(p.cid)&&aiUpSpecial(p,I,A)){A.lastAction='anti-air';return;}
+ if(aiNavigationV27(p,t,I,A,AI_LV[aiLv]||AI_LV[1],plan)){A.lastAction='navigate';return;}
+ // Projectile response requires a visible hazard to persist for the reaction window.
+ const hazard=incomingProj(p,230)||nearExplosive(p,110);
+ if(hazard){
+  if(A.hazard!==hazard){A.hazard=hazard;A.hazardAt=A.clock;}
+  if(A.clock-A.hazardAt>=D.reaction&&Math.random()<D.defend&&aiCounterAction(p,I,A,0,false)){A.lastAction='projectile-guard';return;}
+ }else A.hazard=null;
+ const action=aiTacticalAction(p,t,A,I,D,plan);A.lastAction=action;
+ A.actions=A.actions||{};A.actions[action]=(A.actions[action]||0)+1;
+}
 // ========================================================
 // ⑫ 描画
 // ========================================================

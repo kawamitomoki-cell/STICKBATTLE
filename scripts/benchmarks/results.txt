@@ -1,0 +1,85 @@
+[
+  {
+    "version": "before",
+    "cid": "karate",
+    "damage": 546.2,
+    "deaths": 11,
+    "attacks": 90,
+    "hitEvents": 55,
+    "aiMs": 47.189442999999464,
+    "frames": 5400
+  },
+  {
+    "version": "before",
+    "cid": "gunman",
+    "damage": 461.4,
+    "deaths": 12,
+    "attacks": 90,
+    "hitEvents": 33,
+    "aiMs": 46.44915900000075,
+    "frames": 5400
+  },
+  {
+    "version": "before",
+    "cid": "naruto",
+    "damage": 567.5,
+    "deaths": 16,
+    "attacks": 73,
+    "hitEvents": 43,
+    "aiMs": 41.19034899999349,
+    "frames": 5400
+  },
+  {
+    "version": "before",
+    "cid": "berserker",
+    "damage": 688.05,
+    "deaths": 17,
+    "attacks": 84,
+    "hitEvents": 64,
+    "aiMs": 44.15006300000573,
+    "frames": 5400
+  },
+  {
+    "version": "after",
+    "cid": "karate",
+    "damage": 656,
+    "deaths": 10,
+    "attacks": 28,
+    "hitEvents": 76,
+    "aiMs": 66.19160799999577,
+    "frames": 5400
+  },
+  {
+    "version": "after",
+    "cid": "gunman",
+    "damage": 813.2,
+    "deaths": 19,
+    "attacks": 44,
+    "hitEvents": 84,
+    "aiMs": 56.93949299998951,
+    "frames": 5400
+  },
+  {
+    "version": "after",
+    "cid": "naruto",
+    "damage": 855.7,
+    "deaths": 18,
+    "attacks": 65,
+    "hitEvents": 75,
+    "aiMs": 63.922653999994736,
+    "frames": 5400
+  },
+  {
+    "version": "after",
+    "cid": "berserker",
+    "damage": 386.2,
+    "deaths": 14,
+    "attacks": 51,
+    "hitEvents": 96,
+    "aiMs": 51.41959499999075,
+    "frames": 5400
+  }
+]
+{"cpuCount":1,"calls":1200,"aiMs":8.082480999997188}
+{"cpuCount":3,"calls":3600,"aiMs":21.55838000001154}
+{"cpuCount":7,"calls":8400,"aiMs":56.33507299999064}
