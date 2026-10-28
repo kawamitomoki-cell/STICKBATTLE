@@ -23,6 +23,7 @@ function shadowCloneSummon(p){
 }
 function shadowCloneReceiveSnapshot(id,s){
  if(!online||shadowCloneGone.has(id)||!s||s.sc!==1||s.rd!==curRound||s.o||typeof id!=='string')return null;
+ if(!Number.isFinite(s.x)||!Number.isFinite(s.y))return null;
  if(typeof s.so!=='string'||!id.startsWith('sclone_'+s.so+'_'))return null;
  const owner=byId(s.so);
  if(!owner||owner.cid!=='naruto'||owner.owner===myId)return null;
