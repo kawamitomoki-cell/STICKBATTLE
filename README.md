@@ -45,6 +45,6 @@ Develop changes on a work branch and run the build checks and tests before publi
 
 ### Eren
 
-Review branch controls, specification audit and validation: [エレン仕様対応](docs/EREN_SPEC_REVIEW.md).
+Current controls, specification audit and validation: [エレン仕様対応](docs/EREN_SPEC_REVIEW.md).
 
-The live game still uses the previous [立体機動再設計](docs/EREN_FREEDOM_REWORK.md); this review branch has not been merged into `main`.
+Previous design history: [立体機動再設計](docs/EREN_FREEDOM_REWORK.md). Online players must reload and create a new room for protocol V36.
