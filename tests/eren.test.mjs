@@ -125,7 +125,7 @@ test('polished moves give human and titan different finishers, keeping timed vul
 });
 test('wire combat keeps tether acceleration during an actual moving slash',()=>{
  const g=env();g.run('p.f=1;t.x=460;t.y=350;erenWire(p);erenAttack(p,1);const x=p.x,y=p.y;for(let i=0;i<10;i++){stepFighter(p,blankInput());meleeCheck(p);}');
- assert.equal(g.run('p.mv.kind'),'erenWireCut');assert.ok(g.run('Math.hypot(p.x-x,p.y-y)>40&&Math.hypot(p.x-x,p.y-y)<120'));
+ assert.equal(g.run('p.mv.kind'),'erenWireCut');assert.ok(g.run('Math.hypot(p.x-x,p.y-y)>40&&Math.hypot(p.x-x,p.y-y)<160'));
  assert.ok(g.run('t.d>0'));assert.ok(g.run('!!p.erenWire'));
 });
 test('tether slashes hit twice and titan fists alternate without duplicate damage',()=>{
@@ -308,14 +308,14 @@ test('simultaneous special and attack taps are buffered until the opening hit co
 test('up special is a low vertical slash, including keyboard jump plus special and extreme wire momentum',()=>{
  const g=env();g.run(`p.g=true;p.groundPl=0;const start=p.y;const I={...blankInput(),u:true,jc:1,s:true,sc:1};stepFighter(p,I);let top=p.y;
  for(let i=0;i<22;i++){stepFighter(p,I);top=Math.min(top,p.y);}`);
- assert.ok(g.run('start-top>30&&start-top<55'));
+ assert.ok(g.run('start-top>60&&start-top<130'));
  const h=env();h.run('p.y=240;p.g=false;p.vy=-22;p.vx=24;erenWire(p);p.spc=0;p.rec=false;erenSpecial(p,{u:true});');
- assert.equal(h.run('p.mv.kind'),'erenRiseSpin');assert.equal(h.run('p.erenWire'),null);assert.equal(h.run('p.vy'),-7.5);assert.ok(h.run('p.vx<=5'));
+ assert.equal(h.run('p.mv.kind'),'erenRiseSpin');assert.equal(h.run('p.erenWire'),null);assert.equal(h.run('p.vy'),-9);assert.ok(h.run('p.vx<=5'));
 });
 test('side special stays within a lower speed limit and uses a flatter anchor on level ground',()=>{
  const g=env();g.run(`p.g=true;p.groundPl=0;const start=p.y;let maxSpeed=0,top=p.y;
  const I={...blankInput(),r:true,s:true,sc:1};for(let i=0;i<30;i++){stepFighter(p,I);maxSpeed=Math.max(maxSpeed,Math.abs(p.vx));top=Math.min(top,p.y);}`);
- assert.ok(g.run('maxSpeed<=14.001&&maxSpeed>12'));assert.ok(g.run('start-top<35'));
+ assert.ok(g.run('maxSpeed<=16.001&&maxSpeed>14'));assert.ok(g.run('start-top<35'));
 });
 test('human charged spin gives a decisive launch while titan punch damage remains unchanged',()=>{
  const g=env();g.run('fireAttack(p,CH_FULL);p.a=5;meleeCheck(p);');assert.equal(g.run('t.d'),22);assert.ok(g.run('t.vx>20'));
@@ -389,4 +389,14 @@ test('arrival ends the rush acceleration while leaving the wire visibly connecte
  const g=env();g.run(`p.g=true;p.groundPl=0;erenSpecial(p,{sideSpecial:1});p.x=p.erenWire.x-10;p.y=390;p.g=true;p.vx=14;
  const I={...blankInput(),r:true};for(let i=0;i<8;i++)stepFighter(p,I);`);
  assert.equal(g.run('p.erenWire.docked'),true);assert.ok(g.run('p.vx<6'));assert.ok(g.run('p.x<660'));
+});
+test('up special attaches a real wire and uses only a bounded opening boost',()=>{
+ const g=env();g.run(`p.g=true;p.groundPl=0;erenSpecial(p,{u:true});const anchor=p.erenSlashWire;let top=p.y;for(let i=0;i<40;i++){stepFighter(p,blankInput());top=Math.min(top,p.y);}`);
+ assert.ok(g.run('!!anchor&&anchor.y===stage.plats[anchor.pl].y'));assert.ok(g.run('390-top>70&&390-top<130'));
+});
+test('titan can jump high enough for the standard upper platforms without changing human jump',()=>{
+ const g=env();g.run(`const human=fighterConfig(p).jump;p.erenForm=1;p.erenTime=1080;p.g=true;p.groundPl=0;let I={...blankInput(),jc:1};stepFighter(p,I);let top=p.y;for(let i=0;i<50;i++){stepFighter(p,I);top=Math.min(top,p.y);}`);
+ assert.equal(g.run('human'),1.04);assert.ok(g.run('390-top>120&&390-top<180'));
+ const h=env();h.run(`p.erenForm=1;p.erenTime=1080;p.x=520;p.g=true;p.groundPl=0;const I={...blankInput(),jc:1};for(let i=0;i<50;i++)stepFighter(p,I);`);
+ assert.equal(h.run('p.y'),280);assert.equal(h.run('p.g'),true);
 });

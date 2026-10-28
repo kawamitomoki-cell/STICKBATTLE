@@ -1,0 +1,18 @@
+[
+  {
+    "cpus": 1,
+    "frames": 1200,
+    "invalid": 0,
+    "knockouts": 2,
+    "fighters": 2,
+    "simMs": 66.157401
+  },
+  {
+    "cpus": 7,
+    "frames": 1200,
+    "invalid": 0,
+    "knockouts": 12,
+    "fighters": 8,
+    "simMs": 181.52444199999996
+  }
+]
