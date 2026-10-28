@@ -6,7 +6,7 @@ const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const game=read('src/game/01-game-data.js');
 const source=game.slice(game.indexOf('function animeHold(p,inp){'),game.indexOf('function animeUp(p){'));
 function env(notices=[]){
- const sandbox={NARUTO_CLONE_HOLD:32,NARUTO_CLONE_COST:60,shadowCloneAlive:()=>null,
+ const sandbox={NARUTO_CLONE_MAX:2,shadowClonesAlive:()=>[],NARUTO_CLONE_HOLD:32,NARUTO_CLONE_COST:60,shadowCloneAlive:()=>null,
   shadowCloneSummon(p){p.energy-=60;p.spc=100;p.summoned=(p.summoned||0)+1;return true;},
   animeNotice(p,msg){notices.push(msg)},animeRasenShuriken(){throw Error('no shuriken while long-pressed')},
   animeGain(){},animeSound(){},GOJO_PURPLE_HOLD:150,GOJO_RED_HOLD:30};

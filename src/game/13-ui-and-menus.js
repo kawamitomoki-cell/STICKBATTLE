@@ -512,7 +512,7 @@ function updateControlUI(){
  let text=p.ch>=CH_WARN?'溜めすぎ注意！ 離して攻撃':p.ch>=CH_FULL?'CHARGE READY — 指を離して攻撃':'スティック↑でジャンプ ／ 攻撃：長押しで溜め';
  let ready=(p.cid==='rubber'&&p.gearM>=100&&p.gear<5&&!p.tired)||(p.cid==='boxer'&&p.ko>=100)||(p.cid==='yankee'&&p.rage>=100)||(p.cid==='swordsman'&&p.senku>=100);
  if(p.cid==='naruto'){
-   ready=(p.energy||0)>=NARUTO_CLONE_COST&&!shadowCloneAlive(p.id)&&p.spc<=0;
+   ready=(p.energy||0)>=NARUTO_CLONE_COST&&shadowClonesAlive(p.id).length<NARUTO_CLONE_MAX&&p.spc<=0;
    const progress=p.castStyle==='shadow-charge'&&p.sph>0?Math.min(100,Math.round(p.sph/NARUTO_CLONE_HOLD*100)):0;
    special.style.setProperty('--charge',progress+'%');
  }else special.style.setProperty('--charge','0%');
@@ -1229,7 +1229,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_SHADOW_CLONE_V29';
+const NET_PROTOCOL='SBO_NET_SHADOW_CLONE_TWO_V30';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;

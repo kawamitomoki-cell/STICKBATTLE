@@ -1,14 +1,15 @@
 
 // Naruto: autonomous shadow clone companion.
 // Real CPU fighter, excluded from stock/score; 60 chakra and one-hit life.
-const NARUTO_CLONE_HOLD=32,NARUTO_CLONE_COST=60,NARUTO_CLONE_COOLDOWN=100;
+const NARUTO_CLONE_MAX=2,NARUTO_CLONE_HOLD=32,NARUTO_CLONE_COST=60,NARUTO_CLONE_COOLDOWN=100;
 let shadowCloneSerial=0;
 const shadowCloneGone=new Set();
 function shadowCloneReset(){shadowCloneSerial=0;shadowCloneGone.clear();}
-function shadowCloneAlive(ownerId){return fighters.find(f=>f.shadowClone&&f.shadowOwner===ownerId&&!f.out)||null;}
+function shadowClonesAlive(ownerId){return fighters.filter(f=>f.shadowClone&&f.shadowOwner===ownerId&&!f.out);}
+function shadowCloneAlive(ownerId){return shadowClonesAlive(ownerId)[0]||null;}
 function shadowCloneSummon(p){
  if(!p||p.cid!=='naruto'||p.shadowClone||!isLocal(p)||p.out)return false;
- if(shadowCloneAlive(p.id)){animeNotice(p,'影分身は既に出現中','#ffda95');sfxNo();p.spc=24;return false;}
+ if(shadowClonesAlive(p.id).length>=NARUTO_CLONE_MAX){animeNotice(p,'影分身は最大2体まで','#ffda95');sfxNo();p.spc=24;return false;}
  if((p.energy||0)<NARUTO_CLONE_COST){animeNotice(p,'チャクラ不足','#ffda95');sfxNo();p.spc=24;return false;}
  p.energy-=NARUTO_CLONE_COST;p.spc=NARUTO_CLONE_COOLDOWN;
  const x=Math.max(28,Math.min(stage.w-28,p.x-p.f*55));
@@ -27,8 +28,10 @@ function shadowCloneReceiveSnapshot(id,s){
  if(typeof s.so!=='string'||!id.startsWith('sclone_'+s.so+'_'))return null;
  const owner=byId(s.so);
  if(!owner||owner.cid!=='naruto'||owner.owner===myId)return null;
- const active=shadowCloneAlive(owner.id);
- if(active)return active.id===id?active:null;
+ const active=shadowClonesAlive(owner.id);
+ const existing=active.find(f=>f.id===id);
+ if(existing)return existing;
+ if(active.length>=NARUTO_CLONE_MAX)return null;
  const f=makeFighter({id,cid:'naruto',label:'影分身',cpu:1,owner:owner.owner,team:owner.team},fighters.length);
  f.shadowClone=true;f.shadowOwner=owner.id;f.x=s.x;f.y=s.y;f.f=s.f||1;f.form=s.af||0;f.modeT=s.at||0;f.energy=0;
  f.inv=0;f.s=1;f.spc=0;f.c='#9bd6ff';fighters.push(f);hudKey='';

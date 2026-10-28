@@ -179,7 +179,7 @@ Object.assign(CHARS,{
  goku:{...ANIME_COMMON,name:'孫悟空',en:'SON GOKU',mark:'悟',spd:1.08,jump:1.05,wt:.94,pow:1.14,st:[4,4,3],sp:'特殊：気弾。長押しして離すとかめはめ波（移動しながらチャージ可能）。下特殊：気を溜め、MAXでもう一度押すと超サイヤ人→2→3',up:'通常～超2は攻撃判定なしの大ジャンプ。超3のみ龍拳',ab:'SS1は総合強化。SS2は火力特化＋溜め攻撃貫通。SS3は15秒限定の完全無敵・超火力ボス性能。横特殊は足場から落ちない瞬間移動。気弾には吹っ飛ばしなし'},
  gojo:{...ANIME_COMMON,name:'五条悟',en:'SATORU GOJO',mark:'無',spd:1.04,jump:1.05,wt:.98,pow:1.05,st:[3,5,3],sp:'特殊：即離し＝蒼／少し溜め＝赫／長押し＝茈。横特殊は踏み込み強打で約1/6の確率で黒閃',up:'上特殊：攻撃判定のない大ジャンプ。下特殊：術式ゲージMAXで領域展開「無量空処」',ab:'無下限により飛び道具を常時無効。横特殊は踏み込み打撃、稀に黒閃。無量空処は範囲内の敵を行動不能にするが、被弾・吹っ飛び・撃墜は通常どおり発生'},
  tanjiro:{...ANIME_COMMON,name:'竈門炭治郎',en:'TANJIRO',mark:'水',spd:1.08,jump:1.02,wt:.98,pow:1.12,st:[4,4,3],sp:'通常攻撃は日輪刀。特殊＝壱ノ型 水面斬り／横特殊＝参ノ型 流流舞い／上特殊＝弐ノ型 水車',up:'下特殊で呼吸ゲージMAX時にヒノカミ神楽へ。神楽中：特殊＝碧羅の天、横＝烈日紅鏡、上＝飛輪陽炎、下＝幻日虹',ab:'水の呼吸は高火力の剣技。ヒノカミ神楽は18秒、火力と吹っ飛ばしが大幅強化。幻日虹は残像を残して攻撃を回避'},
- naruto:{...ANIME_COMMON,name:'うずまきナルト',en:'NARUTO',mark:'忍',spd:1.13,jump:1.08,wt:.96,pow:1.05,st:[5,3,3],sp:'特殊短押し＝螺旋手裏剣、長押し約0.5秒で即影分身（チャクラ60消費・同時1体・被弾で消滅）。横特殊＝螺旋丸、下特殊＝チャクラ解放・2段変身',up:'上特殊：一瞬で上へ移動する高速瞬身（攻撃判定なし）',ab:'チャクラは時間経過で蓄積。特殊長押しでチャクラを60消費し、最強級AIの影分身を即召喚（離す必要なし）。分身は敵の一撃で煙になり消える。MAXで仙人モード→九尾チャクラモード'},
+ naruto:{...ANIME_COMMON,name:'うずまきナルト',en:'NARUTO',mark:'忍',spd:1.13,jump:1.08,wt:.96,pow:1.05,st:[5,3,3],sp:'特殊短押し＝螺旋手裏剣、長押し約0.5秒で即影分身（チャクラ60消費・同時最大2体・被弾で消滅）。横特殊＝螺旋丸、下特殊＝チャクラ解放・2段変身',up:'上特殊：一瞬で上へ移動する高速瞬身（攻撃判定なし）',ab:'チャクラは時間経過で蓄積。特殊長押しでチャクラを60消費し、最強級AIの影分身を即召喚（離す必要なし）。分身は敵の一撃で煙になり消える。MAXで仙人モード→九尾チャクラモード'},
  jotaro:{...ANIME_COMMON,name:'空条承太郎',en:'JOTARO KUJO',mark:'星',spd:1.02,jump:1.02,wt:.90,pow:1.13,st:[4,4,4],sp:'特殊＝スタープラチナのオラオララッシュ。横特殊＝スターフィンガー',up:'上特殊：スタープラチナと共に大ジャンプ（攻撃判定なし）。下特殊：ゲージMAXで時を止める',ab:'時止め中は時間経過・攻撃ヒットのどちらでもゲージが増えない。承太郎だけが行動でき、止まった相手へのダメージと吹っ飛ばしは時が動き出した瞬間に反映される'}
 
 });
@@ -476,7 +476,7 @@ function animeHold(p,inp){
   if(p.cid==='goku'&&p.castStyle==='ki'&&p.sph===85)animeNotice(p,'かめはめ波 MAX','#99eaff');
   if(p.cid==='naruto'&&p.castStyle==='shadow-charge'&&!p.shadowClone&&p.sph>=NARUTO_CLONE_HOLD){
    // 長押し約0.5秒で即召喚。指を離す必要はない。
-   if(shadowCloneAlive(p.id)||(p.energy||0)>=NARUTO_CLONE_COST){
+   if(shadowClonesAlive(p.id).length>=NARUTO_CLONE_MAX||(p.energy||0)>=NARUTO_CLONE_COST){
     p.sph=0;p.castStyle='';shadowCloneSummon(p);return;
    }
    if(p.sph===NARUTO_CLONE_HOLD)animeNotice(p,'影分身：チャクラ60必要','#ffdf8f',17,50);
@@ -1101,20 +1101,21 @@ function animeHud(p){
  if(!isAnime(p))return null;
  const m=p.modeT>0&&p.cid==='tanjiro'?p.modeT/10.8:p.cid==='naruto'&&p.form===2?p.modeT/9:p.energy||0;
  let label=p.cid==='goku'?['気：通常','気：超1','気：超2','気：超3'][p.form||0]:p.cid==='gojo'?'無下限 / 術式':p.cid==='tanjiro'?(p.modeT>0?'ヒノカミ神楽':'呼吸'):p.cid==='jotaro'?'スタープラチナ / 時止め':(['チャクラ','仙人モード','九尾モード'][p.form||0]);
- if(p.cid==='naruto'&&shadowCloneAlive(p.id))label+=' / 影分身';
+ if(p.cid==='naruto')label+=' / 分身 '+shadowClonesAlive(p.id).length+'/'+NARUTO_CLONE_MAX;
  if(p.fatigue>0)label='スタミナ回復中';else if(p.energy>=100&&!(p.cid==='naruto'&&p.form===2))label+=' MAX';return{m,label};
 }
 function animeControl(p){
  const h=document.getElementById('combat-hint');
  const instructions={goku:'特殊：気弾／長押しかめはめ波　↓特殊：気を溜める・MAXで変身　→特殊：瞬間移動　超3↑特殊：龍拳',gojo:'特殊：即離し＝蒼／少し溜め＝赫／長時間溜め＝茈　→特殊：踏み込み強打（約1/6で黒閃）　↓特殊：無量空処　↑特殊：大ジャンプ',tanjiro:'特殊：水面斬り　→特殊：流流舞い　↑特殊：水車　↓特殊：神楽変身／幻日虹',naruto:'特殊短押し：螺旋手裏剣／長押し：影分身（チャクラ60）　→特殊：螺旋丸　↑特殊：瞬身　↓特殊：仙人→九尾',jotaro:'特殊：オラオラ連打→最後にオラァ！　→特殊：スターフィンガー　↑特殊：大ジャンプ　↓特殊：ゲージMAXで時止め'};
  if(isAnime(p)){
-  const activeClone=p.cid==='naruto'?shadowCloneAlive(p.id):null;
-  const narutoHint=p.cid!=='naruto'?null:activeClone?'影分身が戦闘中！ 敵の攻撃を受けると消滅'
+  const cloneCount=p.cid==='naruto'?shadowClonesAlive(p.id).length:0;
+  const activeClone=cloneCount>=NARUTO_CLONE_MAX;
+  const narutoHint=p.cid!=='naruto'?null:activeClone?'影分身が戦闘中！ 2/2体 ― 敵の攻撃を受けると消滅'
     :p.castStyle==='shadow-charge'&&p.sph>0?(p.energy>=NARUTO_CLONE_COST?'影分身の術 '+Math.min(100,Math.round(p.sph/NARUTO_CLONE_HOLD*100))+'% ― そのまま長押し':'影分身にはチャクラ60必要（現在 '+Math.floor(p.energy||0)+'）')
     :(p.energy>=NARUTO_CLONE_COST?'チャクラ十分！ 特殊を約0.5秒長押しで影分身':'チャクラ '+Math.floor(p.energy||0)+'/60 ― たまったら特殊長押しで影分身');
   setTxt(h,netIssue||narutoHint||instructions[p.cid]);const b=document.getElementById('btn-g');b.classList.toggle('ready',p.energy>=100);
   setTxt(b.querySelector('small'),p.cid==='gojo'?'無量空処':p.cid==='tanjiro'?(p.modeT>0?'幻日虹':'神楽'):p.cid==='goku'?'気溜め／変身':p.cid==='jotaro'?'時止め':'仙人／九尾');
-  setTxt(document.querySelector('#btn-s small'),p.cid==='goku'?'気弾／かめはめ波':p.cid==='gojo'?'蒼→赫→長溜め茈':p.cid==='tanjiro'?'水面斬り／碧羅の天':p.cid==='jotaro'?'オラオラ':activeClone?'分身が戦闘中':p.castStyle==='shadow-charge'&&p.sph>0?'印 '+Math.min(100,Math.round(p.sph/NARUTO_CLONE_HOLD*100))+'%':p.energy>=NARUTO_CLONE_COST?'長押し：分身OK':'短：手裏剣／長：分身');
+  setTxt(document.querySelector('#btn-s small'),p.cid==='goku'?'気弾／かめはめ波':p.cid==='gojo'?'蒼→赫→長溜め茈':p.cid==='tanjiro'?'水面斬り／碧羅の天':p.cid==='jotaro'?'オラオラ':activeClone?'分身 2/2体':p.castStyle==='shadow-charge'&&p.sph>0?'印 '+Math.min(100,Math.round(p.sph/NARUTO_CLONE_HOLD*100))+'%':p.energy>=NARUTO_CLONE_COST?'長押し：分身 '+cloneCount+'/2体':'短：手裏剣／長：分身');
  }
 }
 function rosterSections(container,choose){

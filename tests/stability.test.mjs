@@ -94,13 +94,14 @@ test('keyboard, touch and gamepad edge inputs clear on blur/cancellation',()=>{
  g.run('readHuman();');assert.equal(g.run('hin.r&&hin.a'),true);
 });
 
-test('Naruto short special preserves rasenshuriken and hold summons only one clone',()=>{
+test('Naruto short special preserves rasenshuriken and hold summons once per press and allows a second clone',()=>{
  const g=game();g.run(battle+`const p=byId(myId);p.energy=100;
  let input=blankInput();input.sc++;input.s=true;stepFighter(p,input);input.s=false;stepFighter(p,input);`);
  assert.equal(g.run('projs.some(q=>q.kind==="rasenshuriken")'),true);
  g.run(`p.spc=0;clearActs(p);input.sc++;input.s=true;for(let i=0;i<40;i++)stepFighter(p,input);`);
  assert.equal(g.run('fighters.filter(f=>f.shadowClone&&!f.out).length'),1);
- g.run('p.energy=100;p.spc=0;shadowCloneSummon(p);');assert.equal(g.run('fighters.filter(f=>f.shadowClone&&!f.out).length'),1);
+ g.run('p.energy=100;p.spc=0;shadowCloneSummon(p);');assert.equal(g.run('fighters.filter(f=>f.shadowClone&&!f.out).length'),2);
+ g.run('p.energy=100;p.spc=0;shadowCloneSummon(p);');assert.equal(g.run('fighters.filter(f=>f.shadowClone&&!f.out).length'),2);
 });
 
 test('normal/team victory ignores clones, training resets, and tournament progresses to a champion',()=>{

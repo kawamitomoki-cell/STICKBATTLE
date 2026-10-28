@@ -17,7 +17,8 @@ test('network accepts only valid remote clone snapshots',()=>{
  vm.createContext(ctx);vm.runInContext(read('src/game/01b-naruto-shadow-clone.js'),ctx);ctx.byId=id=>ctx.fighters.find(f=>f.id===id);
  ctx.fighters.push({id:'other',cid:'naruto',owner:'other',team:0});
  assert.equal(ctx.shadowCloneReceiveSnapshot('sclone_other_1',{sc:1,so:'other',rd:8,x:100,y:200,f:1,o:0}).shadowClone,true);
- assert.equal(ctx.shadowCloneReceiveSnapshot('sclone_other_2',{sc:1,so:'other',rd:8,x:100,y:200,o:0}),null);
+ assert.equal(ctx.shadowCloneReceiveSnapshot('sclone_other_2',{sc:1,so:'other',rd:8,x:100,y:200,o:0}).shadowClone,true);
+ assert.equal(ctx.shadowCloneReceiveSnapshot('sclone_other_3',{sc:1,so:'other',rd:8,x:100,y:200,o:0}),null);
  assert.equal(ctx.shadowCloneReceiveSnapshot('sclone_fake_2',{sc:1,so:'other',rd:8,x:100,y:200,o:0}),null);
 });
 test('expert AI, combat, multiplayer and win checks are wired',()=>{
