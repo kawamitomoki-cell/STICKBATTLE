@@ -1,0 +1,26 @@
+[
+  {
+    "version": "after",
+    "move": "side",
+    "frames": 30,
+    "ko": false,
+    "steps": 30,
+    "maxRise": 5.175831664921873,
+    "maxSpeed": 14,
+    "maxForward": 260.469679332585,
+    "finalX": 660.469679332585,
+    "finalY": 390
+  },
+  {
+    "version": "after",
+    "move": "up",
+    "frames": 60,
+    "ko": false,
+    "steps": 60,
+    "maxRise": 43.19999999999999,
+    "maxSpeed": 0,
+    "maxForward": 0,
+    "finalX": 400,
+    "finalY": 390
+  }
+]

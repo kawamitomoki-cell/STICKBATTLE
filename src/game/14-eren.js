@@ -1,8 +1,8 @@
 // Eren module: owner-authoritative state; existing fighters take unchanged paths.
 const EREN={duration:1080,cutin:84,fatigue:60,hardTime:120,hardCooldown:360,
- normalGain:6,strongGain:10,takenGain:2,respawnCarry:50,wireTime:26,wireCooldown:14,wireSpeed:12,wireUpSpeed:8,wireDownSpeed:9,wireAccel:1.1,wireLift:.75,steerX:.7,steerY:.8,riseSpeed:5.5,glideTime:12,gasCost:14,gasRefund:6,gasDrain:.16,grabTime:24,grabDamage:20};
+ normalGain:6,strongGain:10,takenGain:2,respawnCarry:50,wireTime:42,wireCooldown:12,wireSpeed:14,wireUpSpeed:8,wireDownSpeed:9,wireAccel:1.25,wireLift:.75,steerX:.8,steerY:.8,riseSpeed:7.5,glideTime:12,gasCost:14,gasRefund:6,gasDrain:.16,grabTime:24,grabDamage:20};
 CHARS.eren={name:'エレン・イェーガー',en:'EREN YEAGER',mark:'巨',spd:1.20,jump:1.04,jumps:2,wt:1.05,pow:1,size:1,ctx:0,back:false,ctc:1,dgc:.9,dgs:1.1,st:[4,3,2],
- sp:'特殊：横回転斬り（命中から攻撃へ連携／出し切りで吹っ飛ばす）／横：立体機動急襲。巨人：掴み投げ・タックル',up:'人間：小さく浮く縦回転斬り（空中1回）／巨人：対空アッパー',ab:'攻撃・被弾でTITAN GAUGE蓄積。MAXで下特殊：18秒の巨人化。ガスは着地で補充。巨人の下特殊：2秒硬質化（再使用6秒）。背後上部のうなじは1.2倍ダメージ'};
+ sp:'特殊：ワイヤー付き横回転斬り（命中から攻撃へ連携／出し切りで吹っ飛ばす）／横：立体機動急襲。巨人：掴み投げ・タックル',up:'人間：ほどよく上昇する縦回転斬り（空中1回）／巨人：対空アッパー',ab:'攻撃・被弾でTITAN GAUGE蓄積。MAXで下特殊：18秒の巨人化。ガスは着地で補充。巨人の下特殊：2秒硬質化（再使用6秒）。背後上部のうなじは1.2倍ダメージ'};
 SPECIAL_IDS.push('eren');ANIME_COLORS.eren='#b8b276';fighterRoles.eren='ODM / 時間制限巨人化';
 const EREN_MOVES={
  erenBlades:{type:'normal',act0:3,act1:10,end:16,reach:28,R:23,yo:33,cd:3,multi:5,dm:5,k0:3,ks:.035,up:.4},
@@ -25,7 +25,7 @@ function fighterConfig(p){
  return {...c,size:3,spd:p.erenHard>0?.48:.82,jump:.78,wt:.40,pow:1,dgs:.65,ctc:1.15};
 }
 let erenLifeSerial=0;
-function erenReset(p){Object.assign(p,{erenLife:isLocal(p)?++erenLifeSerial:0,erenAttacks:new Map(),erenCombo:null,erenGas:100,erenGlide:0,erenImpactToken:null,erenSteerX:0,erenSteerY:0,erenExit:0,erenForm:0,erenGauge:0,erenTime:0,erenFatigue:0,erenHard:0,erenHardCd:0,erenWire:null,erenWireCd:0,erenGrab:null,erenSwing:0,erenGainTargets:new Set(),erenGaugeReceipts:new Set(),erenGrabSeen:new Set()});}
+function erenReset(p){Object.assign(p,{erenLife:isLocal(p)?++erenLifeSerial:0,erenAttacks:new Map(),erenCombo:null,erenGas:100,erenGlide:0,erenImpactToken:null,erenSteerX:0,erenSteerY:0,erenExit:0,erenForm:0,erenGauge:0,erenTime:0,erenFatigue:0,erenHard:0,erenHardCd:0,erenWire:null,erenSlashWire:null,erenWireCd:0,erenGrab:null,erenSwing:0,erenGainTargets:new Set(),erenGaugeReceipts:new Set(),erenGrabSeen:new Set()});}
 function erenGain(p,n){
  if(p?.cid!=='eren'||!isLocal(p)||p.out||erenTitan(p)||p.erenFatigue)return;
  const before=p.erenGauge||0;p.erenGauge=Math.min(100,before+Math.max(0,n));
@@ -60,7 +60,7 @@ function erenWire(p,up=false){
  if(!up&&p.erenWireCd>0||up&&p.rec){sfxNo();return false;}
  if(p.erenGas<EREN.gasCost){animeNotice(p,'ガス不足 ― 着地で補充','#b9d5c7');return false;}
  const anchor=erenAnchor(p,up);if(!anchor){animeNotice(p,'アンカー接続先なし','#c9d5de');return false;}
- p.erenGas-=EREN.gasCost;p.erenWire=anchor;if(p.g){p.vy=-3;p.g=false;}p.erenWireCd=EREN.wireCooldown;if(up)p.rec=true;p.inv=Math.max(p.inv,4);
+ p.erenGas-=EREN.gasCost;p.erenSlashWire=null;p.erenWire=anchor;if(p.g){p.vy=-3;p.g=false;}p.erenWireCd=EREN.wireCooldown;if(up)p.rec=true;p.inv=Math.max(p.inv,4);
  p.spc=12;noiseHit(.1,.14,3500,true);return true;
 }
 function erenCutin(e){
@@ -71,7 +71,7 @@ function erenCutin(e){
 }
 function erenTransform(p){
  if(p.erenGauge<100||p.erenFatigue||erenTitan(p)||p.out)return false;
- clearActs(p);p.erenExit=0;p.erenForm=1;p.erenTime=EREN.duration;p.erenGauge=0;p.erenWire=null;p.erenGrab=null;p.erenHard=0;p.inv=Math.max(p.inv,90);p.kb=p.stn=0;p.vx=p.vy=0;
+ clearActs(p);p.erenExit=0;p.erenForm=1;p.erenTime=EREN.duration;p.erenGauge=0;p.erenWire=null;p.erenSlashWire=null;p.erenGrab=null;p.erenHard=0;p.inv=Math.max(p.inv,90);p.kb=p.stn=0;p.vx=p.vy=0;
  // Feet remain on their current surface. Extra size grows upward, never into the floor.
  const e={id:p.id,x:Math.round(p.x),y:Math.round(p.y)};
  // Reuse hit transport so remote targets apply damage on their own owner, once.
@@ -85,7 +85,7 @@ function erenTransform(p){
 }
 function erenRevert(p){
  if(online&&isLocal(p))send({k:'eren-revert',id:p.id});
- p.erenExit=24;p.erenForm=0;p.erenTime=0;p.erenGauge=0;p.erenHard=0;p.erenWire=null;p.erenFatigue=EREN.fatigue;clearActs(p);
+ p.erenExit=24;p.erenForm=0;p.erenTime=0;p.erenGauge=0;p.erenHard=0;p.erenWire=null;p.erenSlashWire=null;p.erenFatigue=EREN.fatigue;clearActs(p);
  burst(p.x,p.y-80,30,5,'#e2e1d1',15);animeNotice(p,'巨人化解除 ― 疲労','#c9d5de');
 }
 function erenSpecial(p,inp){
@@ -108,7 +108,7 @@ function erenSpecial(p,inp){
   erenMove(p,'erenRiseSpin');p.spc=36;
  }
  else if(side){p.f=side;if(erenWire(p,false)){erenMove(p,'erenRaid');p.spc=56;}}
- else{p.erenWire=null;p.erenGlide=0;p.vx=constrain(p.vx,-6,6);p.vy=constrain(p.vy,-4,8);erenMove(p,'erenCrossSpin');p.spc=42;}
+ else{const anchor=p.erenWire||erenAnchor(p,false);p.erenSlashWire=anchor?{...anchor,t:EREN.wireTime}:null;p.erenWire=null;p.erenGlide=0;p.vx=constrain(p.vx,-6,6);p.vy=constrain(p.vy,-4,8);erenMove(p,'erenCrossSpin');p.spc=42;}
 }
 // Explicit world-space giant hurtbox and fist shapes; normal fighters use their original geometry.
 const EREN_TITAN_BODY={halfWidth:45,height:225,napeX:19,napeY:171,napeRadius:11};
@@ -161,6 +161,8 @@ function erenTick(p){
  if(!erenTitan(p))p.erenGas=Math.min(100,(p.erenGas??100)+(p.g?2.5:.08));
  for(const key of ['erenExit','erenGlide','erenWireCd','erenHard','erenHardCd','erenFatigue'])if(p[key]>0)p[key]--;
  if(erenTitan(p)&&p.erenTime>0&&--p.erenTime===0)erenRevert(p);
+ const slash=p.erenSlashWire;
+ if(slash){const pl=stage.plats[slash.pl];if(!pl||slash.x<pl.x||slash.x>pl.x+pl.w||slash.y!==pl.y||--slash.t<=0||p.kb>0||p.out)p.erenSlashWire=null;}
  if(p.mv?.kind==='titanTackle'&&p.g&&p.a>=p.mv.act0&&p.a<=p.mv.act1&&p.a%6===0)burst(p.x-p.f*25,p.y,4,3,'#b6ac8d',6);
  const w=p.erenWire;
  if(w){
@@ -168,8 +170,9 @@ function erenTick(p){
   p.erenGas=Math.max(0,p.erenGas-EREN.gasDrain);
   if(p.erenGas<=0||!pl||w.x<pl.x||w.x>pl.x+pl.w||w.y!==pl.y||--w.t<=0||p.kb>0||p.out){p.erenWire=null;if(!p.kb&&!p.out)p.erenGlide=EREN.glideTime;return;}
   const dx=w.x-p.x,dy=w.y-(p.y-35),d=Math.hypot(dx,dy);
-  if(d<24||Math.abs(dx)<24&&Math.abs(w.y-p.y)<48){
-   p.erenWire=null;p.erenGlide=0;p.vx*=.45;return;
+  if(w.docked||d<24||Math.abs(dx)<24&&Math.abs(w.y-p.y)<48){
+   if(!w.docked){p.erenGlide=0;p.vx*=.45;w.docked=true;}
+   return; // Stay attached until expiry; reaching the anchor stops thrust, not the wire.
   }
   p.vx=constrain(p.vx+dx/d*EREN.wireAccel+(p.erenSteerX||0)*EREN.steerX,-EREN.wireSpeed,EREN.wireSpeed);p.vy=constrain(p.vy+dy/d*EREN.wireLift+(p.erenSteerY||0)*EREN.steerY,-EREN.wireUpSpeed,EREN.wireDownSpeed);
   if(w.y<p.y-20){p.g=false;p.groundPl=-1;}
@@ -178,11 +181,15 @@ function erenTick(p){
 // Restore only bounded, known Eren fields. No arbitrary remote object assignment.
 function erenReadState(s){
  const n=(key,max)=>Number.isFinite(s[key])?constrain(s[key],0,max):0;
- const form=s.ef===1?1:0,wire=s.ew;
- const pl=wire&&Number.isInteger(wire.pl)?stage.plats[wire.pl]:null;
+ const form=s.ef===1?1:0;
+ const readWire=wire=>{
+  const pl=wire&&Number.isInteger(wire.pl)?stage.plats[wire.pl]:null;
+  return pl&&Number.isFinite(wire.x)&&wire.x>=pl.x&&wire.x<=pl.x+pl.w&&wire.y===pl.y&&Number.isFinite(wire.t)&&wire.t>0?
+   {x:wire.x,y:wire.y,pl:wire.pl,t:Math.min(wire.t,EREN.wireTime),docked:wire.docked===true}:null;
+ };
  return {erenLife:Math.floor(n('ep',1e9)),erenExit:n('ex',24),erenGas:n('eo',100),erenGlide:n('el',EREN.glideTime),erenForm:form,erenGauge:n('eg',100),erenTime:form?n('et',EREN.duration):0,
   erenHard:form?n('eh',EREN.hardTime):0,erenHardCd:n('ec',EREN.hardCooldown),erenFatigue:n('ez',EREN.fatigue),erenSwing:n('es',1e6),
-  erenWire:pl&&Number.isFinite(wire.x)&&wire.x>=pl.x&&wire.x<=pl.x+pl.w&&wire.y===pl.y?{x:wire.x,y:wire.y,pl:wire.pl,t:Number.isFinite(wire.t)?constrain(wire.t,0,EREN.wireTime):0}:null,
+  erenWire:readWire(s.ew),erenSlashWire:readWire(s.ewc),
   erenGrab:s.eb&&typeof s.eb.by==='string'&&byId(s.eb.by)&&Number.isFinite(s.eb.t)?{by:s.eb.by,dir:s.eb.dir===-1?-1:1,t:constrain(s.eb.t,0,EREN.grabTime)}:null};
 }
 const erenBaseInit=animeInit;
@@ -213,7 +220,7 @@ const erenBaseStep=stepFighter;
 stepFighter=function(p,inp){
  const attackEdge=inp.ac!==p.prev.ac;
  if(p.cid==='eren'&&bt.phase==='play'&&!freezeT&&!p.out){
-  if(p.domainT>0){p.erenWire=null;p.erenGlide=0;}
+  if(p.domainT>0){p.erenWire=null;p.erenSlashWire=null;p.erenGlide=0;}
   const side=inp.sideSpecial||(!inp.neutralSpecial&&!inp.u?((inp.r?1:0)-(inp.l?1:0)):0);
   const mobility=!!side&&!inp.gd&&(!inp.d||inp.sideSpecial);
   if(!erenTitan(p)&&!p.erenFatigue&&!p.timeStopT&&!p.domainT){
@@ -226,13 +233,18 @@ stepFighter=function(p,inp){
       p.erenGas>=EREN.gasCost&&erenAnchor({x:p.x,y:p.y,f:wireFacing},false)){
     clearActs(p);p.spc=p.cd=0;
    }
-   // Releasing the tether into a spin is deliberate; neutral special never selects an anchor.
+   // Change travel thrust into a braced spin without losing the connected wire.
    if(p.erenWire&&inp.sc!==p.prev.sc&&!p.kb&&!p.stn&&!inp.gd&&!inp.d&&(!side)&&(!inp.u||!p.rec)){
     clearActs(p);p.spc=p.cd=0;
    }
+   if(p.erenSlashWire&&inp.jc!==p.prev.jc)p.erenSlashWire=null;
    erenSpinFollow(p,inp);
    if(p.erenWire&&inp.ac!==p.prev.ac&&!p.kb&&!p.stn){clearActs(p);p.cd=0;}
-   if(p.erenWire&&inp.jc!==p.prev.jc){p.erenWire=null;p.erenGlide=EREN.glideTime;p.vy=constrain(p.vy,-EREN.riseSpeed,-3);p.prev.jc=inp.jc;}
+   if(p.erenWire&&inp.jc!==p.prev.jc){
+    const moving=!p.erenWire.docked;p.erenWire=null;
+    if(moving){p.erenGlide=EREN.glideTime;p.vy=constrain(p.vy,-EREN.riseSpeed,-3);p.prev.jc=inp.jc;}
+    else p.erenGlide=0;
+   }
   }
   if(!p.timeStopT){erenTick(p);if(p.erenFatigue){p.prev={...inp};inp={...inp,l:false,r:false,u:false,d:false,a:false,s:false,gd:false,sideSpecial:0,neutralSpecial:false};}}
  }
@@ -256,7 +268,7 @@ resolveProj=function(q,t){if(erenNape(t,q.x,q.y,q.r||0))q={...q,dm:q.dm*1.2};con
 const erenBaseHit=applyHit;
 applyHit=function(t,h,bk,id){
  const before=t.d,kb=erenBaseHit(t,h,bk,id);
- if(t.d>before){erenGain(t,(t.d-before)*EREN.takenGain);t.erenWire=null;t.erenGrab=null;}
+ if(t.d>before){erenGain(t,(t.d-before)*EREN.takenGain);t.erenWire=null;t.erenSlashWire=null;t.erenGrab=null;}
  return kb;
 };
 const erenBaseArmorHit=armorHit;
@@ -283,7 +295,7 @@ playFx=function(e,remote){
  }
 };
 const erenBaseState=stateOf;
-stateOf=function(p){const s=erenBaseState(p);if(p.cid==='eren')Object.assign(s,{ep:p.erenLife||0,ex:p.erenExit||0,eo:p.erenGas??100,el:p.erenGlide||0,ef:p.erenForm||0,eg:p.erenGauge||0,et:p.erenTime||0,eh:p.erenHard||0,ec:p.erenHardCd||0,ez:p.erenFatigue||0,ew:p.erenWire,es:p.erenSwing||0});if(p.erenGrab)s.eb=p.erenGrab;return s;};
+stateOf=function(p){const s=erenBaseState(p);if(p.cid==='eren')Object.assign(s,{ep:p.erenLife||0,ex:p.erenExit||0,eo:p.erenGas??100,el:p.erenGlide||0,ef:p.erenForm||0,eg:p.erenGauge||0,et:p.erenTime||0,eh:p.erenHard||0,ec:p.erenHardCd||0,ez:p.erenFatigue||0,ew:p.erenWire,ewc:p.erenSlashWire,es:p.erenSwing||0});if(p.erenGrab)s.eb=p.erenGrab;return s;};
 const erenBaseEvent=handleGameplayEvent;
 handleGameplayEvent=function(e){if(e.k==='eren-revert'){const p=byId(e.id);if(p?.cid==='eren'&&p.owner===e.by&&!isLocal(p))erenRevert(p);return;}if(e.k==='mh'&&e.mv?.kind==='titanGrab'&&byId(e.a)?.owner!==e.by)return;return erenBaseEvent(e);};
 const erenBaseReceive=receiveNetEvent;
@@ -402,7 +414,8 @@ function erenDrawBody(p,t,titan=erenTitan(p)){
 }
 function drawEren(p){
  if(p.out)return;
- if(p.erenWire){push();stroke('#d5e8e1');strokeWeight(1.4);for(const offset of [-12,12])line(p.x+offset,p.y-27,p.erenWire.x,p.erenWire.y);noStroke();fill('#dce2bd');circle(p.erenWire.x,p.erenWire.y,6);pop();}
+ const wire=p.erenWire||p.erenSlashWire;
+ if(wire){push();stroke('#d5e8e1');strokeWeight(1.4);for(const offset of [-12,12])line(p.x+offset,p.y-27,wire.x,wire.y);noStroke();fill('#dce2bd');circle(wire.x,wire.y,6);pop();}
  if(!erenTitan(p)&&(p.erenWire||p.erenGlide>0)&&Math.abs(p.vx)>8){for(let i=2;i>=1;i--){push();drawingContext.globalAlpha*=.12/i;erenDrawBody({...p,x:p.x-p.vx*i*.8,y:p.y-p.vy*i*.8,inv:0},visualFrame-i*2);pop();}}
  if(p.erenExit>0){push();drawingContext.globalAlpha*=p.erenExit/24*.55;erenDrawBody({...p,inv:0,mv:null,ch:0},visualFrame,true);pop();}
  erenDrawBody(p,visualFrame);

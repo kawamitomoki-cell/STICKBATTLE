@@ -45,6 +45,6 @@ Develop changes on a work branch and run the build checks and tests before publi
 
 ### Eren
 
-Current controls, specification audit and validation: [回転斬り・連携と移動速度の調整](docs/EREN_SPIN_TUNING.md).
+Current controls, specification audit and validation: [ワイヤーと上昇量の調整](docs/EREN_WIRE_FLOW.md).
 
-Previous design history: [立体機動再設計](docs/EREN_FREEDOM_REWORK.md). Online players must reload and create a new room for protocol V37.
+Previous design history: [立体機動再設計](docs/EREN_FREEDOM_REWORK.md). Online players must reload and create a new room for protocol V38.

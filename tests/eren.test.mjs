@@ -308,14 +308,14 @@ test('simultaneous special and attack taps are buffered until the opening hit co
 test('up special is a low vertical slash, including keyboard jump plus special and extreme wire momentum',()=>{
  const g=env();g.run(`p.g=true;p.groundPl=0;const start=p.y;const I={...blankInput(),u:true,jc:1,s:true,sc:1};stepFighter(p,I);let top=p.y;
  for(let i=0;i<22;i++){stepFighter(p,I);top=Math.min(top,p.y);}`);
- assert.ok(g.run('start-top>10&&start-top<30'));
+ assert.ok(g.run('start-top>30&&start-top<55'));
  const h=env();h.run('p.y=240;p.g=false;p.vy=-22;p.vx=24;erenWire(p);p.spc=0;p.rec=false;erenSpecial(p,{u:true});');
- assert.equal(h.run('p.mv.kind'),'erenRiseSpin');assert.equal(h.run('p.erenWire'),null);assert.equal(h.run('p.vy'),-5.5);assert.ok(h.run('p.vx<=5'));
+ assert.equal(h.run('p.mv.kind'),'erenRiseSpin');assert.equal(h.run('p.erenWire'),null);assert.equal(h.run('p.vy'),-7.5);assert.ok(h.run('p.vx<=5'));
 });
 test('side special stays within a lower speed limit and uses a flatter anchor on level ground',()=>{
  const g=env();g.run(`p.g=true;p.groundPl=0;const start=p.y;let maxSpeed=0,top=p.y;
  const I={...blankInput(),r:true,s:true,sc:1};for(let i=0;i<30;i++){stepFighter(p,I);maxSpeed=Math.max(maxSpeed,Math.abs(p.vx));top=Math.min(top,p.y);}`);
- assert.ok(g.run('maxSpeed<=12.001&&maxSpeed>10'));assert.ok(g.run('start-top<35'));
+ assert.ok(g.run('maxSpeed<=14.001&&maxSpeed>12'));assert.ok(g.run('start-top<35'));
 });
 test('human charged spin gives a decisive launch while titan punch damage remains unchanged',()=>{
  const g=env();g.run('fireAttack(p,CH_FULL);p.a=5;meleeCheck(p);');assert.equal(g.run('t.d'),22);assert.ok(g.run('t.vx>20'));
@@ -361,4 +361,32 @@ test('being hit clears a buffered spin follow-up instead of attacking automatica
 });
 test('CPU evaluates the human finisher damage at the charge time it can actually perform',()=>{
  const g=env();for(const hold of [12,31,50]){g.run(`const profile${hold}=aiMeleeProfile(p,${hold});fireAttack(p,${hold});`);assert.equal(g.run(`profile${hold}.damage`),g.run('p.mv.dm'));}
+});
+test('neutral spin casts a support wire without replacing its slashes or adding an unwanted launch',()=>{
+ const g=env();g.run(`p.g=true;p.groundPl=0;p.vx=p.vy=0;erenSpecial(p,{neutralSpecial:true});const x=p.x,y=p.y,gas=p.erenGas;
+ for(let i=0;i<10;i++)stepFighter(p,blankInput());`);
+ assert.equal(g.run('p.mv.kind'),'erenCrossSpin');assert.ok(g.run('!!p.erenSlashWire'));assert.equal(g.run('p.erenWire'),null);
+ assert.equal(g.run('p.x'),g.run('x'));assert.equal(g.run('p.y'),g.run('y'));assert.equal(g.run('p.erenGas'),g.run('gas'));
+});
+test('a horizontal wire remains attached after arrival and still expires at the longer time limit',()=>{
+ const g=env();g.run(`erenWire(p);const w=p.erenWire;p.x=w.x-10;p.y=w.y;p.g=true;p.vx=14;erenTick(p);`);
+ assert.equal(g.run('p.erenWire'),g.run('w'));assert.equal(g.run('p.erenWire.docked'),true);assert.ok(g.run('p.vx<10'));assert.ok(g.run('w.t>=40'));
+ g.run('for(let i=0;i<EREN.wireTime;i++)erenTick(p);');assert.equal(g.run('p.erenWire'),null);
+});
+test('jumping after arrival releases the lingering wire and keeps a normal ground jump',()=>{
+ const g=env();g.run(`erenWire(p);p.x=p.erenWire.x-10;p.y=390;p.g=true;p.groundPl=0;erenTick(p);
+ stepFighter(p,{...blankInput(),jc:1});`);
+ assert.equal(g.run('p.erenWire'),null);assert.ok(g.run('p.vy<-10'));
+});
+test('support wires restore through bounded snapshots and clear when hit',()=>{
+ const g=env();g.run('erenSpecial(p,{neutralSpecial:true});const s=stateOf(p),restored=erenReadState(s);');
+ assert.ok(g.run('!!restored.erenSlashWire'));assert.equal(g.run('restored.erenSlashWire.t'),42);
+ assert.equal(g.run('erenReadState({ewc:{pl:999,x:1,y:1,t:42}}).erenSlashWire'),null);
+ assert.equal(g.run('erenReadState({...s,ewc:{...s.ewc,t:0}}).erenSlashWire'),null);
+ g.run('applyHit(p,{dm:5,k0:2,ks:0,up:.2,f:-1},false,t.id);');assert.equal(g.run('p.erenSlashWire'),null);
+});
+test('arrival ends the rush acceleration while leaving the wire visibly connected',()=>{
+ const g=env();g.run(`p.g=true;p.groundPl=0;erenSpecial(p,{sideSpecial:1});p.x=p.erenWire.x-10;p.y=390;p.g=true;p.vx=14;
+ const I={...blankInput(),r:true};for(let i=0;i<8;i++)stepFighter(p,I);`);
+ assert.equal(g.run('p.erenWire.docked'),true);assert.ok(g.run('p.vx<6'));assert.ok(g.run('p.x<660'));
 });
