@@ -1,0 +1,189 @@
+[
+  {
+    "cid": "karate",
+    "newDamage": 775.5,
+    "oldDamage": 711.4,
+    "newDeaths": 12,
+    "oldDeaths": 17,
+    "newWins": 5,
+    "oldWins": 1,
+    "draws": 0,
+    "aiMs": 112.78807999999964
+  },
+  {
+    "cid": "bomber",
+    "newDamage": 902.36,
+    "oldDamage": 856.4000000000001,
+    "newDeaths": 8,
+    "oldDeaths": 18,
+    "newWins": 6,
+    "oldWins": 0,
+    "draws": 0,
+    "aiMs": 133.8133760000008
+  },
+  {
+    "cid": "ninja",
+    "newDamage": 902.2,
+    "oldDamage": 932,
+    "newDeaths": 13,
+    "oldDeaths": 15,
+    "newWins": 4,
+    "oldWins": 2,
+    "draws": 0,
+    "aiMs": 144.70554100000538
+  },
+  {
+    "cid": "sumo",
+    "newDamage": 858.3599999999999,
+    "oldDamage": 537.6,
+    "newDeaths": 14,
+    "oldDeaths": 13,
+    "newWins": 3,
+    "oldWins": 3,
+    "draws": 0,
+    "aiMs": 92.39242900000909
+  },
+  {
+    "cid": "boxer",
+    "newDamage": 1156.7,
+    "oldDamage": 781.0000000000001,
+    "newDeaths": 12,
+    "oldDeaths": 16,
+    "newWins": 5,
+    "oldWins": 1,
+    "draws": 0,
+    "aiMs": 117.49202499999024
+  },
+  {
+    "cid": "yankee",
+    "newDamage": 1283.6,
+    "oldDamage": 683.0000000000001,
+    "newDeaths": 12,
+    "oldDeaths": 14,
+    "newWins": 4,
+    "oldWins": 2,
+    "draws": 0,
+    "aiMs": 144.60885699997743
+  },
+  {
+    "cid": "swordsman",
+    "newDamage": 624.22,
+    "oldDamage": 456.80000000000007,
+    "newDeaths": 9,
+    "oldDeaths": 15,
+    "newWins": 4,
+    "oldWins": 2,
+    "draws": 0,
+    "aiMs": 82.766517999999
+  },
+  {
+    "cid": "lancer",
+    "newDamage": 426.20000000000005,
+    "oldDamage": 147,
+    "newDeaths": 5,
+    "oldDeaths": 18,
+    "newWins": 6,
+    "oldWins": 0,
+    "draws": 0,
+    "aiMs": 73.1329349999919
+  },
+  {
+    "cid": "gunman",
+    "newDamage": 988.52,
+    "oldDamage": 497.59999999999997,
+    "newDeaths": 7,
+    "oldDeaths": 18,
+    "newWins": 6,
+    "oldWins": 0,
+    "draws": 0,
+    "aiMs": 139.8522729999936
+  },
+  {
+    "cid": "archer",
+    "newDamage": 1064.6,
+    "oldDamage": 1540,
+    "newDeaths": 15,
+    "oldDeaths": 11,
+    "newWins": 2,
+    "oldWins": 4,
+    "draws": 0,
+    "aiMs": 95.18677199998592
+  },
+  {
+    "cid": "rubber",
+    "newDamage": 460.30000000000007,
+    "oldDamage": 506,
+    "newDeaths": 8,
+    "oldDeaths": 16,
+    "newWins": 4,
+    "oldWins": 2,
+    "draws": 0,
+    "aiMs": 85.07299500003865
+  },
+  {
+    "cid": "berserker",
+    "newDamage": 356.25,
+    "oldDamage": 240,
+    "newDeaths": 10,
+    "oldDeaths": 14,
+    "newWins": 4,
+    "oldWins": 2,
+    "draws": 0,
+    "aiMs": 50.89716199998247
+  },
+  {
+    "cid": "goku",
+    "newDamage": 5510.636615384621,
+    "oldDamage": 6581.460000000008,
+    "newDeaths": 4,
+    "oldDeaths": 12,
+    "newWins": 3,
+    "oldWins": 0,
+    "draws": 3,
+    "aiMs": 246.776552000048
+  },
+  {
+    "cid": "gojo",
+    "newDamage": 213.9,
+    "oldDamage": 6.3,
+    "newDeaths": 1,
+    "oldDeaths": 18,
+    "newWins": 6,
+    "oldWins": 0,
+    "draws": 0,
+    "aiMs": 49.8233709999804
+  },
+  {
+    "cid": "tanjiro",
+    "newDamage": 785.6,
+    "oldDamage": 718.6,
+    "newDeaths": 11,
+    "oldDeaths": 17,
+    "newWins": 5,
+    "oldWins": 1,
+    "draws": 0,
+    "aiMs": 81.82604600000377
+  },
+  {
+    "cid": "naruto",
+    "newDamage": 640.2,
+    "oldDamage": 813.4,
+    "newDeaths": 14,
+    "oldDeaths": 12,
+    "newWins": 4,
+    "oldWins": 2,
+    "draws": 0,
+    "aiMs": 102.73919300000125
+  },
+  {
+    "cid": "jotaro",
+    "newDamage": 719.4000000000001,
+    "oldDamage": 407.40000000000003,
+    "newDeaths": 10,
+    "oldDeaths": 16,
+    "newWins": 4,
+    "oldWins": 2,
+    "draws": 0,
+    "aiMs": 164.32942199999889
+  }
+]

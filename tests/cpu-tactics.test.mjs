@@ -32,3 +32,21 @@ test('resource abilities and Naruto two-clone cap use normal special input',()=>
  assert.equal(g.run('aiTacticalAction(p,t,p.ai,p.ai.inp,AI_DIFFICULTY[3],AI_CHARACTER_PLAN.naruto)'),'clone');
  assert.equal(g.run('p.ai.shold'),34);
 });
+test('prediction lands a falling opponent on a real platform',()=>{
+ const g=game();g.run(setup+'t.g=false;t.x=400;t.y=stage.plats[0].y-10;t.vy=10;t.vx=0;');
+ assert.equal(g.run('aiProjectedTarget(t,20).y'),g.run('stage.plats[0].y'));
+});
+test('melee metadata respects long weapons and berserker startup',()=>{
+ const g=game();g.run(setup+'const basic=aiMeleeProfile(p);p.cid="lancer";');
+ assert.ok(g.run('aiMeleeProfile(p).range>basic.range'));
+ g.run('p.cid="berserker";');assert.ok(g.run('aiMeleeProfile(p).startup>basic.startup'));
+});
+test('all character special options have finite timing and damage, plus valid move references',()=>{
+ const g=game();g.run(setup);
+ assert.equal(g.run(`Object.keys(CHARS).every(cid=>{p.cid=cid;animeInit(p);return aiSkillOptions(p,t).every(m=>Number.isFinite(m.startup)&&Number.isFinite(m.range)&&Number.isFinite(m.damage)&&(!m.move||!!MOVE_DEF[m.move]));})`),true);
+});
+test('dodge refuses to roll off either end of a narrow isolated platform',()=>{
+ const g=game();g.run(setup+'stage={w:800,h:450,plats:[{x:380,y:390,w:40,h:10}]};p.x=400;p.y=390;p.g=true;');
+ assert.equal(g.run('aiCounterAction(p,p.ai.inp,p.ai,1,true)'),false);
+ assert.equal(g.run('p.ai.inp.cc'),0);
+});
