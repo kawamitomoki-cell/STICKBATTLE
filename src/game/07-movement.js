@@ -306,6 +306,7 @@ function stepFighter(p, inp) {
     p.vx += dir * (p.g ? 1.0 : erenGliding ? 1.6 : 0.65) * slow * moveSpd;
     const rushing = p.mv && p.mv.rush && p.a >= p.mv.act0 && p.a <= p.mv.act1;
     p.vx *= p.cid==='eren'&&p.erenWire?0.99:erenGliding?(dir?0.96:0.84):rushing?0.95:(p.g?0.80:0.90);
+    if(p.cid==='eren'&&!erenTitan(p)&&(p.erenWire||erenGliding))p.vx=constrain(p.vx,-EREN.wireSpeed,EREN.wireSpeed);
     if (dir !== 0 && p.a === 0) p.f = dir;
 
     // S / ↓ / Proコンの下入力だけで上段足場をすり抜ける。最下段は床扱い。

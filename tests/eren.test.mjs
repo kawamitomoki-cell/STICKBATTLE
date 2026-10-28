@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import {game} from './helpers/game.mjs';
 const setup=`frameCount=0;startBattleCommon([{id:myId,cid:'eren',owner:myId,label:'EREN',cpu:0},{id:'enemy',cid:'karate',owner:myId,label:'Enemy',cpu:1}],'std',false,3);bt.phase='play';const p=byId(myId),t=byId('enemy');p.x=400;p.y=390;p.inv=0;t.x=455;t.y=390;t.inv=0;`;
 function env(){const g=game();g.run(setup);return g;}
-test('Eren is selectable in special roster and all nine attacks are registered',()=>{
+test('Eren is selectable in special roster and all eleven attacks are registered',()=>{
  const g=env();assert.ok(g.run('cpuCharacterPool("special").includes("eren")'));
- assert.equal(g.run('Object.keys(EREN_MOVES).length'),9);
+ assert.equal(g.run('Object.keys(EREN_MOVES).length'),11);
  for(const titan of [false,true])for(const direction of ['neutral','side','up','down']){
   g.run(`erenReset(p);p.erenForm=${titan?1:0};p.erenTime=1080;p.erenGauge=100;p.spc=0;p.prev=blankInput();
    erenSpecial(p,{neutralSpecial:${direction==='neutral'},u:${direction==='up'},d:${direction==='down'},sideSpecial:${direction==='side'?1:0}});`);
@@ -109,15 +109,15 @@ test('a grab swing cannot capture two opponents and cannot forge the attacker ow
 });
 test('upward recovery remains available during ground-wire cooldown, once per airtime',()=>{
  const g=env();g.run('p.erenWireCd=60;p.spc=65;p.rec=false;erenSpecial(p,{u:true});');
- assert.ok(g.run('!!p.erenWire'));assert.equal(g.run('p.rec'),true);
- g.run('p.erenWire=null;erenSpecial(p,{u:true});');assert.equal(g.run('p.erenWire'),null);
+ assert.equal(g.run('p.mv.kind'),'erenRiseSpin');assert.equal(g.run('p.erenWire'),null);assert.equal(g.run('p.rec'),true);
+ g.run('const riseToken=p.mv.erenToken;p.erenWire=null;erenSpecial(p,{u:true});');assert.equal(g.run('p.erenWire'),null);assert.equal(g.run('p.mv.erenToken'),g.run('riseToken'));
 });
 test('next stock retains at most 50 earned gauge; final stock resets to zero',()=>{
  const g=env();g.run('p.erenGauge=90;p.s=3;koFighter(p);');assert.equal(g.run('p.erenGauge'),50);assert.equal(g.run('p.s'),2);
  g.run('p.erenGauge=90;p.s=1;koFighter(p);');assert.equal(g.run('p.erenGauge'),0);
 });
 test('polished moves give human and titan different finishers, keeping timed vulnerability',()=>{
- const g=env();g.run('fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'erenSpin');assert.equal(g.run('p.mv.dm'),16);
+ const g=env();g.run('fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'erenSpin');assert.equal(g.run('p.mv.dm'),22);
  g.run('p.erenGauge=100;erenTransform(p);');assert.equal(g.run('p.inv'),90);
  g.run('freezeT=0;fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'titanSmash');assert.equal(g.run('p.mv.dm'),28);
  assert.ok(g.run('p.mv.end>p.mv.act1+20'));
@@ -125,7 +125,7 @@ test('polished moves give human and titan different finishers, keeping timed vul
 });
 test('wire combat keeps tether acceleration during an actual moving slash',()=>{
  const g=env();g.run('p.f=1;t.x=460;t.y=350;erenWire(p);erenAttack(p,1);const x=p.x,y=p.y;for(let i=0;i<10;i++){stepFighter(p,blankInput());meleeCheck(p);}');
- assert.equal(g.run('p.mv.kind'),'erenWireCut');assert.ok(g.run('Math.hypot(p.x-x,p.y-y)>100'));
+ assert.equal(g.run('p.mv.kind'),'erenWireCut');assert.ok(g.run('Math.hypot(p.x-x,p.y-y)>40&&Math.hypot(p.x-x,p.y-y)<120'));
  assert.ok(g.run('t.d>0'));assert.ok(g.run('!!p.erenWire'));
 });
 test('tether slashes hit twice and titan fists alternate without duplicate damage',()=>{
@@ -141,15 +141,14 @@ test('hardening also works in the air and cannot become an unlimited guard',()=>
  g.run('p.erenHardCd=0;erenSpecial(p,{d:true});');assert.equal(g.run('p.erenHard'),120);
 });
 
-test('neutral special is a terrain-bound wire hook; missing anchors cannot create movement or attacks',()=>{
- const g=env();g.run('erenSpecial(p,{neutralSpecial:true});');assert.ok(g.run('!!p.erenWire'));assert.equal(g.run('p.mv'),null);
- g.run('erenReset(p);p.spc=0;stage={w:800,h:450,plats:[]};p.vx=p.vy=0;erenSpecial(p,{neutralSpecial:true});');
- assert.equal(g.run('p.erenWire'),null);assert.equal(g.run('p.mv'),null);assert.equal(g.run('p.vx+p.vy'),0);assert.equal(g.run('p.erenGas'),100);
+test('neutral special spins without an anchor and leaves gas for side movement',()=>{
+ const g=env();g.run('stage={w:800,h:450,plats:[]};p.erenGas=0;erenSpecial(p,{neutralSpecial:true});');
+ assert.equal(g.run('p.mv.kind'),'erenCrossSpin');assert.equal(g.run('p.erenWire'),null);assert.equal(g.run('p.erenGas'),0);
 });
 
 test('side special launches toward a forward anchor and cuts for 30 frames with a punishable recovery',()=>{
  const g=env();g.run('p.f=1;erenSpecial(p,{sideSpecial:1});');
- assert.ok(g.run('p.erenWire.y<p.y'));assert.equal(g.run('p.mv.kind'),'erenRaid');
+ assert.equal(g.run('p.erenWire.y'),390);assert.equal(g.run('p.mv.kind'),'erenRaid');
  assert.equal(g.run('p.mv.act1-p.mv.act0+1'),30);assert.ok(g.run('!p.mv.multi&&p.mv.end>p.mv.act1+10'));
  g.run('t.ct=CT_ON;t.f=-1;p.a=3;t.x=p.x+35;meleeCheck(p);');assert.equal(g.run('fzType'),'counter');
 });
@@ -161,7 +160,7 @@ test('committed titan attacks tank ordinary hits but still take damage and heavy
 });
 test('flight can rehook during a slash, steer, detach with momentum and consume finite gas',()=>{
  const g=env();g.run(`p.f=1;p.g=true;p.groundPl=0;let I={...blankInput(),r:true,s:true,sc:1};stepFighter(p,I);
- const first=p.erenSwing,gas=p.erenGas;for(let i=0;i<9;i++)stepFighter(p,I);
+ const first=p.erenSwing;for(let i=0;i<EREN.wireCooldown+1;i++)stepFighter(p,I);const gas=p.erenGas;
  I={...I,l:true,r:false,sc:2};stepFighter(p,I);`);
  assert.equal(g.run('p.f'),-1);assert.ok(g.run('p.erenSwing>first'));assert.ok(g.run('p.erenGas<gas'));
  g.run(`const v=p.vx;I={...I,jc:1};stepFighter(p,I);`);
@@ -273,4 +272,93 @@ test('all stages keep giant feet planted on existing one-way platforms after tra
   g.run('p.rec=false;p.erenWireCd=0;erenRevert(p);p.erenFatigue=0;erenWire(p,true);var w=p.erenWire;');
   assert.ok(g.run('!w||w.x>=stage.plats[w.pl].x&&w.x<=stage.plats[w.pl].x+stage.plats[w.pl].w&&w.y===stage.plats[w.pl].y'),map);
  }
+});
+test('horizontal spin opens softly then finishes with a heavy strike, once per phase and one gauge gain',()=>{
+ const g=env();g.run(`erenSpecial(p,{neutralSpecial:true});p.a=5;meleeCheck(p);const opening=t.d,openingSpeed=t.vx;
+ p.hit={};p.a=13;meleeCheck(p);const finalSpeed=t.vx;meleeCheck(p);`);
+ assert.equal(g.run('opening'),4);assert.equal(g.run('t.d'),18);assert.equal(g.run('p.mv.type'),'heavy');
+ assert.ok(g.run('finalSpeed>openingSpeed*4'));assert.equal(g.run('p.erenGauge'),6);
+});
+test('spin finish can be countered while a miss cannot skip its attack recovery',()=>{
+ const g=env();g.run(`erenSpecial(p,{neutralSpecial:true});p.a=13;t.ct=CT_ON;t.f=-1;meleeCheck(p);`);assert.equal(g.run('fzType'),'counter');
+ const h=env();h.run(`t.x=750;let I={...blankInput(),s:true,neutralSpecial:true,sc:1};stepFighter(p,I);
+ I={...I,a:true,ac:1};stepFighter(p,I);I={...I,a:false,rc:1};
+ for(let i=0;i<12;i++){stepFighter(p,I);meleeCheck(p);}`);
+ assert.equal(h.run('p.mv.kind'),'erenCrossSpin');assert.equal(h.run('t.d'),0);
+});
+test('a buffered attack tap after the opening hit continues into real double-blade attacks',()=>{
+ const g=env();g.run(`let I={...blankInput(),s:true,sc:1,neutralSpecial:true};stepFighter(p,I);meleeCheck(p);
+ I={...I,a:true,ac:1};stepFighter(p,I);meleeCheck(p);I={...I,a:false,rc:1};
+ let chained=false;for(let i=0;i<14;i++){stepFighter(p,I);stepFighter(t,blankInput());meleeCheck(p);if(p.mv?.kind==='erenBlades')chained=true;}`);
+ assert.equal(g.run('chained'),true);assert.ok(g.run('t.d>=9'));assert.ok(g.run('p.spc>0'));
+ const h=env();h.run(`erenSpecial(p,{neutralSpecial:true});p.a=5;meleeCheck(p);p.a=25;stepFighter(p,{...blankInput(),a:true,ac:1});`);
+ assert.ok(h.run('p.ch>0'));
+});
+test('holding the follow-up attack charges a finisher instead of firing an automatic normal attack',()=>{
+ const g=env();g.run(`let I={...blankInput(),s:true,sc:1,neutralSpecial:true};stepFighter(p,I);meleeCheck(p);
+ I={...I,a:true,ac:1};for(let i=0;i<12;i++){stepFighter(p,I);meleeCheck(p);}const charging=p.ch;
+ for(let i=0;i<65&&p.ch<CH_FULL;i++)stepFighter(p,I);I={...I,a:false,rc:1};stepFighter(p,I);`);
+ assert.ok(g.run('charging>0'));assert.equal(g.run('p.mv.kind'),'erenSpin');assert.equal(g.run('p.mv.dm'),22);
+});
+test('simultaneous special and attack taps are buffered until the opening hit confirms',()=>{
+ const g=env();g.run(`let I={...blankInput(),s:true,sc:1,neutralSpecial:true,a:true,ac:1};stepFighter(p,I);meleeCheck(p);
+ I={...I,a:false,rc:1};for(let i=0;i<7;i++){stepFighter(p,I);meleeCheck(p);}`);
+ assert.equal(g.run('p.mv.kind'),'erenBlades');
+});
+test('up special is a low vertical slash, including keyboard jump plus special and extreme wire momentum',()=>{
+ const g=env();g.run(`p.g=true;p.groundPl=0;const start=p.y;const I={...blankInput(),u:true,jc:1,s:true,sc:1};stepFighter(p,I);let top=p.y;
+ for(let i=0;i<22;i++){stepFighter(p,I);top=Math.min(top,p.y);}`);
+ assert.ok(g.run('start-top>10&&start-top<30'));
+ const h=env();h.run('p.y=240;p.g=false;p.vy=-22;p.vx=24;erenWire(p);p.spc=0;p.rec=false;erenSpecial(p,{u:true});');
+ assert.equal(h.run('p.mv.kind'),'erenRiseSpin');assert.equal(h.run('p.erenWire'),null);assert.equal(h.run('p.vy'),-5.5);assert.ok(h.run('p.vx<=5'));
+});
+test('side special stays within a lower speed limit and uses a flatter anchor on level ground',()=>{
+ const g=env();g.run(`p.g=true;p.groundPl=0;const start=p.y;let maxSpeed=0,top=p.y;
+ const I={...blankInput(),r:true,s:true,sc:1};for(let i=0;i<30;i++){stepFighter(p,I);maxSpeed=Math.max(maxSpeed,Math.abs(p.vx));top=Math.min(top,p.y);}`);
+ assert.ok(g.run('maxSpeed<=12.001&&maxSpeed>10'));assert.ok(g.run('start-top<35'));
+});
+test('human charged spin gives a decisive launch while titan punch damage remains unchanged',()=>{
+ const g=env();g.run('fireAttack(p,CH_FULL);p.a=5;meleeCheck(p);');assert.equal(g.run('t.d'),22);assert.ok(g.run('t.vx>20'));
+ g.run('p.erenForm=1;erenMove(p,"titanPunch");t.d=0;t.x=480;p.a=6;meleeCheck(p);');assert.equal(g.run('t.d'),14);
+});
+test('one side-special press settles near its anchor instead of carrying a neutral player off the main floor',()=>{
+ const g=env();g.run(`p.g=true;p.groundPl=0;let I={...blankInput(),r:true,s:true,sc:1};stepFighter(p,I);
+ I={...I,r:false,s:false};for(let i=0;i<80;i++)stepFighter(p,I);`);
+ assert.equal(g.run('p.stats.deaths'),0);assert.equal(g.run('p.g'),true);assert.ok(g.run('p.x>450&&p.x<670'));
+});
+test('explicit mobile side-special remains movement while the stick steers up or down',()=>{
+ for(const direction of ['u','d']){
+  const g=env();g.run(`erenSpecial(p,{sideSpecial:1,${direction}:true});`);
+  assert.equal(g.run('p.mv.kind'),'erenRaid');assert.ok(g.run('!!p.erenWire'));
+ }
+});
+test('horizontal spin cuts both sides and follow-up faces the confirmed opponent after crossing through',()=>{
+ const g=env();g.run(`t.x=p.x-38;p.f=1;erenSpecial(p,{neutralSpecial:true});p.a=5;meleeCheck(p);
+ const opening=t.d,away=t.vx;stepFighter(p,{...blankInput(),a:true,ac:1});stepFighter(p,{...blankInput(),a:false,rc:1});stepFighter(p,{...blankInput(),a:false,rc:1});`);
+ assert.equal(g.run('opening'),4);assert.ok(g.run('away<0'));assert.equal(g.run('p.mv.kind'),'erenBlades');assert.equal(g.run('p.f'),-1);
+});
+test('uncancelled spin finisher still reaches the opponent after its actual opening knockback',()=>{
+ const g=env();g.run(`let I={...blankInput(),neutralSpecial:true,s:true,sc:1};
+ for(let i=0;i<22;i++){if(freezeT>0){freezeT--;continue;}stepFighter(p,I);stepFighter(t,blankInput());meleeCheck(p);}`);
+ assert.equal(g.run('t.d'),18);
+});
+test('side approach, neutral spin and an attack tap connect using the actual moving combat rules',()=>{
+ const g=env();g.run(`let I={...blankInput(),r:true,s:true,sc:1};
+ const tick=()=>{stepFighter(p,I);stepFighter(t,blankInput());meleeCheck(p);};for(let i=0;i<5;i++)tick();
+ I={...I,r:false,neutralSpecial:true,sc:2};tick();I={...I,a:true,ac:1};tick();I={...I,a:false,rc:1};
+ let chained=false;for(let i=0;i<10;i++){tick();if(p.mv?.kind==='erenBlades')chained=true;}`);
+ assert.equal(g.run('chained'),true);assert.ok(g.run('t.d>=23'));
+});
+test('remote spin animation restores the heavy phase after animation-frame prediction',()=>{
+ const g=env();g.run(`erenSpecial(p,{neutralSpecial:true});p.a=12;const snap={...stateOf(p),ts:Date.now()-100,sq:1};
+ online=true;p.owner='peer';p.remote=true;p.off=0;p.netSnap=true;p.buf=[snap];updateRemote();`);
+ assert.ok(g.run('p.a>=13'));assert.equal(g.run('p.mv.type'),'heavy');assert.equal(g.run('p.mv.dm'),14);assert.equal(g.run('p.mv.R'),64);
+});
+test('being hit clears a buffered spin follow-up instead of attacking automatically after hitstun',()=>{
+ const g=env();g.run(`erenSpecial(p,{neutralSpecial:true});p.a=5;meleeCheck(p);p.erenCombo={token:p.mv.erenToken,left:10,released:true};
+ applyHit(p,{dm:5,k0:6,ks:.05,up:.5,f:-1},false,t.id);stepFighter(p,{...blankInput(),ac:1,rc:1});p.kb=0;stepFighter(p,{...blankInput(),ac:1,rc:1});`);
+ assert.equal(g.run('p.erenCombo'),null);assert.equal(g.run('p.mv'),null);assert.equal(g.run('p.ch'),0);
+});
+test('CPU evaluates the human finisher damage at the charge time it can actually perform',()=>{
+ const g=env();for(const hold of [12,31,50]){g.run(`const profile${hold}=aiMeleeProfile(p,${hold});fireAttack(p,${hold});`);assert.equal(g.run(`profile${hold}.damage`),g.run('p.mv.dm'));}
 });

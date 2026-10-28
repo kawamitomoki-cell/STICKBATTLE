@@ -1,0 +1,50 @@
+[
+  {
+    "version": "before",
+    "move": "side",
+    "frames": 30,
+    "ko": true,
+    "steps": 29,
+    "maxRise": 316.65376113056124,
+    "maxSpeed": 22.985773238617053,
+    "maxForward": 507.01737354743216,
+    "finalX": 400,
+    "finalY": 40
+  },
+  {
+    "version": "before",
+    "move": "up",
+    "frames": 60,
+    "ko": true,
+    "steps": 34,
+    "maxRise": 687.7475236624762,
+    "maxSpeed": 14.756336792455794,
+    "maxForward": 0,
+    "finalX": 400,
+    "finalY": 40
+  },
+  {
+    "version": "after",
+    "move": "side",
+    "frames": 30,
+    "ko": false,
+    "steps": 30,
+    "maxRise": 5.176673886040021,
+    "maxSpeed": 12,
+    "maxForward": 295.3015749737456,
+    "finalX": 695.3015749737456,
+    "finalY": 390
+  },
+  {
+    "version": "after",
+    "move": "up",
+    "frames": 60,
+    "ko": false,
+    "steps": 60,
+    "maxRise": 22.5,
+    "maxSpeed": 0,
+    "maxForward": 0,
+    "finalX": 400,
+    "finalY": 390
+  }
+]

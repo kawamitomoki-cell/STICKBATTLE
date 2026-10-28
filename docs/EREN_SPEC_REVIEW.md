@@ -1,5 +1,7 @@
 # エレン：添付仕様対応・レビュー結果
 
+> V36の仕様対応記録。後続の操作感フィードバックによる現行仕様は [EREN_SPIN_TUNING.md](EREN_SPIN_TUNING.md) を参照。
+
 作業開始時の最新main `e9442f1` から新規ブランチ `feat/eren-spec-completion` を作成。今回の[添付仕様](specs/EREN_REQUEST_2026-10-28.md)を優先した。初期レビューではmainへのマージ・公開を保留し、後続のユーザー指示でmain反映・公開を承認された。前版の記録は [EREN_FREEDOM_REWORK.md](EREN_FREEDOM_REWORK.md)。
 
 主要機能を実装・検証したが、実オンライン対戦、実機性能、対人バランスと見た目の最終評価が残る。完成条件をすべて達成したとの判断はしていない。
