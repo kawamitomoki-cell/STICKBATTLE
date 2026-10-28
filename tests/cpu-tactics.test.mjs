@@ -50,3 +50,27 @@ test('dodge refuses to roll off either end of a narrow isolated platform',()=>{
  assert.equal(g.run('aiCounterAction(p,p.ai.inp,p.ai,1,true)'),false);
  assert.equal(g.run('p.ai.inp.cc'),0);
 });
+test('expert mixes credible choices at the same distance without choosing invalid attacks',()=>{
+ const g=game();g.run(setup+`Math=Object.create(Math);let rng=17;Math.random=()=>((rng=(rng*1664525+1013904223)>>>0)/4294967296);
+ const A=p.ai,choices=new Set();for(let i=0;i<300;i++){
+  A.clock=i*3;const selected=aiChooseMixup([{name:'tap',score:18},{name:'charge',score:17},{name:'side',score:16},{name:'unreachable',score:-Infinity}],A,t);choices.add(selected.name);
+ }`);
+ assert.equal(g.run('choices.size'),3);assert.equal(g.run('choices.has("unreachable")'),false);
+ assert.ok(g.run('p.ai.recentMoves.length<=4'));
+});
+test('mindset persists and bait cannot hold forever',()=>{
+ const g=game();g.run(setup+`p.ai.clock=100;p.ai.mindset='ambush';p.ai.mindsetUntil=200;t.x=500;p.ai.baitUntil=112;`);
+ assert.equal(g.run('aiMindset(p.ai)'),'ambush');
+ assert.equal(g.run('aiTacticalAction(p,t,p.ai,p.ai.inp,AI_DIFFICULTY[3],AI_CHARACTER_PLAN.karate)'),'bait-step');
+ g.run('p.ai.clock=115;p.ai.nextBait=200;');
+ assert.notEqual(g.run('aiTacticalAction(p,t,p.ai,p.ai.inp,AI_DIFFICULTY[3],AI_CHARACTER_PLAN.karate)'),'bait-step');
+});
+test('delayed visible max charge can be read into a counter',()=>{
+ const g=game();g.run(setup+`t.ch=CH_FULL-10;t.f=-1;`);
+ assert.equal(g.run('aiTacticalAction(p,t,p.ai,p.ai.inp,AI_DIFFICULTY[3],AI_CHARACTER_PLAN.karate)'),'charge-read-counter');
+ assert.equal(g.run('p.ai.inp.cc'),1);
+});
+test('adaptive smash hold releases before overheat',()=>{
+ const g=game();g.run(setup+'p.ch=CH_WARN-4;p.ai.hold=30;p.ai.inp.a=true;aiStep(p);');
+ assert.equal(g.run('p.ai.inp.a'),false);assert.equal(g.run('p.ai.inp.rc'),1);
+});

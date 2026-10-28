@@ -1,6 +1,6 @@
 import {game} from '../../tests/helpers/game.mjs';
 import {readFileSync} from 'node:fs';
-let baseline=readFileSync(new URL('./cpu-utility-v1.txt',import.meta.url),'utf8');
+let baseline=readFileSync(new URL('./'+(process.argv[2]||'cpu-utility-v1.txt'),import.meta.url),'utf8');
 const names=[...baseline.matchAll(/function\s+(\w+)/g),...baseline.matchAll(/^const\s+(AI_\w+)/gm)].map(m=>m[1]);
 for(const name of [...new Set(names)].sort((a,b)=>b.length-a.length))baseline=baseline.replace(new RegExp('\\b'+name+'\\b','g'),'v1_'+name);
 const rows=[];

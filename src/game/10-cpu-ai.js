@@ -286,12 +286,48 @@ function aiSkillOptions(p,t){
  if(p.cid==='gojo')options.push({name:'purple',dir:'neutral',hold:155,startup:157,damage:52,range:500});
  return options;
 }
+// Expert mixups are selected per fighter and persist across several decisions.
+// All choices are filtered by reach/cost first; variation never grants extra actions.
+function aiMindset(A){
+ const now=A.clock||0;
+ if(!A.mindset||now>=(A.mindsetUntil||0)){
+  A.mindset=['pressure','ambush','mix'][Math.floor(Math.random()*3)];
+  A.mindsetUntil=now+90+Math.floor(Math.random()*120);
+ }
+ return A.mindset;
+}
+function aiChooseMixup(candidates,A,t){
+ const mode=aiMindset(A),recent=A.recentMoves||[];
+ // Slow specialists cannot afford to abandon their core punish on every mixup.
+ if(['berserker','gojo'].includes(A.character)&&Math.random()<.75){
+  const best=candidates.reduce((a,b)=>a.score>b.score?a:b);
+  if(Number.isFinite(best.score)&&best.score>8){A.recentMoves=[...recent.slice(-3),best.name];return best;}
+ }
+ const ceiling=Math.max(...candidates.map(c=>c.score));
+ const scored=candidates.filter(c=>Number.isFinite(c.score)&&c.score>8&&c.score>=ceiling-9).map(c=>{
+  const repeated=recent.filter(n=>n===c.name).length;
+  const bonus=mode==='pressure'&&c.name==='tap'?5:mode==='ambush'&&c.name==='charge'?9:
+   mode==='mix'&&c.name!=='tap'?3:0;
+  return {...c,utility:c.score+bonus-repeated*2.5};
+ }).sort((a,b)=>b.utility-a.utility);
+ if(!scored.length)return null;
+ // A clear punish window stays decisive; neutral play samples several credible options.
+ const window=t.mv&&t.a>t.mv.act1?5:10;
+ const options=scored.filter(c=>c.utility>=scored[0].utility-window);
+ const weights=options.map(c=>Math.exp((c.utility-scored[0].utility)/5));
+ let roll=Math.random()*weights.reduce((a,b)=>a+b,0),selected=options[options.length-1];
+ for(let i=0;i<options.length;i++){roll-=weights[i];if(roll<=0){selected=options[i];break;}}
+ A.recentMoves=[...recent.slice(-3),selected.name];
+ return selected;
+}
 function aiTacticalAction(p,t,A,I,D,plan){
  const dx=t.x-p.x,dist=Math.abs(dx),side=Math.sign(dx)||p.f;
  A.aggression=(A.aggression||0)*.94+(t.a>0||t.ch>0?.06:0);
  A.evasion=(A.evasion||0)*.94+(t.dg>0||t.ct>0?.06:0);
  // Face using ordinary movement before issuing attacks.
  if(side!==p.f&&dist>12){aiAim(I,dx);return 'face';}
+ A.character=p.cid;
+ const expert=aiLv===3&&p.cid!=='berserker',mode=expert?aiMindset(A):'pressure';
  const ready=aiReady(p)&&p.cd===0;
  const threat=t.mv&&t.a<=t.mv.act1&&(!Number.isFinite(t.mv.act0)||t.a+D.reaction>=t.mv.act0-7)&&t.a+D.reaction<=t.mv.act1+4&&Math.abs(t.y-p.y)<75&&
   dist<(t.mv.reach+t.mv.R+25)*CC(t.cid).size&&(t.f===undefined||t.f===-side);
@@ -299,6 +335,18 @@ function aiTacticalAction(p,t,A,I,D,plan){
   // Heavy attacks are counterable; normal attacks beat counter stance.
   const counter=t.mv.type==='heavy'&&!t.mv.pierce&&!t.mv.ko&&!AXE_KINDS.includes(t.mv.kind);
   if(aiCounterAction(p,I,A,counter?0:side,!counter))return counter?'counter':'evade';
+ }
+ if(ready&&expert&&t.ch>=CH_FULL-14&&!['gojo','goku'].includes(t.cid)&&Math.abs(t.y-p.y)<65&&dist<105&&t.f===-side&&p.ctc===0){
+  if(aiCounterAction(p,I,A,0,false))return 'charge-read-counter';
+ }
+ if(ready&&expert&&p.cid!=='berserker'&&!threat&&mode==='ambush'&&dist>55&&dist<145&&p.g){
+  if((A.baitUntil||0)>(A.clock||0)){
+   aiAim(I,side*((A.baitUntil-A.clock)>6?100:-100));
+   aiEdgeControl(p,I,p.x+(I.r?1:-1)*100);return 'bait-step';
+  }
+  if((A.clock||0)>(A.nextBait||0)&&Math.random()<.09){
+   A.baitUntil=(A.clock||0)+12;A.nextBait=(A.clock||0)+90;return 'bait';
+  }
  }
  if(ready){
   // Safe commitment window for utility abilities, before ranged pokes consume the turn.
@@ -309,14 +357,18 @@ function aiTacticalAction(p,t,A,I,D,plan){
   if(p.cid==='jotaro'&&p.energy>=100&&dist<200&&p.spc<=0){aiUseSpecial(p,I,A,2,'down');return 'time-stop';}
   if(p.cid==='gojo'&&p.energy>=100&&dist<250&&p.spc<=0){aiUseSpecial(p,I,A,2,'down');return 'domain';}
   if(p.cid==='archer'&&p.spc<=0&&dist>90&&dist<480&&Math.abs(t.y-p.y)<45){
-   aiUseSpecial(p,I,A,dist>180?28:2);return 'volley';
+   aiUseSpecial(p,I,A,dist>180?expert&&Math.random()<.25?2:28+ (expert?Math.floor(Math.random()*5):0):2);return 'volley';
   }
   const candidates=[];
   const tap=aiMeleeProfile(p,2),quickCharge=aiMeleeProfile(p,CH_TH+2),fullCharge=aiMeleeProfile(p,CH_FULL);
   candidates.push({name:'tap',hold:2,score:aiAttackScore(p,t,tap,D)});
   candidates.push({name:'charge',hold:CH_TH+2,score:aiAttackScore(p,t,quickCharge,D)-(A.aggression||0)*5-(p.cid==='berserker'?18:0)});
+  if(expert){
+   const delayedHold=CH_TH+8+Math.floor(Math.random()*17);
+   candidates.push({name:'charge',hold:delayedHold,score:aiAttackScore(p,t,aiMeleeProfile(p,delayedHold),D)-(A.aggression||0)*3});
+  }
   // Full charge only when there is a real opening; short charges avoid 50-frame idle windups.
-  if(t.kb>25||t.mv&&t.mv.end-t.a>CH_FULL||p.cid==='gojo'&&dist>100)
+  if(t.kb>25||t.mv&&t.a>t.mv.act1&&t.mv.end-t.a>CH_FULL||!expert&&p.cid==='gojo'&&dist>100||expert&&mode==='ambush'&&t.vx*side< -1&&dist>75&&dist<145)
    candidates.push({name:'charge',hold:CH_FULL,score:aiAttackScore(p,t,fullCharge,D)});
   if(p.spc<=0&&!p.fatigue)for(const skill of aiSkillOptions(p,t)){
    if(skill.ready&&!skill.ready(p))continue;
@@ -329,10 +381,10 @@ function aiTacticalAction(p,t,A,I,D,plan){
   if(A.feintUntil>A.clock)return 'feint';
   for(const c of candidates)c.score+=Math.random()*D.error*18-(A.lastAction===c.name?1:0);
   candidates.sort((a,b)=>b.score-a.score);
-  const best=candidates[0];
-  if(best.score>8&&Math.random()>D.error*.3){
+  const best=expert?aiChooseMixup(candidates,A,t):candidates[0];
+  if(best&&best.score>8&&Math.random()>D.error*.3){
    if(best.name==='tap')aiTap(I,A);
-   else if(best.name==='charge'){I.a=true;I.ac++;A.hold=best.hold;}
+   else if(best.name==='charge'){I.a=true;I.ac++;A.hold=best.hold;A.smashStarted=A.clock;}
    else aiUseSpecial(p,I,A,best.hold,best.dir);
    return best.name;
   }
@@ -359,6 +411,11 @@ function aiStep(p){
  const observed=aiObserve(p,A,D);
  const t=observed?{...observed,...aiProjectedTarget(observed,D.reaction*D.predict)}:null;
  for(const key of ['jumpCd','dropCd','upCd'])A[key]=Math.max(0,(A[key]||0)-1);
+ if(aiLv===3&&p.cid!=='berserker'&&A.hold>0&&p.ch>=CH_TH&&p.ch<CH_WARN-4&&t&&Math.abs(t.x-p.x)<150){
+  if(t.dg>0||t.ct>0){A.hold=Math.max(A.hold,2);}
+  else if(t.mv&&t.a>t.mv.act1&&p.ch>=CH_TH+4){A.hold=1;}
+ }
+ if(p.ch>=CH_WARN-4&&A.hold>0)A.hold=1;
  if(A.hold>0&&!--A.hold&&I.a){I.a=false;I.rc++;}
  if(A.shold>0&&!--A.shold){I.s=I.u=I.gd=I.d=false;I.sideSpecial=0;I.neutralSpecial=false;}
  if(p.out||p.timeStopT>0||p.domainT>0)return;
