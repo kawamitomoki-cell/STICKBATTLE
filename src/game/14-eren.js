@@ -1,14 +1,16 @@
 // Eren module: owner-authoritative state; existing fighters take unchanged paths.
 const EREN={duration:1080,cutin:84,fatigue:60,hardTime:120,hardCooldown:360,
- normalGain:8,strongGain:12,takenGain:2,respawnCarry:50,wireTime:26,wireCooldown:65,grabTime:24};
+ normalGain:8,strongGain:12,takenGain:2,respawnCarry:50,wireTime:32,wireCooldown:36,grabTime:24};
 CHARS.eren={name:'エレン・イェーガー',en:'EREN YEAGER',mark:'巨',spd:1.15,jump:1.04,jumps:2,wt:1.0,pow:1,size:1,ctx:0,back:false,ctc:1,dgc:.9,dgs:1.1,st:[4,3,2],
- sp:'特殊：地形へワイヤー／横：立体機動急襲。巨人時：掴み投げ／横：タックル',up:'人間：上の足場へワイヤー復帰（空中1回）／巨人：対空アッパー',ab:'攻撃・被弾でTITAN GAUGE蓄積。MAXで下特殊：18秒の巨人化。巨人の下特殊：2秒硬質化（6秒間隔）。背後上部のうなじは1.2倍ダメージ'};
+ sp:'特殊：ワイヤー高速移動、移動中の攻撃で3連斬り／横：急襲。巨人：左右2連打・掴み・タックル',up:'人間：上の足場へワイヤー復帰（空中1回）／巨人：対空アッパー、空中下特殊で踏みつけ',ab:'攻撃・被弾でTITAN GAUGE蓄積。MAXで下特殊：18秒の巨人化。巨人の下特殊：2秒硬質化（6秒間隔）。背後上部のうなじは1.2倍ダメージ'};
 SPECIAL_IDS.push('eren');ANIME_COLORS.eren='#b8b276';fighterRoles.eren='ODM / 時間制限巨人化';
 const EREN_MOVES={
  erenBlades:{type:'normal',act0:3,act1:10,end:16,reach:28,R:23,yo:33,cd:3,multi:5,dm:7,k0:3,ks:.035,up:.4},
  erenSpin:{type:'heavy',act0:5,act1:12,end:26,reach:32,R:32,yo:30,cd:6,dm:20,k0:10,ks:.075,up:.6},
  erenRaid:{type:'normal',act0:4,act1:16,end:32,reach:34,R:29,yo:32,cd:11,dm:18,k0:10,ks:.075,up:.5},
- titanPunch:{type:'normal',act0:8,act1:16,end:30,reach:30,R:22,yo:12,cd:9,dm:18,k0:13,ks:.10,up:.65},
+ erenWireCut:{type:'normal',act0:2,act1:11,end:18,reach:32,R:28,yo:32,cd:3,multi:4,dm:6,k0:3,ks:.035,up:.4,rush:true},
+ titanStomp:{type:'heavy',act0:8,act1:30,end:52,reach:0,R:27,yo:4,cd:20,dm:24,k0:18,ks:.12,up:.7},
+ titanPunch:{type:'normal',act0:6,act1:16,end:24,reach:30,R:23,yo:12,cd:5,multi:6,dm:9,k0:7,ks:.10,up:.65},
  titanSmash:{type:'heavy',act0:16,act1:24,end:54,reach:34,R:25,yo:15,cd:16,dm:34,k0:21,ks:.14,up:.7},
  titanGrab:{type:'heavy',act0:12,act1:18,end:50,reach:20,R:20,yo:28,cd:18,dm:0,k0:0,ks:0,up:0},
  titanTackle:{type:'heavy',act0:11,act1:24,end:54,reach:22,R:24,yo:14,cd:18,dm:24,k0:19,ks:.12,up:.65,lunge:8},
@@ -20,9 +22,9 @@ function fighterSize(p){return erenTitan(p)?3:CC(p.cid).size;}
 function fighterConfig(p){
  const c=CC(p.cid);if(!erenTitan(p))return c;
  const hard=p.erenHard>0;
- return {...c,size:3,spd:hard?.38:.76,jump:.78,wt:.40,pow:1,dgs:.65,ctc:1.15};
+ return {...c,size:3,spd:hard?.48:.98,jump:.78,wt:.40,pow:1,dgs:.65,ctc:1.15};
 }
-function erenReset(p){Object.assign(p,{erenForm:0,erenGauge:0,erenTime:0,erenFatigue:0,erenHard:0,erenHardCd:0,erenWire:null,erenWireCd:0,erenGrab:null,erenSwing:0,erenGainTargets:new Set(),erenGaugeReceipts:new Set(),erenGrabSeen:new Set()});}
+function erenReset(p){Object.assign(p,{erenForm:0,erenGauge:0,erenTime:0,erenFatigue:0,erenHard:0,erenHardCd:0,erenWire:null,erenWireCd:0,erenGrab:null,erenStompUsed:false,erenSwing:0,erenGainTargets:new Set(),erenGaugeReceipts:new Set(),erenGrabSeen:new Set()});}
 function erenGain(p,n){if(p?.cid==='eren'&&isLocal(p)&&!p.out&&!erenTitan(p)&&!p.erenFatigue)p.erenGauge=Math.min(100,(p.erenGauge||0)+Math.max(0,n));}
 function erenMove(p,kind,extra={}){
  p.erenSwing=(p.erenSwing||0)+1;p.erenGainTargets=new Set();
@@ -31,16 +33,16 @@ function erenMove(p,kind,extra={}){
 }
 function erenAttack(p,ch){
  if(p.erenFatigue)return;
- if(p.erenHard>0){erenMove(p,'titanPunch',{end:42});return;}
- if(ch<CH_TH)erenMove(p,erenTitan(p)?'titanPunch':'erenBlades');
+ if(p.erenHard>0){erenMove(p,'titanPunch',{end:42,multi:0,dm:18,k0:13});return;}
+ if(ch<CH_TH)erenMove(p,erenTitan(p)?'titanPunch':p.erenWire?'erenWireCut':'erenBlades');
  else{const q=constrain((ch-CH_TH)/(CH_FULL-CH_TH),0,1);erenMove(p,erenTitan(p)?'titanSmash':'erenSpin',{dm:erenTitan(p)?22+12*q:12+8*q,k0:erenTitan(p)?17+7*q:8+4*q});}
 }
 function erenAnchor(p,up){
  let best=null,score=Infinity;
  for(let i=0;i<stage.plats.length;i++){
   const pl=stage.plats[i];if(up&&pl.y>p.y-35)continue;
-  const x=constrain(p.x+(up?p.f*40:p.f*220),pl.x+6,pl.x+pl.w-6),y=pl.y;
-  const d=Math.hypot(x-p.x,y-(p.y-35));if(d<35||d>340||!up&&(x-p.x)*p.f<25)continue;
+  const x=constrain(p.x+(up?p.f*40:p.f*280),pl.x+6,pl.x+pl.w-6),y=pl.y;
+  const d=Math.hypot(x-p.x,y-(p.y-35));if(d<35||d>440||!up&&(x-p.x)*p.f<25)continue;
   if(d<score){score=d;best={x,y,pl:i,t:EREN.wireTime};}
  }
  return best;
@@ -77,6 +79,7 @@ function erenSpecial(p,inp){
  if(p.spc>0&&!(up&&!erenTitan(p)))return;
  if(down){
   if(erenTitan(p)){
+   if(!p.g){if(!p.erenStompUsed){erenMove(p,'titanStomp');p.vy=14;p.erenStompUsed=true;p.spc=65;}return;}
    if(!p.erenHardCd){p.erenHard=EREN.hardTime;p.erenHardCd=EREN.hardCooldown;clearActs(p);p.spc=18;}
    else animeNotice(p,'硬質化クールタイム','#bed6ee');
   }else if(!erenTransform(p))animeNotice(p,'TITAN GAUGE '+Math.floor(p.erenGauge||0)+'/100','#e6d083');
@@ -117,6 +120,8 @@ function erenGrabTick(p){
  return true;
 }
 function erenTick(p){
+ if(p.g)p.erenStompUsed=false;
+ if(p.mv?.kind==='titanStomp'&&p.g&&!p.mv.erenLanded){p.mv.erenLanded=true;ring(p.x,p.y,22,16);burst(p.x,p.y,12,5,'#b9bba6',6);}
  for(const key of ['erenWireCd','erenHard','erenHardCd','erenFatigue'])if(p[key]>0)p[key]--;
  if(erenTitan(p)&&p.erenTime>0&&--p.erenTime===0)erenRevert(p);
  if(p.mv?.kind==='titanTackle'&&p.g&&p.a>=p.mv.act0&&p.a<=p.mv.act1&&p.a%6===0)burst(p.x-p.f*25,p.y,4,3,'#b6ac8d',6);
@@ -126,7 +131,7 @@ function erenTick(p){
   if(!pl||w.x<pl.x||w.x>pl.x+pl.w||w.y!==pl.y||--w.t<=0||p.kb>0||p.out){p.erenWire=null;return;}
   const dx=w.x-p.x,dy=w.y-(p.y-35),d=Math.hypot(dx,dy);
   if(d<24){p.erenWire=null;return;}
-  p.vx=constrain(p.vx+dx/d*2,-15,15);p.vy=constrain(p.vy+dy/d*2.2,-17,12);
+  p.vx=constrain(p.vx+dx/d*3.1,-23,23);p.vy=constrain(p.vy+dy/d*2.6,-20,14);
   if(w.y<p.y-20){p.g=false;p.groundPl=-1;}
  }
 }
@@ -199,90 +204,66 @@ const erenBaseTactics=aiTacticalAction;
 aiTacticalAction=function(p,t,A,I,D,plan){
  if(p.cid==='eren'&&aiReady(p)&&!p.erenFatigue&&!p.spc){
   const dist=Math.abs(t.x-p.x),floor=stage.plats[p.groundPl];
+  if(!erenTitan(p)&&p.erenGauge<100&&!p.erenWire&&!p.erenWireCd&&dist>160&&dist<330&&Math.sign(t.x-p.x)===p.f&&!!erenAnchor(p,false)){aiUseSpecial(p,I,A,2);return 'wire-approach';}
+  if(erenTitan(p)&&!p.g&&!p.erenStompUsed&&t.y>p.y+55&&dist<100){aiUseSpecial(p,I,A,2,'down');return 'titan-stomp';}
+  if(erenTitan(p)&&t.y<p.y-45&&dist<95){aiUseSpecial(p,I,A,2,'up');return 'titan-anti-air';}
   if(!erenTitan(p)&&p.erenGauge>=100&&p.g&&floor?.w>=100&&dist<360&&(t.d>65||p.d>65||dist<220||p.s<t.s)){aiUseSpecial(p,I,A,2,'down');return 'titan-transform';}
-  if(erenTitan(p)&&!p.erenHardCd&&t.mv?.type==='heavy'&&t.a<=t.mv.act1&&dist<130&&p.d>70){aiUseSpecial(p,I,A,2,'down');return 'titan-harden';}
+  if(erenTitan(p)&&p.g&&!p.erenHardCd&&t.mv?.type==='heavy'&&t.a<=t.mv.act1&&dist<130&&p.d>70){aiUseSpecial(p,I,A,2,'down');return 'titan-harden';}
  }
  return erenBaseTactics(p,t,A,I,D,p.cid==='eren'&&erenTitan(p)?{...plan,ideal:110,near:65}:plan);
 };
 const erenBaseProfile=aiMeleeProfile;
-aiMeleeProfile=function(p,hold=2){if(p.cid!=='eren')return erenBaseProfile(p,hold);const m=EREN_MOVES[erenTitan(p)?hold>=CH_TH?'titanSmash':'titanPunch':hold>=CH_TH?'erenSpin':'erenBlades'];return {range:(m.reach+m.R)*fighterSize(p),startup:m.act0+hold,damage:!erenTitan(p)&&hold<CH_TH?14:m.dm,hold,type:m.type,recovery:m.end-m.act1};};
+aiMeleeProfile=function(p,hold=2){if(p.cid!=='eren')return erenBaseProfile(p,hold);const m=EREN_MOVES[erenTitan(p)?hold>=CH_TH?'titanSmash':'titanPunch':hold>=CH_TH?'erenSpin':p.erenWire?'erenWireCut':'erenBlades'];return {range:(m.reach+m.R)*fighterSize(p),startup:m.act0+hold,damage:!erenTitan(p)&&hold<CH_TH?(p.erenWire?18:14):erenTitan(p)&&hold<CH_TH?22:m.dm,hold,type:m.type,recovery:m.end-m.act1};};
 // Presentation is generated geometry and synthesized effects only.
 function erenDrawBody(p,t,titan=erenTitan(p)){
  const sc=titan?3:1,m=p.mv,active=m&&p.a>=m.act0&&p.a<=m.act1;
- const speed=Math.min(1,Math.abs(p.vx||0)/7),stride=Math.sin(t*(titan?.16:.3))*speed;
- const attackQ=m?constrain((p.a-m.act0)/Math.max(1,m.act1-m.act0),0,1):0;
+ const skin=flash[p.id]>0?'#fff9e8':'#dcb997',base=titan?'#c18c6d':'#8b704d';
+ const walk=p.g?Math.sin(t*.30)*Math.min(4,Math.abs(p.vx||0))*1.5:4;
  push();translate(p.x,p.y);scale(sc);scale(p.f,1);
- if(isInvuln(p)&&t%8<3)drawingContext.globalAlpha*=.6;
- const outline='#131c22',skin=titan?'#bd8268':'#dfbc98',light=titan?'#e2ae88':'#f3d6ae';
- // Articulated joints and tapered limbs, outlined before the lit plane.
- const limb=(x0,y0,x1,y1,x2,y2,w,col)=>{stroke(outline);strokeWeight(w+2.5);line(x0,y0,x1,y1);line(x1,y1,x2,y2);stroke(col);strokeWeight(w);line(x0,y0,x1,y1);line(x1,y1,x2,y2);stroke(light);strokeWeight(w*.24);line(x0-1,y0,x1-1,y1);};
- const fist=(x,y,r,hard=false)=>{stroke(outline);strokeWeight(1);fill(hard?'#8ca9be':skin);quad(x-r,y-r*.7,x+r*.7,y-r,x+r,y+r*.5,x-r*.6,y+r*.7);fill(hard?'#e2f6f1':light);quad(x-r*.7,y-r*.6,x+r*.5,y-r*.75,x+r*.6,y-r*.2,x-r*.6,y-r*.1);stroke(hard?'#52768b':'#875044');strokeWeight(.6);for(let i=0;i<3;i++)line(x-r*.4+i*r*.45,y-r*.55,x-r*.3+i*r*.45,y+r*.2);};
- // Legs have a thigh, knee and calf rather than one uniformly thick stick.
+ if(isInvuln(p)&&t%8<3)drawingContext.globalAlpha*=.55;
+ // Same blank face, rounded limbs and costume silhouette as the other SPECIAL fighters.
+ if(!titan){noStroke();fill('#2c5745');quad(-12,-51,-27-Math.abs(p.vx)*.5,-37,-22,-21,-8,-29);}
  for(const side of [-1,1]){
-  const kneeX=side*8+stride*side*5,kneeY=-17-Math.max(0,stride*side)*3,footX=side*11+stride*side*8;
-  limb(side*6,-30,kneeX,kneeY,footX,-2,titan?7:4,titan?'#9f6659':'#d2c6a5');
-  if(titan){noStroke();fill('#d79978');ellipse(side*6,-25,8,14);fill('#794c44');ellipse(kneeX,kneeY,6,4);}
-  stroke(outline);strokeWeight(titan?3:4);line(footX-3,-1,footX+5,-1);
-  if(!titan){stroke('#5d493d');strokeWeight(2);line(kneeX,kneeY+2,footX,-2);stroke('#b1b6a6');strokeWeight(.8);line(kneeX-2,kneeY+1,kneeX+2,kneeY+1);}
+  const foot=side*10+side*walk;
+  stroke('#111b29');strokeWeight(11);line(side*7,-24,foot,-5);
+  stroke(titan?skin:'#d7d0b8');strokeWeight(8);line(side*7,-24,foot,-5);
+  stroke(titan?'#a4775f':'#514238');strokeWeight(5);line(foot,-8,foot,-2);
+  stroke('#8e9b93');strokeWeight(1.2);line(foot-3,-1,foot+5,-1);
  }
- let hx=18,hy=-39,backX=-18,backY=-39;
- if(p.ch>0||m?.kind==='titanSmash'&&p.a<m.act0){hx=-24;hy=-49;}
- else if(active){hx=m.reach;hy=-m.yo;}
- if(titan&&m?.kind==='titanGrab'&&p.a>=m.act0&&p.a<44){hx=21;hy=-38;}
- if(p.ct>0||p.erenHard>0){hx=12;hy=-57;backX=0;backY=-51;}
- const alternate=titan&&m?.kind==='titanPunch'&&(p.erenSwing||0)%2===0;
- limb(alternate?10:-10,-49,-19,-45,backX,backY,titan?9:4,titan?'#9b6253':'#8b6d48');
+ stroke('#172334');strokeWeight(1.5);fill(base);quad(-12,-50,12,-50,15,-25,-15,-25);
  if(titan){
-  // Broad deltoids, narrow pelvis and segmented abdominal wall.
-  stroke(outline);strokeWeight(1.3);fill('#9e5f52');beginShape();vertex(-16,-54);vertex(-10,-61);vertex(9,-61);vertex(18,-51);vertex(11,-36);vertex(8,-25);vertex(-8,-25);vertex(-11,-38);endShape(CLOSE);
-  fill('#dba17e');ellipse(-9,-48,19,15);ellipse(9,-48,19,15);fill('#e5b38b');arc(-8,-49,15,9,PI,TWO_PI);arc(8,-49,15,9,PI,TWO_PI);
-  stroke('#79483f');strokeWeight(.7);line(0,-54,0,-28);line(-13,-43,-6,-37);line(13,-43,6,-37);
-  for(let row=0;row<3;row++){noStroke();fill(row%2?'#c78b6c':'#da9c77');rect(-7,-41+row*5,6,4,1);rect(1,-41+row*5,6,4,1);stroke('#895143');strokeWeight(.5);line(-6,-36+row*5,6,-36+row*5);}
-  noFill();stroke('#dfaa84');strokeWeight(1);for(let i=0;i<3;i++){line(-12+i,-41-i*3,-8,-34-i*3);line(12-i,-41-i*3,8,-34-i*3);}
-  fill('#9b6351');noStroke();quad(-9,-28,0,-25,9,-28,7,-20);fill('#c88c6c');triangle(-6,-27,6,-27,0,-22);
+  fill('#dfb18b');quad(-10,-48,10,-48,8,-38,-8,-38);
+  noFill();stroke('#a5735d');strokeWeight(1);line(0,-47,0,-28);line(-6,-35,6,-35);line(-5,-30,5,-30);
  }else{
-  // Cropped leather jacket, white shirt, crossed harness and moving green cape.
-  noStroke();fill('#253c31');beginShape();vertex(-11,-52);vertex(-25-speed*7,-42);vertex(-23-stride*5,-24);vertex(-9,-32);endShape(CLOSE);
-  stroke(outline);strokeWeight(1.2);fill('#e1d3b7');quad(-9,-49,9,-49,9,-27,-9,-27);
-  fill('#9b754b');quad(-13,-52,-3,-50,-4,-30,-14,-28);quad(3,-50,13,-52,15,-29,4,-30);
-  fill('#ba9160');triangle(-12,-51,-4,-49,-8,-42);triangle(12,-51,4,-49,8,-42);
-  stroke('#553e2e');strokeWeight(.65);line(-12,-39,-5,-39);line(5,-39,12,-39);line(-12,-37,-5,-37);line(5,-37,12,-37);
-  stroke('#3d3930');strokeWeight(2);line(-8,-47,7,-29);line(8,-47,-7,-29);line(-11,-28,11,-28);
-  stroke('#d1d1b7');strokeWeight(.7);rect(-3,-33,6,4,1);
-  for(const side of [-1,1]){fill('#45565a');stroke(outline);strokeWeight(1);rect(side<0?-22:13,-25,9,17,2);fill('#aab5b2');rect(side<0?-21:14,-24,6,4,1);stroke('#d3dcd4');strokeWeight(.65);for(let i=0;i<3;i++)line(side<0?-20:15,-18+i*3,side<0?-16:19,-18+i*3);}
-  // Original wing-like insignia, visible on the leather shoulder.
-  stroke('#cddbd2');strokeWeight(.65);for(let i=0;i<4;i++)line(-10,-46+i*1.5,-7+i*.5,-48+i*1.5);
+  fill('#e6deca');triangle(-8,-50,0,-36,8,-50);
+  fill('#a18458');quad(-12,-50,-5,-49,-6,-28,-14,-26);quad(5,-49,12,-50,14,-26,6,-28);
+  stroke('#3d463c');strokeWeight(2);line(-8,-46,7,-27);line(8,-46,-7,-27);line(-12,-26,12,-26);
+  noStroke();fill('#c7cdbc');rect(-3,-29,6,4,1);
+  for(const side of [-1,1]){fill('#5c7275');stroke('#172334');strokeWeight(1);rect(side<0?-22:14,-26,8,17,2);stroke('#ced7d0');strokeWeight(.8);line(side<0?-19:17,-23,side<0?-19:17,-12);}
+  stroke('#dbe2d5');strokeWeight(.8);line(-10,-45,-7,-47);line(-10,-42,-6,-45);
  }
- // Neck and angular face; hair strands frame the cheeks instead of a square helmet.
- stroke(outline);strokeWeight(1);fill(skin);rect(-4,-61,8,8,2);
- fill(titan?'#242c27':'#272b26');beginShape();vertex(-12,-55);vertex(-16,-69);vertex(-9,-80);vertex(2,-82);vertex(13,-74);vertex(14,-59);vertex(9,-50);vertex(5,-69);vertex(-6,-67);vertex(-8,-52);endShape(CLOSE);
- fill(skin);beginShape();vertex(-7,-71);vertex(4,-74);vertex(11,-66);vertex(12,-57);vertex(7,-50);vertex(-2,-52);vertex(-8,-61);endShape(CLOSE);
- fill(light);quad(1,-71,8,-67,9,-61,3,-62);fill('#9c6854');triangle(-4,-58,7,-56,3,-51);
- noStroke();fill('#edf0d5');quad(0,-65,9,-64,7,-61,1,-62);fill('#57a994');rect(4,-64,2,3);stroke('#233329');strokeWeight(1.2);line(-1,-66,9,-65);
- stroke('#805346');strokeWeight(.65);line(7,-61,10,-58);line(9,-57,5,-57);
+ // Intentionally no eyes, teeth, jaw or anatomy rendering: match the roster's visual language.
+ stroke('#152131');strokeWeight(1.3);fill(skin);ellipse(0,-59,20,22);
+ fill('#27352e');noStroke();beginShape();vertex(-12,-58);vertex(-13,-69);vertex(-6,-76);vertex(6,-76);vertex(13,-68);vertex(11,-54);vertex(7,-64);vertex(0,-68);vertex(-7,-64);vertex(-10,-53);endShape(CLOSE);
+ let hx=18,hy=-35;
+ if(p.ch>0||m?.kind==='titanSmash'&&p.a<m.act0){hx=-23;hy=-43;}
+ if(active){hx=m.reach;hy=-m.yo;}
+ if(titan&&m?.kind==='titanGrab'&&p.a>=m.act0&&p.a<40){hx=21;hy=-38;}
+ if(p.ct>0||p.erenHard>0){hx=12;hy=-49;}
+ const second=titan&&m?.kind==='titanPunch'&&p.a>=m.act0+6;
+ animeArm(second?-8:8,-45,hx,hy,titan?skin:base,titan?8:5);
+ animeArm(second?8:-8,-45,-18,-29,titan?skin:base,titan?7:5);
+ noStroke();fill(p.erenHard>0?'#bedce6':skin);circle(hx,hy,titan?15:7);circle(-18,-29,titan?12:7);
  if(titan){
-  fill('#efe4c5');stroke('#653c35');strokeWeight(.65);beginShape();vertex(-1,-57);vertex(10,-56);vertex(7,-51);vertex(0,-52);endShape(CLOSE);
-  for(let i=0;i<5;i++)line(i*1.8,-56,i*1.8,-52);
-  stroke('#9a5948');line(-5,-62,-2,-58);line(-4,-59,-1,-56);line(11,-61,10,-57);
-  fill('#d8a27b');noStroke();triangle(-9,-64,-14,-66,-11,-59);
- }else{stroke('#704c40');strokeWeight(.7);line(0,-55,7,-55);}
- noFill();stroke('#435044');strokeWeight(.7);for(let i=0;i<5;i++)bezier(-10+i*4,-75,-13+i*4,-66,-7+i*4,-63,-10+i*4,-54);
- const elbowX=(hx+9)*.48,elbowY=-45+(hy+45)*.5-3;
- limb(alternate?-10:10,-49,elbowX,elbowY,hx,hy,titan?10:4,titan?skin:'#a58053');
- if(titan){
-  fist(hx,hy,8,p.erenHard>0);fist(backX,backY,6.5,p.erenHard>0);
-  // Nape stays exactly at the gameplay weak-point coordinate.
-  noStroke();fill('#edb993');ellipse(-6.3,-57,4,6);
-  noFill();stroke(227,231,215,70);strokeWeight(1);for(let i=0;i<4;i++){const q=(t*.012+i*.24)%1;bezier(-15+i*9,-48-q*19,-28+i*9,-54-q*21,2+i*9,-65-q*20,-8+i*9,-73-q*21);}
+  noFill();stroke(225,231,217,70);strokeWeight(1);for(let i=0;i<3;i++){const q=(t*.012+i*.3)%1;bezier(-13+i*12,-49-q*10,-24+i*12,-60-q*12,4+i*12,-62-q*12,-7+i*12,-74-q*10);}
  }else{
-  const blade=(x,y,angle)=>{push();translate(x,y);rotate(angle);stroke(outline);strokeWeight(1);fill('#c1d7d3');quad(0,-2,28,-18,31,-23,2,-5);stroke('#f5ffea');strokeWeight(.8);line(3,-5,30,-22);stroke('#526c70');line(2,-2,25,-17);stroke('#353f3e');strokeWeight(2.5);line(-4,2,2,-3);stroke('#b6bca5');strokeWeight(1.2);line(-3,-3,3,2);pop();};
-  blade(hx,hy,active?(attackQ-.5)*1.4:-.15);blade(backX,backY,active?(.5-attackQ)*1.5:.35);
-  if(p.erenWire||p.dg>0){noStroke();for(let i=0;i<5;i++){fill(195,226,218,90-i*13);ellipse(-24-i*7,-24+i*1.5,7+i*4,4+i*2);}}
+  const blade=(x,y,ang)=>{push();translate(x,y);rotate(ang);stroke('#172334');strokeWeight(3.3);line(0,0,28,-19);stroke('#edf4df');strokeWeight(2);line(0,0,28,-19);stroke('#90b1ad');strokeWeight(.7);line(0,1,27,-17);stroke('#80938b');strokeWeight(2);line(-3,-3,3,2);pop();};
+  blade(hx,hy,active?Math.sin(p.a*.8)*.5:0);blade(-18,-29,active?-Math.sin(p.a*.8)*.5:.3);
+  if(p.erenWire||p.dg>0){noStroke();for(let i=0;i<4;i++){fill(200,232,220,85-i*15);ellipse(-25-i*8,-23+i*2,8+i*5,5+i*2);}}
  }
  if(active){
-  noFill();stroke(titan?'#e7bd73':'#78d7cd');strokeWeight(titan?3:3.5);arc(m.reach,-m.yo,m.R*2,m.R*2,-1.35,1.2);
-  stroke(titan?'#fff0ba':'#f1fff6');strokeWeight(titan?1:1.1);arc(m.reach+1,-m.yo,m.R*2+3,m.R*2+3,-1.25,1.1);
-  if(!titan){stroke(156,231,220,100);strokeWeight(1);for(let i=0;i<3;i++)line(m.reach-12-i*6,-m.yo+17,m.reach+6-i*5,-m.yo-13);}
+  noFill();stroke(titan?'#ffd88e':'#86ddd0');strokeWeight(titan?2.5:3);arc(m.reach,-m.yo,m.R*2,m.R*2,-1.4,1.2);
+  stroke(titan?'#fff0bf':'#f0fff1');strokeWeight(1);arc(m.reach+1,-m.yo,m.R*2+3,m.R*2+3,-1.3,1.1);
  }
  pop();
 }
@@ -290,7 +271,7 @@ function drawEren(p){
  if(p.out)return;
  if(p.erenWire){push();stroke('#d5e8e1');strokeWeight(1.4);for(const offset of [-12,12])line(p.x+offset,p.y-27,p.erenWire.x,p.erenWire.y);noStroke();fill('#dce2bd');circle(p.erenWire.x,p.erenWire.y,6);pop();}
  erenDrawBody(p,visualFrame);
- push();textAlign(CENTER,CENTER);textSize(12);stroke('#111b22');strokeWeight(3);fill(p.c);text(p.label,p.x,p.y-(erenTitan(p)?260:94));pop();
+ push();textAlign(CENTER,CENTER);textSize(12);stroke('#111b22');strokeWeight(3);fill(p.c);text(p.label,p.x,p.y-(erenTitan(p)?240:94));pop();
 }
 const erenBaseDraw=drawFighter;
 drawFighter=function(p){if(p.cid==='eren')return drawEren(p);return erenBaseDraw(p);};
@@ -321,41 +302,23 @@ drawFreezeText=function(){if(fzType==='titan')return erenPaintCutin();if(fzType=
 const erenBaseEndFreeze=endFreeze;
 endFreeze=function(){if(['titan','erenHitstop'].includes(fzType))return;const p=fzType==='counter'?pending?.att:null,before=p?.d;const r=erenBaseEndFreeze();if(p?.cid==='eren')erenGain(p,(p.d-before)*EREN.takenGain);return r;};
 function erenPortrait(form=false){
- const skin=form?'#cb9373':'#dfbb95',coat=form?'#9b5b4d':'#967349';
- return `<svg viewBox="0 0 100 82" aria-hidden="true">
- <path d="M0 72L83 0h17v19L26 82H0z" fill="#71c7ae0d"/><circle cx="58" cy="39" r="33" fill="none" stroke="#b7c6a51f"/>
- <path d="M11 76L95 7M1 61L79 1" stroke="#96cabe" stroke-width=".65" opacity=".5"/>
- <g opacity=".2"><path d="M61 76L52 49 60 25 76 21 90 39 100 80" fill="#d49e75"/><path d="M58 34L56 9 69 0h19l12 16-7 32-8-26-16 4-3 20z" fill="#8eae94"/><path d="M76 17l15 5-7 4-9-1m-7 12 23-3-4 11-18-1" fill="#f3dba9"/></g>
- <ellipse cx="49" cy="78" rx="35" ry="3" fill="#030e15a0"/>
- <path d="M40 53L29 75 41 79 49 64 58 79 71 75 58 51" fill="${form?'#a36c57':'#bdb69d'}" stroke="#15252b" stroke-width="2"/>
- <path d="M39 59l-5 15m24-15 7 15" stroke="${form?'#e3ae85':'#5e4d3c'}" stroke-width="3"/>
- <path d="M30 31L12 43 4 64 24 60 39 46" fill="#2e4a3a" stroke="#172930" stroke-width="1.3"/>
- <path d="M29 36L12 54l13-5" fill="#48654b"/>
- <path d="M30 32L45 26 63 31 70 55 59 65 39 61 25 53z" fill="${coat}" stroke="#142129" stroke-width="1.6"/>
- ${form?'<path d="M32 34Q41 26 48 36Q56 27 65 36L58 46H39z" fill="#e2ad83"/><path d="M40 45h7v5h-7zm10 0h7v5h-7zm-9 7h6v5h-6zm9 0h6v5h-6z" fill="#d29670"/><path d="M48 34v25m-12-15 8-4m18 4-8-4" stroke="#7b473c" fill="none"/>':'<path d="M38 31L46 30 57 33 60 56 42 56z" fill="#e4d4b5"/><path d="M30 33l11-4 1 28-15-4m30-22 7 3 6 21-10 6z" fill="#aa8454"/><path d="M33 32l8-2-5 11m22-10 5 3-4 9" fill="#d4ad75"/><path d="M38 34l19 22m0-22-16 22M29 56l35 2" stroke="#393a31" stroke-width="2.4"/><path d="M45 53h7v6h-7z" fill="#bbc0ad" stroke="#3d4c49"/><path d="M30 43h8m21 0h6" stroke="#5d4836"/><path d="M29 37h7v8h-7z" fill="#4e6756"/><path d="M31 38l4 1-3 5m1-5 2 4" fill="none" stroke="#dde5d6" stroke-width=".65"/>'}
- <path d="M31 35L21 45 37 49M62 35L76 46 62 53" fill="none" stroke="#13232a" stroke-width="10" stroke-linecap="round"/>
- <path d="M31 35L21 45 37 49M62 35L76 46 62 53" fill="none" stroke="${form?'#d09b78':'#9e7b4f'}" stroke-width="6" stroke-linecap="round"/>
- <path d="M25 38l-3 6 11 3m33-7 7 6-10 5" fill="none" stroke="${form?'#efc39a':'#c5a471'}" stroke-width="1.5"/>
- <path d="M42 18h12l2 16-10 6-7-8z" fill="${skin}" stroke="#1a272a"/>
- <path d="M32 9L44 2l15 3 7 15-5 13-9 3-14-8z" fill="${skin}" stroke="#14242a" stroke-width="1.4"/>
- <path d="M47 8l10 3 5 10-10 2-3 9-8-6 6-10z" fill="${form?'#e7b08a':'#f3d6ae'}"/>
- <path d="M34 19l8 7 11 9-11-3-8-8z" fill="#ab765c"/>
- <path d="M41 17l19 3-4 4-12-2z" fill="#e9eed6"/><path d="M50 19h4v5h-4z" fill="#559f87"/><path d="M40 16l19 3" stroke="#26342b" stroke-width="1.7"/>
- <path d="M58 24l4 3-6 1m-9 2 9 1" fill="none" stroke="#865b48" stroke-width=".8"/>
- ${form?'<path d="M44 28l16 1-5 7-11-3z" fill="#eee4c4" stroke="#714538"/><path d="M47 29v5m3-5v6m3-6v6m3-6v4" stroke="#794d40" stroke-width=".7"/><path d="M38 23l5 5m-7-2 7 5" stroke="#945448"/>':''}
- <path d="M31 25L27 11 37 1 54-2 66 6 69 20 62 34 61 18 51 11 43 12 37 24 35 34z" fill="#242e27" stroke="#132229" stroke-width="1.1"/>
- <path d="M36 5l-4 12 1 11m9-25-4 17m13-18-7 12m14-9 6 16-2 9" stroke="#52604a" stroke-width="1" fill="none"/>
- ${form?'<path d="M58 50l12 1 4 9-15 5-6-6zM32 46l10 2 1 8-13 2-6-6z" fill="#d9a982" stroke="#17272b"/><path d="M60 54l10 1m-10 3 11 1m-38-9 8 1m-10 3 9 1" stroke="#8c5b4c"/>':'<path d="M26 57l-3 20 10 2 4-20m25 2 5 16 11-5-6-18" fill="#53686b" stroke="#16292d" stroke-width="1.3"/><path d="M27 59l-2 15m4-14-2 15m40-16 5 13m-3-15 5 13" stroke="#b6c7c3" stroke-width="1"/><path d="M35 48L82 9 98 1 86 15 39 52zM61 52L12 12 1 0 15 9 65 49z" fill="#c5e2db" stroke="#263f45" stroke-width=".8"/><path d="M39 48L94 4M62 49L6 3" stroke="#f3fff2" stroke-width="1"/><path d="M33 47l6 7m21-1 6-6" stroke="#6e8f8e" stroke-width="3"/>'}
- <path d="M6 77h17m57-68h15" stroke="#d5c18b" stroke-width="1" opacity=".8"/>
+ const skin='#e3b99a',base=form?'#bf8d70':'#92764e';
+ return `<svg viewBox="0 0 100 82" aria-hidden="true"><circle cx="50" cy="40" r="35" fill="#9cba8f" opacity=".12"/><ellipse cx="50" cy="78" rx="30" ry="3" fill="#050b1680"/>
+ ${form?'':'<path d="M34 35L17 48 22 70 43 57" fill="#315c46" stroke="#19283a"/>'}
+ <path d="M42 60l-8 17m24-17 9 17" stroke="${form?skin:'#d4cbb0'}" stroke-width="10"/><path d="M31 77h9m23 0h9" stroke="${form?'#9b725d':'#514536'}" stroke-width="5"/>
+ <path d="M35 35h30l5 29H30z" fill="${base}" stroke="#19283a"/>
+ <path d="M35 40L22 51M65 40l13 9" fill="none" stroke="${form?skin:base}" stroke-width="8" stroke-linecap="round"/><circle cx="20" cy="51" r="${form?7:5}" fill="${skin}"/><circle cx="80" cy="49" r="${form?7:5}" fill="${skin}"/>
+ ${form?'<path d="M38 38h25l-4 10H42z" fill="#ddb08b"/><path d="M50 40v19m-7-7h14m-13 5h12" stroke="#a6775f" stroke-width="1"/>':'<path d="M41 35l9 15 10-15" fill="#e6deca"/><path d="M38 39l21 23m0-23L40 62M32 62h35" stroke="#444a3d" stroke-width="2.3"/><path d="M46 59h8v5h-8z" fill="#c8cbb5"/><path d="M24 58h9v17h-9zm44 0h9v17h-9z" fill="#627c7e" stroke="#19283a"/><path d="M27 61v11m44-11v11" stroke="#d6e0d3"/><path d="M17 51L4 19m78 29 14-29" stroke="#eff7df" stroke-width="3"/><path d="M13 49l7-2m59-1 7 3" stroke="#8daba4" stroke-width="2"/>'}
+ <circle cx="51" cy="24" r="12" fill="${skin}"/>
+ <path d="M38 25l-1-12 7-10h14l9 9-1 16-5-8-10-6-9 6-3 12z" fill="#27352e"/>
  </svg>`;
 }
-
 const erenBasePortrait=portrait;
 portrait=function(id,gear=1,form=0,mode=false){return id==='eren'?erenPortrait(!!form):erenBasePortrait(id,gear,form,mode);};
 const erenBaseHud=animeHud;
 animeHud=function(p){if(p.cid!=='eren')return erenBaseHud(p);const titan=erenTitan(p);return {m:titan?p.erenTime/EREN.duration*100:p.erenGauge,label:p.erenFatigue?'疲労':titan?(p.erenTime<=180?'解除間近 ':'ATTACK TITAN ')+Math.ceil(p.erenTime/60)+'秒':'TITAN GAUGE '+Math.floor(p.erenGauge||0)+'/100'};};
 const erenBaseControl=updateControlUI;
-updateControlUI=function(){erenBaseControl();const p=byId(myId);if(p?.cid!=='eren')return;setTxt(document.getElementById('combat-hint'),netIssue|| (erenTitan(p)?'特殊：掴み投げ ／ 横：タックル ／ 上：アッパー ／ 下：硬質化':'特殊：ワイヤー ／ 横：急襲 ／ 上：ワイヤー復帰 ／ MAXで下特殊：巨人化'));setTxt(document.querySelector('#btn-g small'),erenTitan(p)?'硬質化':'巨人化');setTxt(document.querySelector('#btn-s small'),erenTitan(p)?'掴み投げ':'ワイヤー');};
+updateControlUI=function(){erenBaseControl();const p=byId(myId);if(p?.cid!=='eren')return;setTxt(document.getElementById('combat-hint'),netIssue|| (erenTitan(p)?'特殊：掴み投げ ／ 横：タックル ／ 上：アッパー ／ 下：地上硬質化／空中踏みつけ':'特殊：ワイヤー ／ 横：急襲 ／ 上：ワイヤー復帰 ／ MAXで下特殊：巨人化'));setTxt(document.querySelector('#btn-g small'),erenTitan(p)?p.g?'硬質化':'踏みつけ':'巨人化');setTxt(document.querySelector('#btn-s small'),erenTitan(p)?'掴み投げ':'ワイヤー');};
 const erenBaseHUDDraw=drawHUD;
 drawHUD=function(){erenBaseHUDDraw();const list=fighters.filter(f=>!f.shadowClone);const rows=document.getElementById('battle-roster').children;list.forEach((p,i)=>{if(p.cid==='eren'&&rows[i]){rows[i].classList.toggle('titan-expiring',erenTitan(p)&&p.erenTime<=180);rows[i].style.setProperty('--team',p.erenTime<=180&&erenTitan(p)?'#ed975e':p.c);}});};
 
@@ -366,3 +329,7 @@ aiUpSpecial=function(p,I,A){if(erenTitan(p))return false;return erenBaseUp(p,I,A
 
 const erenBasePickup=tryPickup;
 tryPickup=function(p,id,it){if(p.cid==='eren')return;return erenBasePickup(p,id,it);};
+
+// The second fist uses the existing multi-hit window and the same owner-side hit transport.
+const erenBaseCheck=meleeCheck;
+meleeCheck=function(p){if(erenTitan(p)&&p.mv?.kind==='titanPunch'&&p.mv.multi){const finish=p.a>=p.mv.act0+6;p.mv.dm=finish?13:9;p.mv.k0=finish?15:7;}return erenBaseCheck(p);};

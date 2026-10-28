@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import {game} from './helpers/game.mjs';
 const setup=`frameCount=0;startBattleCommon([{id:myId,cid:'eren',owner:myId,label:'EREN',cpu:0},{id:'enemy',cid:'karate',owner:myId,label:'Enemy',cpu:1}],'std',false,3);bt.phase='play';const p=byId(myId),t=byId('enemy');p.x=400;p.y=390;p.inv=0;t.x=455;t.y=390;t.inv=0;`;
 function env(){const g=game();g.run(setup);return g;}
-test('Eren is selectable in special roster and all eight attacks are registered',()=>{
+test('Eren is selectable in special roster and all ten attacks are registered',()=>{
  const g=env();assert.ok(g.run('cpuCharacterPool("special").includes("eren")'));
- assert.equal(g.run('Object.keys(EREN_MOVES).length'),8);
+ assert.equal(g.run('Object.keys(EREN_MOVES).length'),10);
  for(const titan of [false,true])for(const direction of ['neutral','side','up','down']){
   g.run(`erenReset(p);p.erenForm=${titan?1:0};p.erenTime=1080;p.erenGauge=100;p.spc=0;p.prev=blankInput();
    erenSpecial(p,{neutralSpecial:${direction==='neutral'},u:${direction==='up'},d:${direction==='down'},sideSpecial:${direction==='side'?1:0}});`);
@@ -35,7 +35,7 @@ test('wire needs a real platform, expires, accelerates toward anchor, up use is 
  const g=env();g.run('const ok=erenWire(p,true);const wire=p.erenWire;erenTick(p);');
  assert.equal(g.run('ok'),true);assert.ok(g.run('p.vy<0'));assert.ok(g.run('wire.y===stage.plats[wire.pl].y'));
  assert.equal(g.run('erenWire(p,true)'),false);
- g.run('for(let i=0;i<30;i++)erenTick(p);');assert.equal(g.run('p.erenWire'),null);
+ g.run('for(let i=0;i<40;i++)erenTick(p);');assert.equal(g.run('p.erenWire'),null);
  g.run('erenReset(p);p.rec=false;stage={w:800,h:450,plats:[]};');assert.equal(g.run('erenWire(p,true)'),false);
 });
 test('titan body includes feet and head; nape is small, high and behind',()=>{
@@ -46,7 +46,7 @@ test('titan body includes feet and head; nape is small, high and behind',()=>{
  g.run(`resolveProj({o:t.id,x:381,y:219,vx:1,dir:1,dm:10,k0:1,ks:0,up:.2},p);`);assert.equal(g.run('p.d'),12);
 });
 test('titan punches reach small fighters at its feet; enemy melee can hit its torso',()=>{
- const g=env();g.run('p.erenForm=1;erenMove(p,"titanPunch");p.a=11;t.x=480;meleeCheck(p);');assert.equal(g.run('t.d'),18);
+ const g=env();g.run('p.erenForm=1;erenMove(p,"titanPunch");p.a=11;t.x=480;meleeCheck(p);');assert.equal(g.run('t.d'),9);
  g.run('t.x=430;t.y=270;t.f=-1;fireAttack(t,1);t.a=t.mv.act0;meleeCheck(t);');assert.ok(g.run('p.d>0'));
 });
 test('hardening reduces damage by 30%, restricts attacks, expires after 120 ticks and cools for 360',()=>{
@@ -118,4 +118,21 @@ test('polished moves give human and titan different finishers, keeping timed vul
  g.run('freezeT=0;fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'titanSmash');assert.equal(g.run('p.mv.dm'),34);
  assert.ok(g.run('p.mv.end>p.mv.act1+20'));
  g.run('clearActs(p);for(let i=0;i<24;i++)stepFighter(p,blankInput());');assert.equal(g.run('isInvuln(p)'),false);
+});
+test('wire combat keeps tether acceleration during an actual moving slash',()=>{
+ const g=env();g.run('p.f=1;t.x=460;t.y=350;erenWire(p);erenAttack(p,1);const x=p.x,y=p.y;for(let i=0;i<10;i++){stepFighter(p,blankInput());meleeCheck(p);}');
+ assert.equal(g.run('p.mv.kind'),'erenWireCut');assert.ok(g.run('Math.hypot(p.x-x,p.y-y)>100'));
+ assert.ok(g.run('t.d>0'));assert.ok(g.run('!!p.erenWire'));
+});
+test('tether slashes hit three times without duplicate gauge gain; titan punches combo twice',()=>{
+ const g=env();g.run('erenWire(p);erenAttack(p,1);for(const frame of [2,6,10]){p.a=frame;p.hit={};meleeCheck(p);}');
+ assert.equal(g.run('t.d'),18);assert.equal(g.run('p.erenGauge'),8);
+ g.run('p.erenForm=1;erenMove(p,"titanPunch");t.d=0;t.x=480;for(const frame of [6,12]){p.a=frame;p.hit={};meleeCheck(p);}');
+ assert.equal(g.run('t.d'),22);
+});
+test('airborne titan down special is a limited stomp; grounded down still hardens',()=>{
+ const g=env();g.run('p.erenForm=1;p.erenTime=1080;p.g=false;p.y=300;erenSpecial(p,{d:true});const token=p.mv.erenToken;');
+ assert.equal(g.run('p.mv.kind'),'titanStomp');assert.equal(g.run('p.vy'),14);
+ g.run('p.spc=0;erenSpecial(p,{d:true});');assert.equal(g.run('p.mv.erenToken'),g.run('token'));
+ g.run('p.g=true;p.y=390;erenTick(p);p.spc=0;erenSpecial(p,{d:true});');assert.equal(g.run('p.erenHard'),120);
 });
