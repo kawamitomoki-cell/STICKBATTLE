@@ -12,10 +12,10 @@ test('Eren is selectable in special roster and all eight attacks are registered'
   assert.ok(g.run('p.erenForm||p.erenWire||p.erenHard||p.mv||p.spc>0'),`${titan}/${direction}`);
  }
 });
-test('dual blades hit twice, but gain only six gauge per swing and target',()=>{
+test('dual blades hit twice, but gain only eight gauge per swing and target',()=>{
  const g=env();g.run(`fireAttack(p,1);p.a=3;meleeCheck(p);const first=t.d;
  p.hit={};p.a=8;meleeCheck(p);`);
- assert.equal(g.run('t.d'),10);assert.equal(g.run('first'),5);assert.equal(g.run('p.erenGauge'),6);
+ assert.equal(g.run('t.d'),14);assert.equal(g.run('first'),7);assert.equal(g.run('p.erenGauge'),8);
 });
 test('received damage gains gauge, idle time does not, titan cannot refill',()=>{
  const g=env();g.run('for(let i=0;i<200;i++)erenTick(p);');assert.equal(g.run('p.erenGauge'),0);
@@ -46,18 +46,18 @@ test('titan body includes feet and head; nape is small, high and behind',()=>{
  g.run(`resolveProj({o:t.id,x:381,y:219,vx:1,dir:1,dm:10,k0:1,ks:0,up:.2},p);`);assert.equal(g.run('p.d'),12);
 });
 test('titan punches reach small fighters at its feet; enemy melee can hit its torso',()=>{
- const g=env();g.run('p.erenForm=1;erenMove(p,"titanPunch");p.a=11;t.x=480;meleeCheck(p);');assert.equal(g.run('t.d'),14);
+ const g=env();g.run('p.erenForm=1;erenMove(p,"titanPunch");p.a=11;t.x=480;meleeCheck(p);');assert.equal(g.run('t.d'),18);
  g.run('t.x=430;t.y=270;t.f=-1;fireAttack(t,1);t.a=t.mv.act0;meleeCheck(t);');assert.ok(g.run('p.d>0'));
 });
 test('hardening reduces damage by 30%, restricts attacks, expires after 120 ticks and cools for 360',()=>{
- const g=env();g.run('p.erenForm=1;p.erenTime=1080;erenSpecial(p,{d:true});fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'titanPunch');assert.equal(g.run('p.mv.end'),51);
+ const g=env();g.run('p.erenForm=1;p.erenTime=1080;erenSpecial(p,{d:true});fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'titanPunch');assert.equal(g.run('p.mv.end'),42);
  g.run('applyHit(p,{dm:20,k0:1,ks:0,up:.2,f:1},false,t.id);');assert.equal(g.run('p.d'),14);
  g.run('for(let i=0;i<120;i++)erenTick(p);');assert.equal(g.run('p.erenHard'),0);assert.equal(g.run('p.erenHardCd'),240);
 });
 test('grab holds one target then throws once; duplicate token and stale owner are rejected',()=>{
  const g=env();g.run('p.erenForm=1;p.erenTime=1080;erenMove(p,"titanGrab");const A={id:p.id,mv:p.mv};erenGrabStart(A,t);');
  assert.ok(g.run('!!t.erenGrab'));
- g.run('for(let i=0;i<24;i++)erenGrabTick(t);');assert.equal(g.run('t.d'),16);assert.equal(g.run('t.erenGrab'),null);
+ g.run('for(let i=0;i<24;i++)erenGrabTick(t);');assert.equal(g.run('t.d'),20);assert.equal(g.run('t.erenGrab'),null);
  g.run('erenGrabStart(A,t);');assert.equal(g.run('t.erenGrab'),null);
  g.run('t.erenGrab={by:p.id,dir:1,t:20};p.erenForm=0;erenGrabTick(t);');assert.equal(g.run('t.erenGrab'),null);
 });
@@ -92,7 +92,7 @@ test('two clients reconstruct titan form and grab/throw through the existing tra
  owner.run('freezeT=0;erenMove(byId(myId),"titanGrab");');
  const attack=owner.run('({id:myId,mv:byId(myId).mv})');guest.ctx.attack=attack;
  guest.run(`freezeT=0;resolveMelee(attack,byId(myId));for(let i=0;i<24;i++)erenGrabTick(byId(myId));`);
- assert.equal(guest.run('byId(myId).d'),16);assert.equal(guest.run('byId(myId).erenGrab'),null);
+ assert.equal(guest.run('byId(myId).d'),20);assert.equal(guest.run('byId(myId).erenGrab'),null);
  owner.run('erenRevert(byId(myId));');
  const revert=events.find(e=>e.k==='eren-revert');assert.ok(revert);guest.ctx.onEvent(revert);
  assert.equal(guest.run(`byId('${aId}').erenForm`),0);
@@ -111,4 +111,11 @@ test('upward recovery remains available during ground-wire cooldown, once per ai
 test('next stock retains at most 50 earned gauge; final stock resets to zero',()=>{
  const g=env();g.run('p.erenGauge=90;p.s=3;koFighter(p);');assert.equal(g.run('p.erenGauge'),50);assert.equal(g.run('p.s'),2);
  g.run('p.erenGauge=90;p.s=1;koFighter(p);');assert.equal(g.run('p.erenGauge'),0);
+});
+test('polished moves give human and titan different finishers, keeping timed vulnerability',()=>{
+ const g=env();g.run('fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'erenSpin');assert.equal(g.run('p.mv.dm'),20);
+ g.run('p.erenGauge=100;erenTransform(p);');assert.equal(g.run('p.inv'),24);
+ g.run('freezeT=0;fireAttack(p,CH_FULL);');assert.equal(g.run('p.mv.kind'),'titanSmash');assert.equal(g.run('p.mv.dm'),34);
+ assert.ok(g.run('p.mv.end>p.mv.act1+20'));
+ g.run('clearActs(p);for(let i=0;i<24;i++)stepFighter(p,blankInput());');assert.equal(g.run('isInvuln(p)'),false);
 });
