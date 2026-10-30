@@ -1868,12 +1868,12 @@ function rosterSections(container,choose){
 
  // 表示順を固定。承太郎が確実に選択画面へ出るよう、SECRET欄の先頭側に配置する。
  const standardOrder=['karate','bomber','ninja','sumo','boxer','yankee','swordsman','lancer','gunman','archer','berserker'];
- const secretOrder=['rubber','jotaro','goku','gojo','tanjiro','naruto','eren'];
+ const secretOrder=['rubber','jotaro','goku','gojo','tanjiro','naruto','eren','kaneki'];
 
  for(const secret of [false,true]){
   const section=document.createElement('section');
   section.className=secret?'roster-group secret-roster':'roster-group';
-  section.innerHTML=`<header><b>${secret?'SPECIAL FIGHTERS':'STANDARD FIGHTERS'}</b><span>${secret?'ルフィ・承太郎・悟空・五条・炭治郎・ナルト・エレン':'通常キャラクター'}</span></header><div class="roster-cards"></div>`;
+  section.innerHTML=`<header><b>${secret?'SPECIAL FIGHTERS':'STANDARD FIGHTERS'}</b><span>${secret?'ルフィ・承太郎・悟空・五条・炭治郎・ナルト・エレン・金木':'通常キャラクター'}</span></header><div class="roster-cards"></div>`;
   const grid=section.lastElementChild;
   const ids=(secret?secretOrder:standardOrder).filter(id=>CHARS[id]);
 
