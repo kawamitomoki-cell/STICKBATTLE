@@ -224,7 +224,7 @@ function renderLobby() {
       '<div class="optrow" style="margin-top:8px"><span>CPUを足す</span><div class="seg" id="lb-cpun"></div></div>' +
       '<div class="optrow" style="margin-top:8px"><span>CPUキャラ</span><div class="seg" id="lb-cpupool"></div></div>' +
       '<div class="optrow" style="margin-top:8px"><span>CPUの強さ</span><div class="seg" id="lb-cpulv"></div></div>';
-    renderStageGrid('lb-stage', g.map, id => roomRef.child('gm').update({ map: id }));
+    renderStageGrid('lb-stage', g.mapChoice||g.map, id => roomRef.child('gm').update({ map: id,mapChoice:id }));
     if(isTournament)document.getElementById('lb-team-mode').parentElement.style.display='none';
     else seg('lb-team-mode', ['個人戦', 'チーム戦'], () => teamMode ? 1 : 0, i => roomRef.child('gm').update({ teamMode: i === 1 ? 1 : 0 }));
     seg('lb-wpn', ['なし', 'あり'], () => g.wpn ? 1 : 0, i => roomRef.child('gm').update({ wpn: i === 1 ? 1 : 0 }));
@@ -241,7 +241,7 @@ function renderLobby() {
     else { startBtn.className = 'startbig off'; startBtn.innerText = 'あと1人必要（CPUを足してもOK）'; }
   } else {
     setBox.innerHTML = '<div class="sh">④ ルール（ホストが決めます）</div>' +
-      `形式：<b>${teamMode ? 'チーム戦' : '個人戦'}</b>　ステージ：<b>${(MAPS[g.map] || MAPS.std).name}</b>　武器：<b>${g.wpn ? 'あり' : 'なし'}</b>　残機：<b>${clampInt(g.stocks,1,MAX_STOCK,DEFAULT_STOCK)}</b>　CPU：<b>${g.cpuN ? g.cpuN + '体（' + CPU_POOL_LABEL[g.cpuPool || 'all'] + '）' : 'なし'}</b>`;
+      `形式：<b>${teamMode ? 'チーム戦' : '個人戦'}</b>　ステージ：<b>${arenaChoiceName(g.mapChoice||g.map)}</b>　武器：<b>${g.wpn ? 'あり' : 'なし'}</b>　残機：<b>${clampInt(g.stocks,1,MAX_STOCK,DEFAULT_STOCK)}</b>　CPU：<b>${g.cpuN ? g.cpuN + '体（' + CPU_POOL_LABEL[g.cpuPool || 'all'] + '）' : 'なし'}</b>`;
     startBtn.style.display = 'none';
     waitEl.style.display = 'block';
     waitEl.innerText = 'ホストがバトルを始めるのを待っています…';
@@ -281,7 +281,7 @@ async function hostStart() {
   const roster=[...humans,...Object.entries(upd).filter(([k,v])=>k.startsWith('mem/')&&v).map(([k,v])=>({id:k.slice(4),...v}))];
   await roomRef.update(upd);
   nextSpawn = Date.now() + 6000;
-  await roomRef.child('gm').set({ ...g, players:roster, teamMode: teamMode ? 1 : 0,
+  await roomRef.child('gm').set({ ...g, map:resolveArena(g.mapChoice||g.map),mapChoice:g.mapChoice||g.map,players:roster, teamMode: teamMode ? 1 : 0,
     stocks: clampInt(g.stocks, 1, MAX_STOCK, DEFAULT_STOCK), ph: 'play',
     round: (g.round || 0) + 1, w: '', wt: 0 });
 }
@@ -300,7 +300,7 @@ async function hostStartTournament(){
   for(let i=0;i<needed;i++)cpu.push({id:'cpu_t'+i,cid:pool[Math.floor(Math.random()*pool.length)],label:'CPU '+(i+1),cpu:1,owner:myId,team:0});
   const entrants=[...humans.map(h=>({id:h.id,cid:h.cid,label:h.label,cpu:0,owner:h.id,team:0})),...cpu];
   for(let i=entrants.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[entrants[i],entrants[j]]=[entrants[j],entrants[i]];}
-  t={active:1,entrants,matches:Array.from({length:target/2},(_,i)=>[entrants[2*i].id,entrants[2*i+1].id]),round:1,index:0,winners:[],details:[],history:[],champion:'',map:g.map,stocks:clampInt(g.stocks,1,MAX_STOCK,DEFAULT_STOCK)};
+  t={active:1,entrants,matches:Array.from({length:target/2},(_,i)=>[entrants[2*i].id,entrants[2*i+1].id]),round:1,index:0,winners:[],details:[],history:[],champion:'',map:resolveArena(g.mapChoice||g.map),stocks:clampInt(g.stocks,1,MAX_STOCK,DEFAULT_STOCK)};
   const patch={items:null,p:null,ev:null};
   for(const id in memCache)if(memCache[id]?.cpu)patch['mem/'+id]=null;
   for(const m of cpu)patch['mem/'+m.id]={...m,slot:100+cpu.indexOf(m)};
@@ -316,7 +316,7 @@ async function hostStartTournament(){
  const match=t.matches[t.index],players=match.map(id=>t.entrants.find(m=>m.id===id)).filter(Boolean);
  if(players.length!==2)return;
  await roomRef.update({items:null,p:null,ev:null});
- await roomRef.child('gm').set({...g,mode:'tournament',teamMode:0,wpn:0,stocks:clampInt(t.stocks||g.stocks,1,MAX_STOCK,DEFAULT_STOCK),players,tour:t,ph:'play',round:(g.round||0)+1,w:'',wt:0,matchDetail:null});
+ await roomRef.child('gm').set({...g,map:t.map,mode:'tournament',teamMode:0,wpn:0,stocks:clampInt(t.stocks||g.stocks,1,MAX_STOCK,DEFAULT_STOCK),players,tour:t,ph:'play',round:(g.round||0)+1,w:'',wt:0,matchDetail:null});
 }
 
 function hostTick() {

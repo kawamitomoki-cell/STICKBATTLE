@@ -133,6 +133,7 @@ function matchDetailFor(winnerId,solo=true){
  return {method:'場外撃墜',durationSec,winnerDamage:f?Math.round(f.d):null,loserDamage:loser?Math.round(loser.d):null,map:settings.map};
 }
 function newSoloTournament(){
+ settings.map=resolveArena(settings.arenaChoice||settings.map);
  const ids=Object.keys(CHARS),rivals=[];
  for(let i=0;i<7;i++)rivals.push({id:'cpu'+i,cid:ids[Math.floor(Math.random()*ids.length)],label:'CPU '+(i+1),cpu:1,owner:myId});
  const entrants=[{id:myId,cid:settings.cid,label:cleanName(settings.name),cpu:0,owner:myId},...rivals];
@@ -195,6 +196,7 @@ function pickOfflineCpu(cid,pool){
 
 function startBattleOffline() {
   online = false;
+  if(offlineMode!=='tournament')settings.map=resolveArena(settings.arenaChoice||settings.map);
   if(offlineMode==='tournament'){
    if(!offlineTour)offlineTour=newSoloTournament();
    const enemy=nextSoloTournamentOpponent();
@@ -202,6 +204,7 @@ function startBattleOffline() {
    const me=offlineTour.entrants.find(x=>x.id===myId);
    me.cid=settings.cid;me.label=cleanName(settings.name);
    aiLv=settings.cpuLv;
+   settings.map=offlineTour.map;
    startBattleCommon([me,enemy],settings.map,false,settings.stocks,false);
    modeHeader();return;
   }

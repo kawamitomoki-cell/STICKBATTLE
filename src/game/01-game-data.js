@@ -1209,6 +1209,12 @@ Object.assign(MAPS,{
   {x:645,y:181,w:210,h:16}]}
 });
 
+// Width is the world-space map width, not the size of a browser preview.
+const ARENA_RANDOM={random:'全ステージからランダム','random-small':'狭いステージからランダム','random-wide':'広いステージからランダム'};
+function arenaCandidates(choice){return Object.keys(MAPS).filter(id=>choice==='random-small'?MAPS[id].w<=800:choice==='random-wide'?MAPS[id].w>800:true);}
+function arenaChoiceName(choice){return ARENA_RANDOM[choice]||MAPS[choice]?.name||MAPS.std.name;}
+function resolveArena(choice){if(Object.hasOwn(MAPS,choice))return choice;const ids=arenaCandidates(choice);return ids[Math.floor(Math.random()*ids.length)]||'std';}
+
 const AI_LV = [
   { think: 16, read: 0.25, spec: 0.12, err: 0.25 },
   { think: 9,  read: 0.55, spec: 0.2,  err: 0.12 },
