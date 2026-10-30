@@ -1,5 +1,5 @@
 // Kaneki's mechanics are isolated; victims confirm hits/pulls, owners confirm regeneration.
-const KANEKI={duration:900,cutin:84,fatigue:24,regenCooldown:360,regenCap:20,regenHits:3,pullTime:18,pullImmunity:120};
+const KANEKI={duration:900,cutin:84,fatigue:24,regenCooldown:360,regenCap:20,regenHits:3,pullTime:30,pullImmunity:120};
 CHARS.kaneki={name:'金木 研',en:'KEN KANEKI',mark:'赫',spd:1.12,jump:1.08,jumps:2,wt:1.18,pow:1.08,size:1,ctx:0,back:false,ctc:1,dgc:1,dgs:1,st:[4,2,3],sp:'特殊：赫子乱舞 → 最後にスマッシュ（連打でも出し切り）／横：赫子捕縛',up:'赫子跳躍：方向を選んで大きく上昇する復帰技（空中1回）',ab:'白髪・四尾鱗赫。確認済み攻撃3回で2%再生（6秒間隔・残機20%まで）。MAXで下特殊：半赫者「百足」15秒。覚醒中下特殊：狂乱衝撃'};
 SPECIAL_IDS.push('kaneki');ANIME_COLORS.kaneki='#e94b69';fighterRoles.kaneki='鱗赫 / 捕縛・再生';
 const KANEKI_MOVES={
@@ -75,9 +75,15 @@ function kanekiPrepare(p){
 }
 const kanekiCheckBase=meleeCheck;
 meleeCheck=function(p){kanekiPrepare(p);return kanekiCheckBase(p);};
+function kanekiCaptureConfirmed(actor,token,target){
+ const a=byId(actor),r=a?.kanekiAttacks?.get(token);
+ if(a?.cid!=='kaneki'||!isLocal(a)||a.out||a.kb||a.stn||a.mv?.kanekiToken!==token||r?.kind!=='kanekiBind')return;
+ r.connected=true;r.captured=true;r.target=target;
+}
 function kanekiPullTick(p){
  const g=p.kanekiPull;if(!g)return false;const a=byId(g.by);
- if(!a||a.out||a.cid!=='kaneki'||!g.token.startsWith(a.id+':'+curRound+':'+a.kanekiLife+':')||kanekiAwake(a)||a.kb||a.stn||a.timeStopT||a.domainT||p.out||erenTitan(p)||p.kanekiTime>0||isInvuln(p)||Math.hypot(p.x-a.x,p.y-a.y)>260||--g.t<=0){p.kanekiPull=null;return false;}
+ if(!a||a.out||a.cid!=='kaneki'||!g.token.startsWith(a.id+':'+curRound+':'+a.kanekiLife+':')||kanekiAwake(a)||a.kb||a.stn||a.timeStopT||a.domainT||p.out||erenTitan(p)||p.kanekiTime>0||isInvuln(p)||Math.hypot(p.x-a.x,p.y-a.y)>260 ){p.kanekiPull=null;return false;}
+ if(--g.t<=0){p.kanekiPull=null;clearActs(p);p.stn=Math.max(p.stn,8);return false;}
  // Victim owner moves its own body; bounded displacement, no teleport across the arena.
  p.x+=constrain(a.x+g.dir*52-p.x,-9,9);p.y+=constrain(a.y-p.y,-6,6);p.vx=p.vy=0;clearActs(p);return true;
 }
@@ -93,7 +99,9 @@ resolveMelee=function(A,t){
   const protectedTarget=isArmored(t);
   const before=t.d;kanekiMeleeBase({...A,mv:safe},t);
   if(m.kind==='kanekiBind'&&t.d>before&&!t.ct&&!protectedTarget&&!erenTitan(t)&&fighterSize(t)<=1.5&&!t.shadowClone&&!t.erenGrab&&!t.kanekiPullImmune&&!kanekiAwake(t)){
-   t.kanekiPull={by:a.id,dir:A.f,t:KANEKI.pullTime,token};t.kanekiPullImmune=KANEKI.pullImmunity;t.kb=t.stn=0;
+   t.kanekiPull={by:a.id,dir:A.f,t:KANEKI.pullTime,token};t.kanekiPullImmune=KANEKI.pullImmunity;t.kb=t.stn=0;clearActs(t);
+   kanekiCaptureConfirmed(a.id,token,t.id);
+   if(online)send({k:'kaneki-capture',a:a.id,t:t.id,token});
   }
   return;
  }
@@ -116,8 +124,9 @@ stepFighter=function(p,i){
    const neutralRepeat=p.mv?.kind.includes('Dance')&&i.sc!==p.prev.sc&&!i.u&&!i.d&&!i.gd&&!i.sideSpecial;
    const edge=(!neutralRepeat&&i.sc!==p.prev.sc)||i.ac!==p.prev.ac;
    if(neutralRepeat)p.kanekiBuffer=null;
-   if(record?.connected&&edge&&!p.kb&&!p.stn&&p.a>=8)p.kanekiBuffer={i:{...i},t:10};
-   if(p.kanekiBuffer){const b=p.kanekiBuffer;if(--b.t<=0||p.kb||p.stn)p.kanekiBuffer=null;else if(p.mv&&p.a>=p.mv.act1){clearActs(p);p.cd=p.spc=0;i=b.i;p.prev.sc=i.sc-1;p.prev.ac=i.ac-1;p.kanekiBuffer=null;}}
+   const binding=record?.kind==='kanekiBind';
+   if(edge&&!p.kb&&!p.stn&&((binding&&p.a>=4)||record?.connected&&p.a>=8))p.kanekiBuffer={i:{...i},t:binding?24:10};
+   if(p.kanekiBuffer){const b=p.kanekiBuffer;if(--b.t<=0||p.kb||p.stn)p.kanekiBuffer=null;else if(p.mv&&((record?.captured&&record.kind==='kanekiBind')||record?.connected&&p.a>=p.mv.act1)){clearActs(p);p.cd=p.spc=0;i=b.i;p.prev.sc=i.sc-1;p.prev.ac=i.ac-1;p.kanekiBuffer=null;}}
    if(p.kanekiFatigue)i={...blankInput(),ac:i.ac,sc:i.sc};
   }
  }
@@ -131,11 +140,11 @@ const kanekiPickupBase=tryPickup;
 tryPickup=function(p,id,it){if(p.cid==='kaneki')return;return kanekiPickupBase(p,id,it);};
 // Bounded snapshots; no remote map/set assignment or remote healing commands.
 function kanekiRead(s){const k=s.kn||{},n=(v,max)=>Number.isFinite(v)?constrain(v,0,max):0;return {kanekiLife:n(k.life,1e9),kanekiGauge:n(k.gauge,100),kanekiTime:n(k.time,900),kanekiHealed:n(k.healed,20),kanekiRegenCd:n(k.regen,360),kanekiGlow:n(k.glow,30),kanekiFatigue:n(k.fatigue,24)};}
-function kanekiRestore(p,s){if(p.cid==='kaneki')Object.assign(p,kanekiRead(s));const g=s.kg,a=g&&byId(g.by);p.kanekiPull=g&&a?.cid==='kaneki'&&Number.isInteger(g.t)&&g.t>0&&g.t<=18&&typeof g.token==='string'&&g.token.length<=180&&Math.abs(g.dir)===1?{by:g.by,t:g.t,token:g.token,dir:g.dir}:null;}
+function kanekiRestore(p,s){if(p.cid==='kaneki')Object.assign(p,kanekiRead(s));const g=s.kg,a=g&&byId(g.by);p.kanekiPull=g&&a?.cid==='kaneki'&&Number.isInteger(g.t)&&g.t>0&&g.t<=KANEKI.pullTime&&typeof g.token==='string'&&g.token.length<=180&&Math.abs(g.dir)===1?{by:g.by,t:g.t,token:g.token,dir:g.dir}:null;}
 const kanekiStateBase=stateOf;
 stateOf=function(p){const s=kanekiStateBase(p);if(p.cid==='kaneki')s.kn={life:p.kanekiLife,gauge:p.kanekiGauge,time:p.kanekiTime,healed:p.kanekiHealed,regen:p.kanekiRegenCd,glow:p.kanekiGlow,fatigue:p.kanekiFatigue};if(p.kanekiPull)s.kg=p.kanekiPull;return s;};
 const kanekiEventBase=handleGameplayEvent;
-handleGameplayEvent=function(e){if(e.k==='mh'&&KANEKI_MOVES[e.mv?.kind]&&byId(e.a)?.owner!==e.by)return;if(e.k==='fx'&&e.kanekiToken&&byId(e.t)?.owner!==e.by)return;return kanekiEventBase(e);};
+handleGameplayEvent=function(e){if(e.k==='kaneki-capture'){if(byId(e.t)?.owner===e.by&&typeof e.token==='string')kanekiCaptureConfirmed(e.a,e.token,e.t);return;}if(e.k==='mh'&&KANEKI_MOVES[e.mv?.kind]&&byId(e.a)?.owner!==e.by)return;if(e.k==='fx'&&e.kanekiToken&&byId(e.t)?.owner!==e.by)return;return kanekiEventBase(e);};
 const kanekiReceiveBase=receiveNetEvent;
 receiveNetEvent=function(e){if(e?.k==='cinx'&&e.kind==='kakuja'&&byId(e.data?.id)?.owner!==e.by)return;return kanekiReceiveBase(e);};
 AI_CHARACTER_PLAN.kaneki={ideal:105,near:48,far:220,shoot:180,skill:.65,charge:.25,guard:.3};
