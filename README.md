@@ -63,4 +63,4 @@ Previous design history: [立体機動再設計](docs/EREN_FREEDOM_REWORK.md). O
 
 ### Co-op raid
 
-最大4人のHP制ボス戦。DIOの専用連携と承太郎だけの時止め返し、人数・キャラを選べる味方CPU：[協力ボスの操作と同期仕様](docs/DIO_COOP_RAID.md)。V45では全員再読み込み・新規ルームが必要。
+最大4人で通常サイズの最強NPC・DIOを倒す協力戦。味方は普段のダメージ％・残機2、DIOだけHP制。承太郎の時止め返し、人数・キャラを選べる味方CPU：[協力ボスの操作と同期仕様](docs/DIO_COOP_RAID.md)。V46では全員再読み込み・新規ルームが必要。
