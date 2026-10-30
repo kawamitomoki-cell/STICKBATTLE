@@ -173,6 +173,7 @@ function trainingReset(gauge=false){
 }
 function setTrainingAi(mode){trainingAiMode=mode%3;document.getElementById('train-ai').textContent=['CPU：停止','CPU：通常','CPU：最強'][trainingAiMode];}
 function configureExtraCpuOptions(){
+ renderCpuChoices();
  const row=document.getElementById('cpu-opts');row.style.display='flex';
  document.getElementById('seg-cpun').parentElement.style.display=offlineMode==='normal'?'flex':'none';
  document.getElementById('seg-cpupool').parentElement.style.display=offlineMode==='kumite'?'none':'flex';
@@ -185,6 +186,11 @@ function extraModeStart(mode){
  openChars('cpu');
  configureExtraCpuOptions();
  document.getElementById('chars-next').textContent='ステージを選ぶ →';
+}
+
+function pickOfflineCpu(cid,pool){
+ if(typeof cid==='string'&&Object.hasOwn(CHARS,cid))return cid;
+ const ids=cpuCharacterPool(pool);return ids[Math.floor(Math.random()*ids.length)];
 }
 
 function startBattleOffline() {
@@ -200,7 +206,7 @@ function startBattleOffline() {
    modeHeader();return;
   }
   if(offlineMode==='training'||offlineMode==='kumite'){
-   const keys=cpuCharacterPool(offlineMode==='kumite'?'all':settings.cpuPool),cid=keys[Math.floor(Math.random()*keys.length)];
+   const keys=cpuCharacterPool(offlineMode==='kumite'?'all':settings.cpuPool),cid=offlineMode==='training'?pickOfflineCpu(settings.trainingCpuCid,settings.cpuPool):keys[Math.floor(Math.random()*keys.length)];
    if(offlineMode==='kumite')kumiteOpponentSeed++;
    const list=[{id:myId,cid:settings.cid,label:cleanName(settings.name),cpu:0,owner:myId},
                {id:'cpu'+kumiteOpponentSeed,cid:cid,label:offlineMode==='training'?'練習相手':'対戦相手 '+(kumiteCount+1),cpu:1,owner:myId}];
@@ -208,13 +214,12 @@ function startBattleOffline() {
    if(offlineMode==='training'){trainingReset(false);setTrainingAi(trainingAiMode);}else fighters[1].s=1;
    modeHeader();return;
   }
-  const keys = cpuCharacterPool(settings.cpuPool);
   const myTeam = settings.teamMode ? normTeam(settings.team) : 0;
   const list = [{ id: myId, cid: settings.cid, label: cleanName(settings.name), cpu: 0, owner: myId, team: myTeam }];
   for (let i = 0; i < settings.cpuN; i++) {
     let team = 0;
     if (settings.teamMode) team = i % 2 === 0 ? (myTeam === 1 ? 2 : 1) : myTeam;
-    list.push({ id: 'cpu' + i, cid: keys[Math.floor(Math.random() * keys.length)], label: 'CPU' + (i + 1), cpu: 1, owner: myId, team });
+    list.push({ id: 'cpu' + i, cid: pickOfflineCpu(settings.cpuCids?.[i],settings.cpuPool), label: 'CPU' + (i + 1), cpu: 1, owner: myId, team });
   }
   aiLv = settings.cpuLv;
   startBattleCommon(list, settings.map, settings.wpn, settings.stocks, settings.teamMode);

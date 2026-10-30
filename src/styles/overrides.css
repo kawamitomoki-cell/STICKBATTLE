@@ -5,3 +5,11 @@
 .tour-pair{padding:8px;min-height:102px}
 #tour-preview{max-height:65vh}
 @media(max-width:650px){.tour-cols{min-width:620px}.tour-col{min-width:180px}}
+
+/* Offline opponent selection: native controls work with touch, keyboard and screen readers. */
+.cpu-fighters{margin:16px 0 0;padding:14px;border:1px solid #35465f;border-radius:12px;background:#111b2b;color:#edf3ff;min-width:0}
+.cpu-fighters[hidden]{display:none}
+.cpu-fighters legend{padding:0 6px;font-weight:800}.cpu-fighters p{margin:0 0 10px;font-size:12px;color:#aebed4}
+.cpu-fighter-row{display:flex;align-items:center;gap:12px;margin:8px 0}.cpu-fighter-row label{flex:0 0 70px;font-weight:700;font-size:13px}
+.cpu-fighter-row select{flex:1;min-width:0;width:100%;min-height:44px;padding:8px;border:1px solid #536987;border-radius:8px;background:#19273a;color:#fff;font:inherit;font-size:14px;color-scheme:dark}
+.cpu-fighter-row select:focus-visible{outline:2px solid #79dcff;outline-offset:2px}

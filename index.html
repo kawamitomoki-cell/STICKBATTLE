@@ -246,6 +246,14 @@ html,body{touch-action:pan-y}#wrap,#pad,#acts{touch-action:none;-webkit-touch-ca
 .tour-pair{padding:8px;min-height:102px}
 #tour-preview{max-height:65vh}
 @media(max-width:650px){.tour-cols{min-width:620px}.tour-col{min-width:180px}}
+
+/* Offline opponent selection: native controls work with touch, keyboard and screen readers. */
+.cpu-fighters{margin:16px 0 0;padding:14px;border:1px solid #35465f;border-radius:12px;background:#111b2b;color:#edf3ff;min-width:0}
+.cpu-fighters[hidden]{display:none}
+.cpu-fighters legend{padding:0 6px;font-weight:800}.cpu-fighters p{margin:0 0 10px;font-size:12px;color:#aebed4}
+.cpu-fighter-row{display:flex;align-items:center;gap:12px;margin:8px 0}.cpu-fighter-row label{flex:0 0 70px;font-weight:700;font-size:13px}
+.cpu-fighter-row select{flex:1;min-width:0;width:100%;min-height:44px;padding:8px;border:1px solid #536987;border-radius:8px;background:#19273a;color:#fff;font:inherit;font-size:14px;color-scheme:dark}
+.cpu-fighter-row select:focus-visible{outline:2px solid #79dcff;outline-offset:2px}
 </style>
 <style>
 /* =====================================================
@@ -493,7 +501,7 @@ html,body{touch-action:pan-y}#wrap,#pad,#acts{touch-action:none;-webkit-touch-ca
  <div class="fighter-layout"><div class="fighter-left"><div class="fighter-preview" id="fighter-showcase"></div><div id="char-info" class="card"></div><p class="char-select-tip">技が分からなくてもOK！「上必殺技・キャラ特性を見る」で詳しく確認できます。</p></div>
  <div class="fighter-right"><div id="char-grid" class="cgrid"></div>
  <div class="namebox"><label for="player-name">PLAYER NAME</label><input id="player-name" maxlength="12" autocomplete="off" placeholder="PLAYER"></div>
- <div id="cpu-opts" style="display:flex;flex-direction:column"><div class="optrow"><span>CPUの数</span><div class="seg" id="seg-cpun"></div></div><div class="optrow"><span>CPUキャラ</span><div class="seg" id="seg-cpupool"></div></div><div class="optrow"><span>CPUの強さ</span><div class="seg" id="seg-cpulv"></div></div></div></div></div>
+ <div id="cpu-opts" style="display:flex;flex-direction:column"><div class="optrow"><span>CPUの数</span><div class="seg" id="seg-cpun"></div></div><div class="optrow"><span>ランダムの対象</span><div class="seg" id="seg-cpupool"></div></div><div class="optrow"><span>CPUの強さ</span><div class="seg" id="seg-cpulv"></div></div></div><fieldset id="cpu-fighters" class="cpu-fighters" hidden><legend>対戦するCPU</legend><p>キャラを指定するか、ランダムを選べます。</p><div id="cpu-fighter-slots"></div></fieldset></div></div>
  <div class="nav"><button class="back" id="chars-back">もどる</button><button class="next" id="chars-next">ステージへ →</button></div>
 </div>
 
@@ -2009,7 +2017,7 @@ function mkMv(kind, w) {
 
 const myId = Math.random().toString(36).slice(2, 10);
 const urlRoom = new URLSearchParams(location.search).get('room');
-let settings = { cid: 'karate', cpuN: 1, cpuLv: 1, cpuPool: 'all', map: 'std', wpn: false, stocks: DEFAULT_STOCK, name: 'PLAYER', teamMode: false, team: 1 };
+let settings = { cid: 'karate', cpuN: 1, cpuLv: 1, cpuPool: 'all', cpuCids: [], trainingCpuCid: '', map: 'std', wpn: false, stocks: DEFAULT_STOCK, name: 'PLAYER', teamMode: false, team: 1 };
 let scene = 'title', howtoFrom = 'sc-mode', charMode = 'cpu';
 let offlineMode='normal',requestedOnlineMode='normal',trainingAiMode=0,kumiteCount=0,kumiteOpponentSeed=0,offlineTour=null;
 let online = false, isHost = false, roomId = null, roomRef = null;
@@ -2915,6 +2923,7 @@ function trainingReset(gauge=false){
 }
 function setTrainingAi(mode){trainingAiMode=mode%3;document.getElementById('train-ai').textContent=['CPU：停止','CPU：通常','CPU：最強'][trainingAiMode];}
 function configureExtraCpuOptions(){
+ renderCpuChoices();
  const row=document.getElementById('cpu-opts');row.style.display='flex';
  document.getElementById('seg-cpun').parentElement.style.display=offlineMode==='normal'?'flex':'none';
  document.getElementById('seg-cpupool').parentElement.style.display=offlineMode==='kumite'?'none':'flex';
@@ -2927,6 +2936,11 @@ function extraModeStart(mode){
  openChars('cpu');
  configureExtraCpuOptions();
  document.getElementById('chars-next').textContent='ステージを選ぶ →';
+}
+
+function pickOfflineCpu(cid,pool){
+ if(typeof cid==='string'&&Object.hasOwn(CHARS,cid))return cid;
+ const ids=cpuCharacterPool(pool);return ids[Math.floor(Math.random()*ids.length)];
 }
 
 function startBattleOffline() {
@@ -2942,7 +2956,7 @@ function startBattleOffline() {
    modeHeader();return;
   }
   if(offlineMode==='training'||offlineMode==='kumite'){
-   const keys=cpuCharacterPool(offlineMode==='kumite'?'all':settings.cpuPool),cid=keys[Math.floor(Math.random()*keys.length)];
+   const keys=cpuCharacterPool(offlineMode==='kumite'?'all':settings.cpuPool),cid=offlineMode==='training'?pickOfflineCpu(settings.trainingCpuCid,settings.cpuPool):keys[Math.floor(Math.random()*keys.length)];
    if(offlineMode==='kumite')kumiteOpponentSeed++;
    const list=[{id:myId,cid:settings.cid,label:cleanName(settings.name),cpu:0,owner:myId},
                {id:'cpu'+kumiteOpponentSeed,cid:cid,label:offlineMode==='training'?'練習相手':'対戦相手 '+(kumiteCount+1),cpu:1,owner:myId}];
@@ -2950,13 +2964,12 @@ function startBattleOffline() {
    if(offlineMode==='training'){trainingReset(false);setTrainingAi(trainingAiMode);}else fighters[1].s=1;
    modeHeader();return;
   }
-  const keys = cpuCharacterPool(settings.cpuPool);
   const myTeam = settings.teamMode ? normTeam(settings.team) : 0;
   const list = [{ id: myId, cid: settings.cid, label: cleanName(settings.name), cpu: 0, owner: myId, team: myTeam }];
   for (let i = 0; i < settings.cpuN; i++) {
     let team = 0;
     if (settings.teamMode) team = i % 2 === 0 ? (myTeam === 1 ? 2 : 1) : myTeam;
-    list.push({ id: 'cpu' + i, cid: keys[Math.floor(Math.random() * keys.length)], label: 'CPU' + (i + 1), cpu: 1, owner: myId, team });
+    list.push({ id: 'cpu' + i, cid: pickOfflineCpu(settings.cpuCids?.[i],settings.cpuPool), label: 'CPU' + (i + 1), cpu: 1, owner: myId, team });
   }
   aiLv = settings.cpuLv;
   startBattleCommon(list, settings.map, settings.wpn, settings.stocks, settings.teamMode);
@@ -5603,6 +5616,30 @@ function openHowto(fromBattle){
  sc.scrollTop=0;
 }
 
+function renderCpuChoices(){
+ const box=document.getElementById('cpu-fighters'),slots=document.getElementById('cpu-fighter-slots');
+ box.hidden=online||charMode!=='cpu'||!['normal','training'].includes(offlineMode);
+ if(box.hidden)return;
+ slots.replaceChildren();
+ const training=offlineMode==='training',count=training?1:clampInt(settings.cpuN,1,7,1);
+ for(let i=0;i<count;i++){
+  const row=document.createElement('div');row.className='cpu-fighter-row';
+  const label=document.createElement('label');label.htmlFor='cpu-fighter-'+i;label.textContent=training?'練習相手':'CPU '+(i+1);
+  const select=document.createElement('select');select.id=label.htmlFor;
+  const option=(parent,id,name)=>{const el=document.createElement('option');el.value=id;el.textContent=name;parent.appendChild(el);};
+  option(select,'','ランダム（'+CPU_POOL_LABEL[settings.cpuPool||'all']+'）');
+  for(const special of [false,true]){
+   const group=document.createElement('optgroup');group.label=special?'スペシャル':'通常キャラ';
+   for(const id of Object.keys(CHARS))if(SPECIAL_IDS.includes(id)===special)option(group,id,CHARS[id].name);
+   select.appendChild(group);
+  }
+  const selected=(training?settings.trainingCpuCid:settings.cpuCids?.[i])||'';
+  select.value=Object.hasOwn(CHARS,selected)?selected:'';
+  select.onchange=()=>{if(training)settings.trainingCpuCid=select.value;else{settings.cpuCids??=[];settings.cpuCids[i]=select.value;}};
+  row.appendChild(label);row.appendChild(select);slots.appendChild(row);
+ }
+}
+
 function buildMenus() {
   const grid = document.getElementById('char-grid');
   renderChars = () => {
@@ -5610,10 +5647,11 @@ function buildMenus() {
     const C = CC(settings.cid);
     document.getElementById('char-info').innerHTML = fighterInfo(C);
     updateFighterShowcase();
+    renderCpuChoices();
   };
   renderChars();
-  seg('seg-cpun', ['1体', '2体', '3体', '4体', '5体', '6体', '7体'], () => settings.cpuN - 1, i => settings.cpuN = i + 1);
-  seg('seg-cpupool', ['通常キャラ', 'スペシャル', '全キャラ'], () => cpuPoolIndex(settings.cpuPool), i => settings.cpuPool = cpuPoolFromIndex(i));
+  seg('seg-cpun', ['1体', '2体', '3体', '4体', '5体', '6体', '7体'], () => settings.cpuN - 1, i => {settings.cpuN = i + 1;renderCpuChoices();});
+  seg('seg-cpupool', ['通常キャラ', 'スペシャル', '全キャラ'], () => cpuPoolIndex(settings.cpuPool), i => {settings.cpuPool = cpuPoolFromIndex(i);renderCpuChoices();});
   seg('seg-cpulv', LV_NAME, () => settings.cpuLv, i => settings.cpuLv = i);
 
   const renderStages = () => renderStageGrid('stage-grid', settings.map, id => {
