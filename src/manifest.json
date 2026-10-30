@@ -3,7 +3,8 @@
     "src/styles/base.css",
     "src/styles/tournament.css",
     "src/styles/overrides.css",
-    "src/styles/mode-bracket.css"
+    "src/styles/mode-bracket.css",
+    "src/styles/menu-v2.css"
   ],
   "scripts": [
     "src/game/00-firebase.js",
@@ -23,6 +24,7 @@
     "src/game/12-input.js",
     "src/game/13-ui-and-menus.js",
     "src/game/14-eren.js",
-    "src/game/15-kaneki.js"
+    "src/game/15-kaneki.js",
+    "src/game/16-menu-ui.js"
   ]
 }
