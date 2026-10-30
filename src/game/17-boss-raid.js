@@ -1,12 +1,13 @@
 // Boss HP only. Allies use the ordinary percentage, knockback and stock rules.
 const RAID_BOSS_ID='raid_dio';
 const RAID_BOSSES={dio:{name:'DIO',hp:6400,lives:2}};
-const DIO_BODY={...CHARS.jotaro,name:'DIO',en:'DIO / THE WORLD',size:1,wt:.62,pow:1.45,spd:1.65,jump:1.15};
+const DIO_BODY={...CHARS.jotaro,name:'DIO',en:'DIO / THE WORLD',size:1,wt:.62,pow:1.25,spd:1.32,jump:1.15};
 const DIO_STOP_T=240;
+const RAID_CITY={name:'カイロ / 最終決戦',w:1800,h:1012.5,wpn:false,plats:[{x:60,y:880,w:1680,h:34},{x:130,y:710,w:285,h:18},{x:650,y:690,w:260,h:18},{x:1090,y:725,w:275,h:18},{x:1485,y:670,w:225,h:18}]};
 const DIO_MOVES={
- dioJab:{type:'normal',act0:2,act1:6,end:12,reach:44,R:26,yo:34,dm:11,k0:5,ks:.055,up:.35,cd:3},
- dioKick:{type:'heavy',act0:5,act1:11,end:23,reach:64,R:29,yo:32,dm:23,k0:13,ks:.12,up:.6,lunge:6,cd:8},
- dioRush:{type:'normal',act0:3,act1:31,end:43,reach:78,R:31,yo:36,multi:4,dm:4,k0:1.2,ks:.008,up:.12,cd:10},
+ dioJab:{type:'normal',act0:3,act1:7,end:15,reach:44,R:26,yo:34,dm:8,k0:4,ks:.045,up:.3,cd:5},
+ dioKick:{type:'heavy',act0:6,act1:12,end:27,reach:64,R:29,yo:32,dm:14,k0:9,ks:.085,up:.45,lunge:5,cd:10},
+ dioRush:{type:'normal',act0:3,act1:31,end:48,reach:78,R:31,yo:36,multi:4,dm:2.4,k0:1.2,ks:.008,up:.12,cd:16},
  dioThrow:{type:'normal',act0:9,act1:10,end:24,reach:0,R:0,yo:34,noHit:true,cd:6},
  dioRoller:{type:'heavy',act0:17,act1:18,end:54,reach:0,R:0,yo:34,noHit:true,cd:13},
  dioRise:{type:'normal',act0:2,act1:16,end:27,reach:18,R:34,yo:53,dm:18,k0:11,ks:.10,up:1.1,cd:7}
@@ -29,9 +30,9 @@ function raidCounterWindow(p){return raidWorldStopped()&&p?.cid==='jotaro'&&!p.o
 const raidAnimeStopActiveBase=animeTimeStopActive;
 animeTimeStopActive=function(){return raidWorldStopped()||raidAnimeStopActiveBase();};
 function raidInit(){
- raid={boss:'dio',frame:0,move:'fight',at:0,serial:1,counterIds:[],result:'',phase:1,nextWorld:600,nextControl:0};
+ raid={boss:'dio',frame:0,move:'fight',at:0,serial:1,counterIds:[],result:'',phase:1,nextWorld:1200,nextControl:0};
  raidFx=[];raidLastWire=-1;
- stage=MAPS.wide;
+ stage=RAID_CITY;
  raidHeroes().forEach(p=>{delete p.raidHp;p.s=2;p.team=1;p.raidCounterSerial=0;});
  const host=online?gmCache.hostId||raidHeroes()[0]?.owner:myId;
  const boss=makeFighter({id:RAID_BOSS_ID,cid:'dio',label:'DIO',owner:host,cpu:1,team:2},fighters.length);
@@ -45,7 +46,7 @@ const raidStartCommonBase=startBattleCommon;
 startBattleCommon=function(...args){raid=null;const r=raidStartCommonBase(...args);if(raidMode())raidInit();return r;};
 const raidSizeBase=fighterSize,raidConfigBase=fighterConfig;
 fighterSize=function(p){return p.raidBoss?DIO_BODY.size:raidSizeBase(p);};
-fighterConfig=function(p){return p.raidBoss?DIO_BODY:raidConfigBase(p);};
+fighterConfig=function(p){return p.raidBoss?(raidWorldStopped()?{...DIO_BODY,spd:1.85}:DIO_BODY):raidConfigBase(p);};
 const raidOfflineBase=startBattleOffline;
 startBattleOffline=function(){
  if(offlineMode!=='raid')return raidOfflineBase();
@@ -70,11 +71,12 @@ hostStart=async function(){
 function raidBeginWorld(){
  if(!raidActive()||!raidAuthority()||raidWorldStopped())return false;
  const p=byId(RAID_BOSS_ID);if(!p||p.out||p.timeStopT||p.domainT)return false;
- raid.move='world';raid.at=0;raid.serial++;raid.counterIds=[];raid.nextWorld=raid.frame+(raid.phase===2?900:1260);
+ raid.move='world';raid.at=0;raid.serial++;raid.counterIds=[];raid.nextWorld=raid.frame+(raid.phase===2?1440:1800);
  raidStopActions();
  clearActs(p);p.cd=12;p.kb=p.stn=0;p.vx=p.vy=0;
- raidFx.push({kind:'clock',life:30});tone(65,25,.35,.15,'sawtooth');
- popups.push({x:p.x,y:p.y-95,txt:'ザ・ワールド！',life:45,max:45,size:25,c:'#ead08a'});
+ p.dioWorldTarget='';
+ const cutin={id:p.id,x:p.x,y:p.y-35,raidWorld:raid.serial,raidFrame:raid.frame};
+ if(online)requestCinematic('timestop',cutin);else beginJotaroTimeStopCutin(cutin);
  return true;
 }
 function raidStopActions(){for(const p of fighters)if(!p.raidBoss&&isLocal(p)&&!p.out)clearActs(p);}
@@ -98,11 +100,13 @@ function raidCounter(p){
 }
 function raidAcceptCounter(e){
  const p=byId(e.id);if(!raidAuthority()||e.serial!==raid.serial||e.by!==p?.owner||!raidCounterWindow(p))return;
- raid.counterIds.push(p.id);raidGrantCounter(p);raidFx.push({kind:'counter',life:30,id:p.id});
+ raid.counterIds.push(p.id);byId(RAID_BOSS_ID).inv=0;raidGrantCounter(p);
+ const cutin={id:p.id,x:p.x,y:p.y-35,raidCounter:raid.serial};
+ if(online)requestCinematic('timestop',cutin);else beginJotaroTimeStopCutin(cutin);
 }
 function raidGrantCounter(p){
  if(!p||p.raidGrantSerial===raid.serial)return;
- p.raidGrantSerial=raid.serial;clearActs(p);p.kb=p.stn=p.timeStopT=p.domainT=p.spc=p.cd=0;p.vx=p.vy=0;
+ p.raidGrantSerial=raid.serial;clearActs(p);p.kb=p.stn=p.timeStopT=p.domainT=p.spc=p.cd=0;p.vx=p.vy=0;p.energy=0;p.timeStopSelfT=DIO_STOP_T-raid.at;
 }
 function raidFinish(win,reason){
  if(!raid||raid.result||!raidAuthority())return;
@@ -117,8 +121,8 @@ function dioMove(p,kind){
  p.mv={...mkMv(kind)};if(raid.phase===2){p.mv.dm*=1.2;p.mv.k0*=1.1;}
  p.a=1;p.hit={};p.ch=p.sph=0;p.dioCastFired=false;
  if(kind==='dioRush'||kind==='dioRoller')p.arm=kind==='dioRush'?34:28;
- if(kind==='dioRoller'){p.vy=-15;p.g=false;p.dioRollerCd=raid.phase===2?240:360;}
- if(kind==='dioThrow')p.dioKnifeCd=raid.phase===2?65:100;
+ if(kind==='dioRoller'){p.vy=-15;p.g=false;p.dioRollerCd=raid.phase===2?330:450;}
+ if(kind==='dioThrow')p.dioKnifeCd=raid.phase===2?95:130;
  return true;
 }
 function dioProjectile(p,kind,target){
@@ -126,7 +130,7 @@ function dioProjectile(p,kind,target){
  for(let i=0;i<count;i++){
   const aim=target?constrain((target.y-32-(p.y-35))/Math.max(60,Math.abs(target.x-p.x)),-.65,.65):0;
   const vy=knife?aim*17+(i-(count-1)/2)*2.1:4;
-  const q={pid:p.id+'_'+(objSeq++),o:p.id,kind,x:p.x+p.f*(knife?27:55),y:p.y-(knife?35:75),vx:p.f*(knife?19:3.5),vy,dir:p.f,rot:0,life:knife?65:100,r:knife?5:43,dm:(knife?12:42)*(raid.phase===2?1.2:1),k0:knife?7:21,ks:knife?.065:.14,up:knife?.3:.9,pierce:knife?0:1};
+  const q={pid:p.id+'_'+(objSeq++),o:p.id,kind,x:p.x+p.f*(knife?27:55),y:p.y-(knife?35:75),vx:p.f*(knife?19:3.5),vy,dir:p.f,rot:0,life:knife?65:100,r:knife?5:43,dm:(knife?6:24)*(raid.phase===2?1.12:1),k0:knife?5:13,ks:knife?.045:.095,up:knife?.3:.65,pierce:knife?0:1};
   projs.push({...q,local:true,hitIds:{}});send({k:'proj',q});
  }
  if(knife)tone(1100,450,.12,.06,'triangle');else noiseHit(.15,.14,300);
@@ -135,7 +139,15 @@ function dioAiStep(p){
  const I={...p.ai.inp,l:false,r:false,u:false,d:false,a:false,s:false,gd:false,neutralSpecial:false,sideSpecial:0};p.ai.inp=I;
  if(p.out||raidFrozen(p)||p.timeStopT||p.domainT)return;
  for(const k of ['dioKnifeCd','dioRollerCd','dioBlinkCd','dioJumpCd'])if(p[k]>0)p[k]--;
- const target=nearestFoe(p);if(!target)return;
+ let target=nearestFoe(p);if(!target)return;
+ if(raidWorldStopped()){
+  const targets=raidHeroes().filter(h=>!h.out),next=targets[Math.floor(raid.at/60)%Math.max(1,targets.length)];
+  if(next){target=next;if(p.dioWorldTarget!==next.id){
+   p.dioWorldTarget=next.id;clearActs(p);p.cd=0;p.dioThink=0;
+   // DIO traverses stopped time to attack actual opponents. No remote area damage.
+   if(Math.abs(next.x-p.x)>120||Math.abs(next.y-p.y)>70){p.x=constrain(next.x+(next.x<stage.w/2?75:-75),40,stage.w-40);p.y=next.y;p.vx=p.vy=0;p.g=next.g;}
+  }}
+ }
  const dx=target.x-p.x,dy=target.y-p.y,dist=Math.abs(dx),dir=Math.sign(dx)||p.f;
  // Recovery has priority over offense, using the same gravity, jumps and recovery limits.
  if(!overGround(p)||p.y>stage.plats[0].y+30){
@@ -152,10 +164,10 @@ function dioAiStep(p){
  if(p.a||p.cd)return;
  p.f=dir;
  // Short think intervals, counter-dodging and instant follow-ups make DIO an aggressive NPC.
- if(--p.dioThink>0)return;p.dioThink=raid.phase===2?3:5;
+ if(--p.dioThink>0)return;p.dioThink=raid.phase===2?5:8;
  if(!raidWorldStopped()&&!p.dioBlinkCd&&(dist>190||target.ch>16)&&dist<600){
   const x=constrain(target.x+dir*70,30,stage.w-30);
-  if(stage.plats.some(pl=>x>=pl.x+10&&x<=pl.x+pl.w-10&&Math.abs(pl.y-target.y)<45)){p.x=x;p.y=target.y;p.g=target.g;p.vx=0;p.f=-dir;p.inv=8;p.dioBlinkCd=raid.phase===2?110:180;}
+  if(stage.plats.some(pl=>x>=pl.x+10&&x<=pl.x+pl.w-10&&Math.abs(pl.y-target.y)<45)){p.x=x;p.y=target.y;p.g=target.g;p.vx=0;p.f=-dir;p.inv=8;p.dioBlinkCd=raid.phase===2?210:300;}
   return;
  }
  if(!raidWorldStopped()&&target.a>0&&dist<110&&p.dgc===0&&p.g&&Math.random()<.28){I.l=dir<0;I.r=dir>0;I.cc++;return;}
@@ -178,12 +190,33 @@ function raidBossDamage(p,damage,meta={}){
  emitFx({res:'hit',t:boss.id,a:p.id,x:boss.x,y:boss.y-34,kb:3,c:'#dfc777',gain:5,kanekiToken:meta.kanekiToken||null,kanekiPhase:meta.kanekiPhase||0,erenToken:meta.erenToken||null});
  if(boss.raidHp<=0)raidFinish(true,'DIO撃破');return dm;
 }
-resolveMelee=function(A,t){if(raidActive()&&t.raidBoss)return raidBossDamage(byId(A.id),A.mv.dm,{...A.mv,f:A.f});return raidMeleeBase(A,t);};
-resolveProj=function(q,t){if(raidActive()&&t.raidBoss)return raidBossDamage(byId(q.o),q.dm,{...q,f:q.dir||Math.sign(q.vx)});return raidProjBase(q,t);};
+function raidStoppedDioHit(t,h){
+ if(t.shadowClone){shadowClonePop(t);return;}
+ const kb=applyHit(t,h,false,RAID_BOSS_ID);
+ emitFx({res:'hit',t:t.id,a:RAID_BOSS_ID,x:t.x,y:t.y-34,kb:Math.round(kb*10)/10,c:'#e5c477',gain:0});
+ return kb;
+}
+resolveMelee=function(A,t){
+ if(raidActive()&&t.raidBoss)return raidBossDamage(byId(A.id),A.mv.dm,{...A.mv,f:A.f});
+ if(raidWorldStopped()&&A.id===RAID_BOSS_ID&&raidFrozen(t)&&!t.out)return raidStoppedDioHit(t,{dm:A.mv.dm,k0:A.mv.k0,ks:A.mv.ks,up:A.mv.up,f:A.f});
+ return raidMeleeBase(A,t);
+};
+resolveProj=function(q,t){
+ if(raidActive()&&t.raidBoss)return raidBossDamage(byId(q.o),q.dm,{...q,f:q.dir||Math.sign(q.vx)});
+ if(raidWorldStopped()&&q.o===RAID_BOSS_ID&&raidFrozen(t)&&!t.out)return raidStoppedDioHit(t,{dm:q.dm,k0:q.k0,ks:q.ks,up:q.up,f:q.dir||Math.sign(q.vx)||1});
+ return raidProjBase(q,t);
+};
+const raidInvulnBase=isInvuln;
+isInvuln=function(p){return raidWorldStopped()&&p&&!p.raidBoss&&raidFrozen(p)?false:raidInvulnBase(p);};
 applyHit=function(t,h,bk,id){
  if(raidActive()){
   if(sameTeam(byId(id),t))return 0;
   if(t.raidBoss)return raidBossDamage(byId(id),h.dm,{...h});
+  if(byId(id)?.raidBoss&&!h.raidAdjusted){
+   const lethal=raidWorldStopped()&&!raidFrozen(byId(id));
+   h=lethal?{...h,dm:h.dm*2,k0:h.k0*1.7+8,ks:Math.max(.18,h.ks),up:Math.max(.65,h.up||0),minKb:24,raidAdjusted:true,raidWorldHit:true}:
+    {...h,k0:h.k0*.52,ks:h.ks*.45,minKb:(h.minKb||0)*.52,raidAdjusted:true};
+  }
   if(raidFrozen(t)&&!t.releasingStop){
    // Use the existing stopped-hit queue; ordinary percentage and knockback resume with time.
    const old=t.timeStopT;t.timeStopT=Math.max(1,old);t.raidHeldHits=true;
@@ -196,7 +229,7 @@ const raidMeleeCheckBase=meleeCheck;
 meleeCheck=function(p){
  if(raidActive()){
   if(raidFrozen(p))return;
-  if(p.raidBoss&&p.mv?.kind==='dioRush'&&p.a>=31)Object.assign(p.mv,{type:'heavy',dm:raid.phase===2?28:24,k0:18,ks:.13,up:.55,minKb:17});
+  if(p.raidBoss&&p.mv?.kind==='dioRush'&&p.a>=31)Object.assign(p.mv,{type:'heavy',dm:raid.phase===2?12:10,k0:9,ks:.075,up:.45,minKb:0});
  }
  return raidMeleeCheckBase(p);
 };
@@ -448,7 +481,7 @@ function raidHudEnsure(){
 }
 const raidHudBase=drawHUD;
 drawHUD=function(){
- const active=raidActive(),h=raidHudEnsure();h.style.display=active?'block':'none';document.getElementById('game').classList.toggle('raid-battle',active);
+ const active=raidActive(),h=raidHudEnsure();h.style.display=active&&!(freezeT>0&&fzType==='timestopcin')?'block':'none';document.getElementById('game').classList.toggle('raid-battle',active);
  if(!active)return raidHudBase();
  const boss=byId(RAID_BOSS_ID),heroes=raidHeroes(),roster=document.getElementById('battle-roster'),key='raid|'+heroes.map(p=>p.id+':'+p.cid).join('|');
  if(hudKey!==key){hudKey=key;roster.style.setProperty('--columns',heroes.length);roster.style.setProperty('--pc-columns',heroes.length);roster.innerHTML=heroes.map(p=>`<div class="hud-card ${p.id===myId?'me':''}"><div class="hud-portrait">${portrait(p.cid)}</div><div class="hud-info"><div class="hud-name">${esc(p.label)}</div><div class="hud-damage"></div></div><div class="hud-stocks"></div><div class="hud-skill"></div><div class="hud-meter"></div></div>`).join('');}

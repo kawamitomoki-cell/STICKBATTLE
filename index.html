@@ -498,10 +498,10 @@ html,body{touch-action:pan-y}#wrap,#pad,#acts{touch-action:none;-webkit-touch-ca
  <div class="raid-heading"><span>CO-OP / VS THE STRONGEST NPC</span><h2>最強のDIOを、<br><em>みんなで倒せ。</em></h2><p>最大4人。普段の操作で、桁違いの強敵に挑む。</p></div>
  <div class="raid-dossier">
   <div class="raid-boss-art" id="raid-boss-art" aria-hidden="true"></div>
-  <div class="raid-dossier-copy"><span class="raid-difficulty">最高難度 / 4人での協力推奨</span><h3>DIO <small>THE WORLD</small></h3><p>同じサイズ、同じ戦場。圧倒的な反応と連携で襲いかかるDIOを、全員の力で倒せ。</p>
+  <div class="raid-dossier-copy"><span class="raid-difficulty">最高難度 / 4人での協力推奨</span><h3>DIO <small>THE WORLD</small></h3><p>広いカイロの夜の市街地で、仲間と粘り強く戦え。通常の打ち合いを耐え抜いても、DIOの時止めだけは別格。</p>
    <dl class="raid-facts"><div><dt>DIO HP</dt><dd>6,400</dd></div><div><dt>PLAYERS</dt><dd>1〜4人</dd></div><div><dt>PLAYER</dt><dd>ダメージ％ / 残機2</dd></div></dl>
-   <div class="raid-key"><b>時止めに対抗できるのは、承太郎だけ。</b><p>DIOに時を止められたら「下＋特殊」で止め返す。動けるのは止め返した承太郎だけ。他の仲間は時が動き出すまで停止する。</p></div>
-   <details class="raid-guide"><summary>対戦ルールを確認</summary><ul><li><b>味方のルール：</b>普段と同じダメージ％・吹っ飛ばし。残機は2。HP制なのはDIOだけ。</li><li><b>最強NPC：</b>DIOは普通のキャラと同じサイズで追跡・ジャンプ・回避。ラッシュ、ナイフ、ロードローラー、時止めを使い分ける。攻撃範囲や次の攻撃の予告表示はない。</li><li><b>時止め返し：</b>承太郎だけが停止中に下＋特殊（スマホは下技）で動き出し、DIOを止めて反撃できる。専用ゲージを削る操作は不要。</li><li><b>協力：</b>味方への攻撃は無効。CPUの人数・キャラを選んで最大4人で挑める。</li></ul><p>人数によるDIOの弱体化なし。1人での出撃も可能。全員が場外撃墜で残機を失うと敗北。</p></details>
+   <div class="raid-key"><b>時止めに対抗できるのは、承太郎だけ。</b><p>DIOの時止め攻撃は、時間再開で即撃墜につながる威力。承太郎も発動前は動けない。「下＋特殊」でスタープラチナ ザ・ワールドを発動し、DIOを止めて反撃する。</p></div>
+   <details class="raid-guide"><summary>対戦ルールを確認</summary><ul><li><b>味方のルール：</b>普段と同じダメージ％・吹っ飛ばし。残機は2。HP制なのはDIOだけ。</li><li><b>最強NPC：</b>DIOは普通のキャラと同じサイズ。広い道路・屋上・橋のある市街地で追跡・ジャンプ・回避。ラッシュ、ナイフ、ロードローラー、時止めを使い分ける。攻撃範囲や次の攻撃の予告表示はない。</li><li><b>時止め返し：</b>承太郎だけが停止中に下＋特殊（スマホは下技）で動き出し、DIOを止めて反撃できる。専用ゲージを削る操作は不要。承太郎も発動するまでは完全に停止する。</li><li><b>協力：</b>味方への攻撃は無効。CPUの人数・キャラを選んで最大4人で挑める。</li></ul><p>人数によるDIOの弱体化なし。1人での出撃も可能。全員が場外撃墜で残機を失うと敗北。</p></details>
    <div class="raid-actions"><button class="next" id="raid-online">仲間と挑む・部屋に参加 ↗</button><button class="back" id="raid-solo">ソロ・味方CPUと挑む →</button></div>
   </div>
  </div><div class="nav"><button class="back" id="raid-back">← モード選択</button></div>
@@ -1215,7 +1215,7 @@ function animeTimeStop(p){
  if(p.energy<100||p.timeStopSelfT>0){sfxNo();return;}
  p.energy=0;p.spc=24;p.timeStopSelfT=JOTARO_STOP_T;p.boostFlash=40;
  if(isLocal(p))playJotaroTimeStopBgm();
- animeCall(p,'時よ止まれ！','#efe1ff',true,1.05,.70);
+ animeCall(p,'スタープラチナ！ ザ・ワールド！','#efe1ff',true,1.05,.70);
  const e={k:'animearea',id:p.id,kind:'timestop',x:p.x,y:p.y-34,f:p.f,range:9999,life:JOTARO_STOP_T};
  animeArea(e);send(e);animeEmit(p,'timestop',{life:JOTARO_STOP_T});
  // ギア変身と同じ：全員停止→承太郎＋スタープラチナの専用カットイン→時が止まった世界。
@@ -4769,7 +4769,7 @@ function render() {
     if(prefs.shake) translate(random(-shake, shake), random(-shake, shake));
     if (!frozen) { shake *= 0.82; if (shake < 0.5) shake = 0; }
   }
-  scale(W / stage.w);
+  if(raidActive())raidApplyCamera();else scale(W / stage.w);
   paintAnimeBackdrop();
   paintPlatforms();
   for (const id in items) drawItem(items[id]);
@@ -6536,7 +6536,7 @@ function legacy_paintJotaroTimeStopCutin(){
  fill('#a5f2dc');quad(0,y-38,W*.64,y-49,W*.64,y-44,0,y-34);
  textAlign(LEFT,CENTER);textFont('sans-serif');textStyle(BOLD);
  stroke('#100c24');strokeWeight(7);fill('#faf3ff');textSize(61);
- text('時よ止まれ！',28-(1-slide)*W*.65,y-5);
+ text('スタープラチナ！',28-(1-slide)*W*.65,y-5);
  noStroke();fill('#b9fff0');textSize(16);text('スタープラチナ・ザ・ワールド',31,y+45);
  textSize(11);fill('#d1bfec');text('空条承太郎',32,y+69);
  // 時間の停止を象徴する、割れた時計針。目立ちすぎない控えめな装飾。
@@ -6842,7 +6842,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_DIO_NPC_V46';
+const NET_PROTOCOL='SBO_NET_CAIRO_WORLD_V47';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -7262,8 +7262,8 @@ function chronoText(){
  const t=1-freezeT/Math.max(1,freezeMax),inQ=1-Math.pow(1-Math.min(1,t*5),3);
  push();noStroke();fill('#090e18');rect(0,0,W,20);rect(0,WH-24,W,24);
  const y=WH*.79;fill(7,10,20,235);quad(0,y-28,W,y-45,W,y+47,0,y+58);fill('#b6a4d6');rect(0,y-28,5,83);
- textAlign(LEFT,CENTER);textFont('sans-serif');textStyle(BOLD);textSize(Math.min(66,W*.086));stroke('#120f23');strokeWeight(8);fill('#f8f4ff');text('時よ止まれ！',24-(1-inQ)*190,y-7);
- noStroke();textSize(17);fill('#99d7cf');text('ザ・ワールド',28,y+36);textAlign(RIGHT,TOP);textSize(10);fill('#b1bacb');text('空条承太郎',W-22,32);pop();
+ textAlign(LEFT,CENTER);textFont('sans-serif');textStyle(BOLD);textSize(Math.min(55,W*.07));stroke('#120f23');strokeWeight(8);fill('#f8f4ff');text('スタープラチナ！',24-(1-inQ)*190,y-7);
+ noStroke();textSize(30);fill('#99d7cf');text('ザ・ワールド！',28,y+36);textAlign(RIGHT,TOP);textSize(10);fill('#b1bacb');text('空条承太郎',W-22,32);pop();
 }
 function chronoBackdrop(){
  const ts=activeTimeStopFx();if(!ts){classicAnimeBackdrop();return;}
@@ -8223,12 +8223,13 @@ document.querySelector('.title-art').innerHTML=`<svg viewBox="0 0 680 720" fill=
 // Boss HP only. Allies use the ordinary percentage, knockback and stock rules.
 const RAID_BOSS_ID='raid_dio';
 const RAID_BOSSES={dio:{name:'DIO',hp:6400,lives:2}};
-const DIO_BODY={...CHARS.jotaro,name:'DIO',en:'DIO / THE WORLD',size:1,wt:.62,pow:1.45,spd:1.65,jump:1.15};
+const DIO_BODY={...CHARS.jotaro,name:'DIO',en:'DIO / THE WORLD',size:1,wt:.62,pow:1.25,spd:1.32,jump:1.15};
 const DIO_STOP_T=240;
+const RAID_CITY={name:'カイロ / 最終決戦',w:1800,h:1012.5,wpn:false,plats:[{x:60,y:880,w:1680,h:34},{x:130,y:710,w:285,h:18},{x:650,y:690,w:260,h:18},{x:1090,y:725,w:275,h:18},{x:1485,y:670,w:225,h:18}]};
 const DIO_MOVES={
- dioJab:{type:'normal',act0:2,act1:6,end:12,reach:44,R:26,yo:34,dm:11,k0:5,ks:.055,up:.35,cd:3},
- dioKick:{type:'heavy',act0:5,act1:11,end:23,reach:64,R:29,yo:32,dm:23,k0:13,ks:.12,up:.6,lunge:6,cd:8},
- dioRush:{type:'normal',act0:3,act1:31,end:43,reach:78,R:31,yo:36,multi:4,dm:4,k0:1.2,ks:.008,up:.12,cd:10},
+ dioJab:{type:'normal',act0:3,act1:7,end:15,reach:44,R:26,yo:34,dm:8,k0:4,ks:.045,up:.3,cd:5},
+ dioKick:{type:'heavy',act0:6,act1:12,end:27,reach:64,R:29,yo:32,dm:14,k0:9,ks:.085,up:.45,lunge:5,cd:10},
+ dioRush:{type:'normal',act0:3,act1:31,end:48,reach:78,R:31,yo:36,multi:4,dm:2.4,k0:1.2,ks:.008,up:.12,cd:16},
  dioThrow:{type:'normal',act0:9,act1:10,end:24,reach:0,R:0,yo:34,noHit:true,cd:6},
  dioRoller:{type:'heavy',act0:17,act1:18,end:54,reach:0,R:0,yo:34,noHit:true,cd:13},
  dioRise:{type:'normal',act0:2,act1:16,end:27,reach:18,R:34,yo:53,dm:18,k0:11,ks:.10,up:1.1,cd:7}
@@ -8251,9 +8252,9 @@ function raidCounterWindow(p){return raidWorldStopped()&&p?.cid==='jotaro'&&!p.o
 const raidAnimeStopActiveBase=animeTimeStopActive;
 animeTimeStopActive=function(){return raidWorldStopped()||raidAnimeStopActiveBase();};
 function raidInit(){
- raid={boss:'dio',frame:0,move:'fight',at:0,serial:1,counterIds:[],result:'',phase:1,nextWorld:600,nextControl:0};
+ raid={boss:'dio',frame:0,move:'fight',at:0,serial:1,counterIds:[],result:'',phase:1,nextWorld:1200,nextControl:0};
  raidFx=[];raidLastWire=-1;
- stage=MAPS.wide;
+ stage=RAID_CITY;
  raidHeroes().forEach(p=>{delete p.raidHp;p.s=2;p.team=1;p.raidCounterSerial=0;});
  const host=online?gmCache.hostId||raidHeroes()[0]?.owner:myId;
  const boss=makeFighter({id:RAID_BOSS_ID,cid:'dio',label:'DIO',owner:host,cpu:1,team:2},fighters.length);
@@ -8267,7 +8268,7 @@ const raidStartCommonBase=startBattleCommon;
 startBattleCommon=function(...args){raid=null;const r=raidStartCommonBase(...args);if(raidMode())raidInit();return r;};
 const raidSizeBase=fighterSize,raidConfigBase=fighterConfig;
 fighterSize=function(p){return p.raidBoss?DIO_BODY.size:raidSizeBase(p);};
-fighterConfig=function(p){return p.raidBoss?DIO_BODY:raidConfigBase(p);};
+fighterConfig=function(p){return p.raidBoss?(raidWorldStopped()?{...DIO_BODY,spd:1.85}:DIO_BODY):raidConfigBase(p);};
 const raidOfflineBase=startBattleOffline;
 startBattleOffline=function(){
  if(offlineMode!=='raid')return raidOfflineBase();
@@ -8292,11 +8293,12 @@ hostStart=async function(){
 function raidBeginWorld(){
  if(!raidActive()||!raidAuthority()||raidWorldStopped())return false;
  const p=byId(RAID_BOSS_ID);if(!p||p.out||p.timeStopT||p.domainT)return false;
- raid.move='world';raid.at=0;raid.serial++;raid.counterIds=[];raid.nextWorld=raid.frame+(raid.phase===2?900:1260);
+ raid.move='world';raid.at=0;raid.serial++;raid.counterIds=[];raid.nextWorld=raid.frame+(raid.phase===2?1440:1800);
  raidStopActions();
  clearActs(p);p.cd=12;p.kb=p.stn=0;p.vx=p.vy=0;
- raidFx.push({kind:'clock',life:30});tone(65,25,.35,.15,'sawtooth');
- popups.push({x:p.x,y:p.y-95,txt:'ザ・ワールド！',life:45,max:45,size:25,c:'#ead08a'});
+ p.dioWorldTarget='';
+ const cutin={id:p.id,x:p.x,y:p.y-35,raidWorld:raid.serial,raidFrame:raid.frame};
+ if(online)requestCinematic('timestop',cutin);else beginJotaroTimeStopCutin(cutin);
  return true;
 }
 function raidStopActions(){for(const p of fighters)if(!p.raidBoss&&isLocal(p)&&!p.out)clearActs(p);}
@@ -8320,11 +8322,13 @@ function raidCounter(p){
 }
 function raidAcceptCounter(e){
  const p=byId(e.id);if(!raidAuthority()||e.serial!==raid.serial||e.by!==p?.owner||!raidCounterWindow(p))return;
- raid.counterIds.push(p.id);raidGrantCounter(p);raidFx.push({kind:'counter',life:30,id:p.id});
+ raid.counterIds.push(p.id);byId(RAID_BOSS_ID).inv=0;raidGrantCounter(p);
+ const cutin={id:p.id,x:p.x,y:p.y-35,raidCounter:raid.serial};
+ if(online)requestCinematic('timestop',cutin);else beginJotaroTimeStopCutin(cutin);
 }
 function raidGrantCounter(p){
  if(!p||p.raidGrantSerial===raid.serial)return;
- p.raidGrantSerial=raid.serial;clearActs(p);p.kb=p.stn=p.timeStopT=p.domainT=p.spc=p.cd=0;p.vx=p.vy=0;
+ p.raidGrantSerial=raid.serial;clearActs(p);p.kb=p.stn=p.timeStopT=p.domainT=p.spc=p.cd=0;p.vx=p.vy=0;p.energy=0;p.timeStopSelfT=DIO_STOP_T-raid.at;
 }
 function raidFinish(win,reason){
  if(!raid||raid.result||!raidAuthority())return;
@@ -8339,8 +8343,8 @@ function dioMove(p,kind){
  p.mv={...mkMv(kind)};if(raid.phase===2){p.mv.dm*=1.2;p.mv.k0*=1.1;}
  p.a=1;p.hit={};p.ch=p.sph=0;p.dioCastFired=false;
  if(kind==='dioRush'||kind==='dioRoller')p.arm=kind==='dioRush'?34:28;
- if(kind==='dioRoller'){p.vy=-15;p.g=false;p.dioRollerCd=raid.phase===2?240:360;}
- if(kind==='dioThrow')p.dioKnifeCd=raid.phase===2?65:100;
+ if(kind==='dioRoller'){p.vy=-15;p.g=false;p.dioRollerCd=raid.phase===2?330:450;}
+ if(kind==='dioThrow')p.dioKnifeCd=raid.phase===2?95:130;
  return true;
 }
 function dioProjectile(p,kind,target){
@@ -8348,7 +8352,7 @@ function dioProjectile(p,kind,target){
  for(let i=0;i<count;i++){
   const aim=target?constrain((target.y-32-(p.y-35))/Math.max(60,Math.abs(target.x-p.x)),-.65,.65):0;
   const vy=knife?aim*17+(i-(count-1)/2)*2.1:4;
-  const q={pid:p.id+'_'+(objSeq++),o:p.id,kind,x:p.x+p.f*(knife?27:55),y:p.y-(knife?35:75),vx:p.f*(knife?19:3.5),vy,dir:p.f,rot:0,life:knife?65:100,r:knife?5:43,dm:(knife?12:42)*(raid.phase===2?1.2:1),k0:knife?7:21,ks:knife?.065:.14,up:knife?.3:.9,pierce:knife?0:1};
+  const q={pid:p.id+'_'+(objSeq++),o:p.id,kind,x:p.x+p.f*(knife?27:55),y:p.y-(knife?35:75),vx:p.f*(knife?19:3.5),vy,dir:p.f,rot:0,life:knife?65:100,r:knife?5:43,dm:(knife?6:24)*(raid.phase===2?1.12:1),k0:knife?5:13,ks:knife?.045:.095,up:knife?.3:.65,pierce:knife?0:1};
   projs.push({...q,local:true,hitIds:{}});send({k:'proj',q});
  }
  if(knife)tone(1100,450,.12,.06,'triangle');else noiseHit(.15,.14,300);
@@ -8357,7 +8361,15 @@ function dioAiStep(p){
  const I={...p.ai.inp,l:false,r:false,u:false,d:false,a:false,s:false,gd:false,neutralSpecial:false,sideSpecial:0};p.ai.inp=I;
  if(p.out||raidFrozen(p)||p.timeStopT||p.domainT)return;
  for(const k of ['dioKnifeCd','dioRollerCd','dioBlinkCd','dioJumpCd'])if(p[k]>0)p[k]--;
- const target=nearestFoe(p);if(!target)return;
+ let target=nearestFoe(p);if(!target)return;
+ if(raidWorldStopped()){
+  const targets=raidHeroes().filter(h=>!h.out),next=targets[Math.floor(raid.at/60)%Math.max(1,targets.length)];
+  if(next){target=next;if(p.dioWorldTarget!==next.id){
+   p.dioWorldTarget=next.id;clearActs(p);p.cd=0;p.dioThink=0;
+   // DIO traverses stopped time to attack actual opponents. No remote area damage.
+   if(Math.abs(next.x-p.x)>120||Math.abs(next.y-p.y)>70){p.x=constrain(next.x+(next.x<stage.w/2?75:-75),40,stage.w-40);p.y=next.y;p.vx=p.vy=0;p.g=next.g;}
+  }}
+ }
  const dx=target.x-p.x,dy=target.y-p.y,dist=Math.abs(dx),dir=Math.sign(dx)||p.f;
  // Recovery has priority over offense, using the same gravity, jumps and recovery limits.
  if(!overGround(p)||p.y>stage.plats[0].y+30){
@@ -8374,10 +8386,10 @@ function dioAiStep(p){
  if(p.a||p.cd)return;
  p.f=dir;
  // Short think intervals, counter-dodging and instant follow-ups make DIO an aggressive NPC.
- if(--p.dioThink>0)return;p.dioThink=raid.phase===2?3:5;
+ if(--p.dioThink>0)return;p.dioThink=raid.phase===2?5:8;
  if(!raidWorldStopped()&&!p.dioBlinkCd&&(dist>190||target.ch>16)&&dist<600){
   const x=constrain(target.x+dir*70,30,stage.w-30);
-  if(stage.plats.some(pl=>x>=pl.x+10&&x<=pl.x+pl.w-10&&Math.abs(pl.y-target.y)<45)){p.x=x;p.y=target.y;p.g=target.g;p.vx=0;p.f=-dir;p.inv=8;p.dioBlinkCd=raid.phase===2?110:180;}
+  if(stage.plats.some(pl=>x>=pl.x+10&&x<=pl.x+pl.w-10&&Math.abs(pl.y-target.y)<45)){p.x=x;p.y=target.y;p.g=target.g;p.vx=0;p.f=-dir;p.inv=8;p.dioBlinkCd=raid.phase===2?210:300;}
   return;
  }
  if(!raidWorldStopped()&&target.a>0&&dist<110&&p.dgc===0&&p.g&&Math.random()<.28){I.l=dir<0;I.r=dir>0;I.cc++;return;}
@@ -8400,12 +8412,33 @@ function raidBossDamage(p,damage,meta={}){
  emitFx({res:'hit',t:boss.id,a:p.id,x:boss.x,y:boss.y-34,kb:3,c:'#dfc777',gain:5,kanekiToken:meta.kanekiToken||null,kanekiPhase:meta.kanekiPhase||0,erenToken:meta.erenToken||null});
  if(boss.raidHp<=0)raidFinish(true,'DIO撃破');return dm;
 }
-resolveMelee=function(A,t){if(raidActive()&&t.raidBoss)return raidBossDamage(byId(A.id),A.mv.dm,{...A.mv,f:A.f});return raidMeleeBase(A,t);};
-resolveProj=function(q,t){if(raidActive()&&t.raidBoss)return raidBossDamage(byId(q.o),q.dm,{...q,f:q.dir||Math.sign(q.vx)});return raidProjBase(q,t);};
+function raidStoppedDioHit(t,h){
+ if(t.shadowClone){shadowClonePop(t);return;}
+ const kb=applyHit(t,h,false,RAID_BOSS_ID);
+ emitFx({res:'hit',t:t.id,a:RAID_BOSS_ID,x:t.x,y:t.y-34,kb:Math.round(kb*10)/10,c:'#e5c477',gain:0});
+ return kb;
+}
+resolveMelee=function(A,t){
+ if(raidActive()&&t.raidBoss)return raidBossDamage(byId(A.id),A.mv.dm,{...A.mv,f:A.f});
+ if(raidWorldStopped()&&A.id===RAID_BOSS_ID&&raidFrozen(t)&&!t.out)return raidStoppedDioHit(t,{dm:A.mv.dm,k0:A.mv.k0,ks:A.mv.ks,up:A.mv.up,f:A.f});
+ return raidMeleeBase(A,t);
+};
+resolveProj=function(q,t){
+ if(raidActive()&&t.raidBoss)return raidBossDamage(byId(q.o),q.dm,{...q,f:q.dir||Math.sign(q.vx)});
+ if(raidWorldStopped()&&q.o===RAID_BOSS_ID&&raidFrozen(t)&&!t.out)return raidStoppedDioHit(t,{dm:q.dm,k0:q.k0,ks:q.ks,up:q.up,f:q.dir||Math.sign(q.vx)||1});
+ return raidProjBase(q,t);
+};
+const raidInvulnBase=isInvuln;
+isInvuln=function(p){return raidWorldStopped()&&p&&!p.raidBoss&&raidFrozen(p)?false:raidInvulnBase(p);};
 applyHit=function(t,h,bk,id){
  if(raidActive()){
   if(sameTeam(byId(id),t))return 0;
   if(t.raidBoss)return raidBossDamage(byId(id),h.dm,{...h});
+  if(byId(id)?.raidBoss&&!h.raidAdjusted){
+   const lethal=raidWorldStopped()&&!raidFrozen(byId(id));
+   h=lethal?{...h,dm:h.dm*2,k0:h.k0*1.7+8,ks:Math.max(.18,h.ks),up:Math.max(.65,h.up||0),minKb:24,raidAdjusted:true,raidWorldHit:true}:
+    {...h,k0:h.k0*.52,ks:h.ks*.45,minKb:(h.minKb||0)*.52,raidAdjusted:true};
+  }
   if(raidFrozen(t)&&!t.releasingStop){
    // Use the existing stopped-hit queue; ordinary percentage and knockback resume with time.
    const old=t.timeStopT;t.timeStopT=Math.max(1,old);t.raidHeldHits=true;
@@ -8418,7 +8451,7 @@ const raidMeleeCheckBase=meleeCheck;
 meleeCheck=function(p){
  if(raidActive()){
   if(raidFrozen(p))return;
-  if(p.raidBoss&&p.mv?.kind==='dioRush'&&p.a>=31)Object.assign(p.mv,{type:'heavy',dm:raid.phase===2?28:24,k0:18,ks:.13,up:.55,minKb:17});
+  if(p.raidBoss&&p.mv?.kind==='dioRush'&&p.a>=31)Object.assign(p.mv,{type:'heavy',dm:raid.phase===2?12:10,k0:9,ks:.075,up:.45,minKb:0});
  }
  return raidMeleeCheckBase(p);
 };
@@ -8670,7 +8703,7 @@ function raidHudEnsure(){
 }
 const raidHudBase=drawHUD;
 drawHUD=function(){
- const active=raidActive(),h=raidHudEnsure();h.style.display=active?'block':'none';document.getElementById('game').classList.toggle('raid-battle',active);
+ const active=raidActive(),h=raidHudEnsure();h.style.display=active&&!(freezeT>0&&fzType==='timestopcin')?'block':'none';document.getElementById('game').classList.toggle('raid-battle',active);
  if(!active)return raidHudBase();
  const boss=byId(RAID_BOSS_ID),heroes=raidHeroes(),roster=document.getElementById('battle-roster'),key='raid|'+heroes.map(p=>p.id+':'+p.cid).join('|');
  if(hudKey!==key){hudKey=key;roster.style.setProperty('--columns',heroes.length);roster.style.setProperty('--pc-columns',heroes.length);roster.innerHTML=heroes.map(p=>`<div class="hud-card ${p.id===myId?'me':''}"><div class="hud-portrait">${portrait(p.cid)}</div><div class="hud-info"><div class="hud-name">${esc(p.label)}</div><div class="hud-damage"></div></div><div class="hud-stocks"></div><div class="hud-skill"></div><div class="hud-meter"></div></div>`).join('');}
@@ -8695,6 +8728,125 @@ showResult=function(){
  document.getElementById('res-win').textContent=win?'DIO DEFEATED':'DIO WIN';document.getElementById('winner-art').innerHTML='';
  document.getElementById('res-list').innerHTML=raidHeroes().map(p=>`<div class="rk"><div class="mk">${CC(p.cid).mark}</div><div>${esc(p.label)} / ${CC(p.cid).name}<div class="result-stats">与ダメージ ${Math.round(p.stats.dealt)} ／ 被ダメージ ${Math.round(p.d)}% ／ 撃墜された回数 ${p.stats.deaths}</div></div></div>`).join('');
  const box=document.getElementById('tour-result');box.style.display='block';box.innerHTML='<h3>'+(win?'DIOを倒した！':esc(gmCache?.raidReason||raid.reason||'DIOに敗北'))+'</h3><p>DIO残りHP '+Math.ceil(byId(RAID_BOSS_ID).raidHp)+' / 6,400 ／ 経過 '+Math.floor(raid.frame/60)+'秒</p>';
+};
+// Cairo night streets and time-stop cinematics. All art is local, cached or bounded to a cut-in.
+let raidCamera=null,raidCityCache=null;
+const cairoInitBase=raidInit;
+raidInit=function(){cairoInitBase();raidCamera=null;};
+function raidCameraTarget(){
+ const alive=fighters.filter(p=>!p.out&&!p.shadowClone&&p.x>-160&&p.x<stage.w+160);
+ if(!alive.length)return{x:0,y:0,w:stage.w};
+ const minX=Math.min(...alive.map(p=>p.x)),maxX=Math.max(...alive.map(p=>p.x));
+ const minY=Math.min(...alive.map(p=>p.y-95)),maxY=Math.max(...alive.map(p=>p.y));
+ const w=constrain(Math.max(1040,maxX-minX+240,(maxY-minY+180)*16/9),1040,stage.w);
+ return{x:constrain((minX+maxX-w)/2,0,stage.w-w),y:constrain(maxY+90-w*9/16,0,stage.h-w*9/16),w};
+}
+function raidApplyCamera(){
+ const target=raidCameraTarget();
+ if(!raidCamera)raidCamera={...target};
+ else if(!freezeT)for(const k of ['x','y','w'])raidCamera[k]+=(target[k]-raidCamera[k])*.12;
+ scale(W/raidCamera.w);translate(-raidCamera.x,-raidCamera.y);
+}
+const cairoArenaBase=paintArena;
+paintArena=function(){
+ if(!raidActive())return cairoArenaBase();
+ if(!raidCityCache){
+  raidCityCache=document.createElement('canvas');raidCityCache.width=W;raidCityCache.height=WH;
+  const c=raidCityCache.getContext('2d'),sky=c.createLinearGradient(0,0,0,WH);
+  sky.addColorStop(0,'#090d20');sky.addColorStop(.58,'#252039');sky.addColorStop(1,'#594039');c.fillStyle=sky;c.fillRect(0,0,W,WH);
+  c.fillStyle='#c7d6e2';for(let i=0;i<55;i++){c.globalAlpha=.22+(i%4)*.13;c.fillRect((i*127+31)%W,28+(i*67)%195,i%3?1:2,1);}c.globalAlpha=1;
+  const moon=c.createRadialGradient(636,82,7,636,82,80);moon.addColorStop(0,'#e5dccb48');moon.addColorStop(1,'#d3d5ec00');c.fillStyle=moon;c.fillRect(548,0,180,175);
+  c.fillStyle='#ddd6c2';c.beginPath();c.arc(636,82,26,0,Math.PI*2);c.fill();c.fillStyle='#b8b4ad50';c.beginPath();c.arc(626,78,8,0,Math.PI*2);c.fill();
+  // Dense flat roofs, balconies, minarets and warm window light suggest the final Cairo street duel.
+  for(let layer=0;layer<3;layer++)for(let i=0;i<22;i++){
+   const x=i*41-18+(layer%2)*17,h=45+((i*53+layer*37)%115),y=335+layer*27-h;
+   c.fillStyle=['#15192b','#252335','#37303c'][layer];c.fillRect(x,y,38,h+110);
+   c.fillStyle=['#27253b','#443343','#5b4145'][layer];c.fillRect(x-2,y-5,42,6);
+   for(let r=0;r<5;r++)for(let col=0;col<3;col++){c.fillStyle=(i+r+col)%4?'#c99d6530':'#f4ca8288';c.fillRect(x+6+col*10,y+10+r*19,4,8);}
+   c.strokeStyle='#171b2c';c.lineWidth=2;for(let r=1;r<4;r++){c.beginPath();c.moveTo(x+2,y+r*29);c.lineTo(x+36,y+r*29);c.stroke();}
+  }
+  c.fillStyle='#222337';for(const x of [96,548]){c.fillRect(x,155,11,166);c.fillRect(x-5,169,21,5);c.beginPath();c.moveTo(x-3,155);c.lineTo(x+5,124);c.lineTo(x+14,155);c.fill();}
+  // River and an arched bridge sit behind the playable avenue.
+  c.fillStyle='#15232e';c.fillRect(0,363,W,WH-363);c.strokeStyle='#85725f66';c.lineWidth=2;
+  for(let i=0;i<17;i++){c.beginPath();c.moveTo((i*71)%W,373+(i%5)*9);c.lineTo((i*71)%W+35,373+(i%5)*9);c.stroke();}
+  c.fillStyle='#473b40';c.fillRect(0,331,W,17);c.strokeStyle='#ac8a6355';c.lineWidth=3;c.beginPath();c.moveTo(0,329);c.lineTo(W,329);c.stroke();
+  c.fillStyle='#292936';for(let x=-30;x<W;x+=95){c.beginPath();c.moveTo(x,391);c.lineTo(x,350);c.quadraticCurveTo(x+39,314,x+78,350);c.lineTo(x+78,391);c.closePath();c.fill();}
+  for(let x=40;x<W;x+=125){c.strokeStyle='#292733';c.lineWidth=4;c.beginPath();c.moveTo(x,337);c.lineTo(x,284);c.quadraticCurveTo(x+8,272,x+17,282);c.stroke();c.fillStyle='#eed19b';c.fillRect(x+12,280,9,5);}
+  const shade=c.createLinearGradient(0,270,0,WH);shade.addColorStop(0,'#080b1600');shade.addColorStop(1,'#080b1680');c.fillStyle=shade;c.fillRect(0,270,W,WH-270);
+ }
+ drawingContext.drawImage(raidCityCache,0,0,W,WH);
+};
+const cairoPlatformsBase=paintPlatforms;
+paintPlatforms=function(){
+ if(!raidActive())return cairoPlatformsBase();
+ const c=drawingContext;c.save();
+ stage.plats.forEach((pl,i)=>{
+  if(i===0){
+   c.fillStyle='#191d29';c.fillRect(pl.x,pl.y,pl.w,pl.h+80);c.fillStyle='#55505a';c.fillRect(pl.x,pl.y,pl.w,6);c.fillStyle='#aaa091';c.fillRect(pl.x,pl.y+6,pl.w,3);
+   c.fillStyle='#cdbf8b55';for(let x=pl.x+35;x<pl.x+pl.w-20;x+=105)c.fillRect(x,pl.y+26,60,3);
+   for(let x=pl.x+40;x<pl.x+pl.w-10;x+=195){c.fillStyle='#2b303d';c.fillRect(x,pl.y+10,52,6);c.strokeStyle='#645660';c.lineWidth=1;for(let k=0;k<6;k++){c.beginPath();c.moveTo(x+5+k*8,pl.y+10);c.lineTo(x+5+k*8,pl.y+16);c.stroke();}}
+  }else{
+   c.fillStyle=i%2?'#302e3b':'#3a303b';c.fillRect(pl.x,pl.y,pl.w,stage.plats[0].y-pl.y);
+   c.fillStyle='#b99a77';c.fillRect(pl.x-4,pl.y,pl.w+8,5);c.fillStyle='#5f5053';c.fillRect(pl.x-4,pl.y+5,pl.w+8,9);
+   for(let x=pl.x+20;x<pl.x+pl.w-20;x+=45){c.fillStyle='#171e2a';c.fillRect(x,pl.y+32,23,45);c.fillStyle='#d2a96977';c.fillRect(x+4,pl.y+35,15,36);c.fillStyle='#453b46';c.fillRect(x+10,pl.y+33,3,42);}
+   c.strokeStyle='#201f2a';c.lineWidth=3;c.beginPath();c.moveTo(pl.x+12,pl.y-18);c.lineTo(pl.x+12,pl.y);c.lineTo(pl.x+pl.w-12,pl.y);c.lineTo(pl.x+pl.w-12,pl.y-18);c.stroke();
+   c.fillStyle='#bc9b7833';c.fillRect(pl.x+14,pl.y+95,pl.w-28,6);
+  }
+ });
+ c.restore();
+};
+
+// Share the ordinary cinematic transport. The host alone can issue DIO/counter commands.
+const cairoValidCinematicBase=validCinematic;
+validCinematic=function(kind,d){
+ if(kind==='timestop'&&d?.raidWorld){
+  return raidActive()&&byId(d.id)?.raidBoss&&Number.isFinite(d.x)&&Number.isFinite(d.y)&&Number.isSafeInteger(d.raidWorld)&&d.raidWorld>=raid.serial&&Number.isFinite(d.raidFrame)&&raid.frame<=d.raidFrame+20&&!(d.raidWorld===raid.serial&&raid.move==='fight'&&raid.at>=DIO_STOP_T);
+ }
+ if(kind==='timestop'&&d?.raidCounter)return raidWorldStopped()&&d.raidCounter===raid.serial&&byId(d.id)?.cid==='jotaro'&&cairoValidCinematicBase(kind,d);
+ return cairoValidCinematicBase(kind,d);
+};
+const cairoReceiveBase=receiveNetEvent;
+receiveNetEvent=function(e){
+ if(e?.k==='cinx'&&e.kind==='timestop'&&(e.data?.raidWorld||e.data?.raidCounter)&&e.by!==gmCache?.hostId)return;
+ return cairoReceiveBase(e);
+};
+const cairoCutinBase=beginJotaroTimeStopCutin;
+beginJotaroTimeStopCutin=function(d){
+ if(d?.raidWorld&&byId(d.id)?.raidBoss){
+  if(!validCinematic('timestop',d))return;
+  if(online&&!cinDispatching){requestCinematic('timestop',d);return;}
+  if(d.raidWorld>raid.serial||raid.move!=='world'){
+   raid.serial=d.raidWorld;raid.frame=Math.max(raid.frame,d.raidFrame);raid.move='world';raid.at=0;raid.counterIds=[];raidStopActions();
+  }
+  freezeT=freezeMax=60;fzType='timestopcin';fz={x:d.x,y:d.y,att:d.id,cnt:d.id,dioWorld:true};
+  animeSound('timestop');shake=Math.max(shake,6);return;
+ }
+ if(d?.raidCounter){
+  if(!validCinematic('timestop',d))return;
+  if(!raid.counterIds.includes(d.id))raid.counterIds.push(d.id);
+  const p=byId(d.id);if(isLocal(p))raidGrantCounter(p);
+  animeSound('timestop');
+ }
+ return cairoCutinBase(d);
+};
+const cairoChronoWorldBase=chronoWorld;
+chronoWorld=function(){
+ if(!fz?.dioWorld)return cairoChronoWorldBase();
+ const c=drawingContext,t=1-freezeT/Math.max(1,freezeMax),cx=fz.x,cy=fz.y;
+ c.save();c.fillStyle=t<.27?'#12101de8':t<.38&&!prefs.lowFlash?'#d6c99ce8':'#191828e8';c.fillRect(-400,-400,stage.w+800,stage.h+800);
+ for(let i=0;i<9;i++){const r=45+i*70+Math.max(0,t-.2)*900;c.strokeStyle=i%2?'#d6bd8077':'#a191b055';c.lineWidth=i%3?2:5;c.beginPath();c.ellipse(cx,cy,r,r*.55,0,0,Math.PI*2);c.stroke();}
+ c.strokeStyle='#e4c77488';c.lineWidth=3;for(let i=0;i<12;i++){const a=i*Math.PI/6;c.beginPath();c.moveTo(cx+Math.sin(a)*100,cy+Math.cos(a)*100);c.lineTo(cx+Math.sin(a)*122,cy+Math.cos(a)*122);c.stroke();}
+ c.restore();
+};
+const cairoChronoTextBase=chronoText;
+chronoText=function(){
+ if(!fz?.dioWorld)return cairoChronoTextBase();
+ const c=drawingContext,t=1-freezeT/Math.max(1,freezeMax),slide=Math.max(0,1-t*5);
+ c.save();c.fillStyle='#080c16';c.fillRect(0,0,W,20);c.fillRect(0,WH-24,W,24);
+ c.save();c.globalAlpha=.65;raidDrawBody(c,W*.81,WH*.66,1.35,true,1,-1);c.restore();raidDrawBody(c,W*.76,WH*.72,1.05,false,1,-1);
+ c.fillStyle='#090e18ed';c.beginPath();c.moveTo(0,WH*.68);c.lineTo(W,WH*.64);c.lineTo(W,WH*.91);c.lineTo(0,WH*.95);c.closePath();c.fill();
+ c.fillStyle='#d6bb7c';c.fillRect(0,WH*.68,5,WH*.27);c.textAlign='left';c.font='bold 61px sans-serif';c.strokeStyle='#171220';c.lineWidth=7;c.strokeText('ザ・ワールド！',26-slide*210,WH*.82);c.fillStyle='#fff1cd';c.fillText('ザ・ワールド！',26-slide*210,WH*.82);
+ c.font='13px sans-serif';c.fillStyle='#c3ac7c';c.fillText('THE WORLD  /  時は止まる',30,WH*.90);c.textAlign='right';c.font='bold 15px sans-serif';c.fillStyle='#ebd19c';c.fillText('DIO',W-25,44);c.restore();
 };
 </script>
 </body>

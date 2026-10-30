@@ -400,7 +400,7 @@ function animeTimeStop(p){
  if(p.energy<100||p.timeStopSelfT>0){sfxNo();return;}
  p.energy=0;p.spc=24;p.timeStopSelfT=JOTARO_STOP_T;p.boostFlash=40;
  if(isLocal(p))playJotaroTimeStopBgm();
- animeCall(p,'時よ止まれ！','#efe1ff',true,1.05,.70);
+ animeCall(p,'スタープラチナ！ ザ・ワールド！','#efe1ff',true,1.05,.70);
  const e={k:'animearea',id:p.id,kind:'timestop',x:p.x,y:p.y-34,f:p.f,range:9999,life:JOTARO_STOP_T};
  animeArea(e);send(e);animeEmit(p,'timestop',{life:JOTARO_STOP_T});
  // ギア変身と同じ：全員停止→承太郎＋スタープラチナの専用カットイン→時が止まった世界。

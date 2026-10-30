@@ -27,6 +27,7 @@
     "src/game/14-eren.js",
     "src/game/15-kaneki.js",
     "src/game/16-menu-ui.js",
-    "src/game/17-boss-raid.js"
+    "src/game/17-boss-raid.js",
+    "src/game/18-cairo-and-world.js"
   ]
 }

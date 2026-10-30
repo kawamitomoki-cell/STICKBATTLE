@@ -32,6 +32,7 @@ const assert=require('node:assert/strict');
  for(const p of pages)await p.evaluate(()=>{bt.phase='play';deltaTime=FIXED_MS;render();});
  await pages[0].evaluate(()=>{raidBeginWorld();raid.at=30;sendLocal();});
  await pages[1].waitForFunction(()=>raid.at===30);
+ for(const p of pages)await p.evaluate(()=>{for(let n=0;n<160&&freezeT>0;n++){frameCount++;simulateFrame()}});
  // Real keyboard input from the guest must escape existing hitstun/cooldown on acknowledgment.
  await pages[1].evaluate(()=>{const p=byId(myId);p.spc=99;p.kb=40;});
  await pages[1].keyboard.down('s');await pages[1].keyboard.down('k');await pages[1].evaluate(()=>simulateFrame());
@@ -39,6 +40,9 @@ const assert=require('node:assert/strict');
  await pages[0].evaluate(()=>{lastFighterTx.clear();sendLocal();});await pages[1].waitForFunction(()=>raid.counterIds.includes(myId));
  assert.equal(await pages[1].evaluate(()=>byId(myId).spc+byId(myId).kb),0);
  assert.equal(await pages[0].evaluate(()=>raidFrozen(byId(myId))),true);
+ await pages[1].evaluate(()=>{freezeT=Math.min(freezeT,32);render();});
+ await pages[1].screenshot({path:'/workspace/kaneki-tools/jotaro-world-cutin.png'});
+ for(const p of pages)await p.evaluate(()=>{for(let n=0;n<160&&freezeT>0;n++){frameCount++;simulateFrame()}});
  await pages[1].keyboard.up('k');await pages[1].keyboard.up('s');
  await pages[1].evaluate(()=>simulateFrame());
  await pages[1].evaluate(()=>{const p=byId(myId),b=byId(RAID_BOSS_ID);p.x=b.x-70;p.y=b.y;p.g=true;p.groundPl=0;p.f=1;p.prev={...hin};});
