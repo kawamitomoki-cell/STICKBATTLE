@@ -48,3 +48,7 @@ Develop changes on a work branch and run the build checks and tests before publi
 Current controls, specification audit and validation: [敵を狙う立体機動](docs/EREN_TARGET_ODM.md).
 
 Previous design history: [立体機動再設計](docs/EREN_FREEDOM_REWORK.md). Online players must reload and create a new room for protocol V40.
+
+### Kaneki
+
+白髪金木・捕縛連携・攻撃成功による再生・半赫者「百足」の操作、検証範囲と残課題：[金木研の実装記録](docs/KANEKI_IMPLEMENTATION.md)。プロトコルV41採用後は全員再読み込み・新規ルームが必要。

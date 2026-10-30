@@ -25,9 +25,9 @@ test('malformed remote clone snapshots cannot reserve a clone slot',()=>{
  assert.equal(run('fighters.length'),1);
  assert.equal(run("!!shadowCloneReceiveSnapshot('sclone_peer_2',{...invalid,x:200})"),true);
 });
-test('all 17 characters initialize and produce finite normal and charged melee moves',()=>{
+test('all 19 characters initialize and produce finite normal and charged melee moves',()=>{
  const run=game();
- assert.equal(run('Object.keys(CHARS).length'),18);
+ assert.equal(run('Object.keys(CHARS).length'),19);
  for(const cid of run('Object.keys(CHARS)')){
   for(const charge of [0,50]){
    run(`fighters=[makeFighter({id:myId,cid:${JSON.stringify(cid)},owner:myId},0)];fireAttack(fighters[0],${charge});`);
