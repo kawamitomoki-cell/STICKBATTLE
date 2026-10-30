@@ -101,6 +101,30 @@ function openHowto(fromBattle){
  sc.scrollTop=0;
 }
 
+function renderCpuChoices(){
+ const box=document.getElementById('cpu-fighters'),slots=document.getElementById('cpu-fighter-slots');
+ box.hidden=online||charMode!=='cpu'||!['normal','training'].includes(offlineMode);
+ if(box.hidden)return;
+ slots.replaceChildren();
+ const training=offlineMode==='training',count=training?1:clampInt(settings.cpuN,1,7,1);
+ for(let i=0;i<count;i++){
+  const row=document.createElement('div');row.className='cpu-fighter-row';
+  const label=document.createElement('label');label.htmlFor='cpu-fighter-'+i;label.textContent=training?'練習相手':'CPU '+(i+1);
+  const select=document.createElement('select');select.id=label.htmlFor;
+  const option=(parent,id,name)=>{const el=document.createElement('option');el.value=id;el.textContent=name;parent.appendChild(el);};
+  option(select,'','ランダム（'+CPU_POOL_LABEL[settings.cpuPool||'all']+'）');
+  for(const special of [false,true]){
+   const group=document.createElement('optgroup');group.label=special?'スペシャル':'通常キャラ';
+   for(const id of Object.keys(CHARS))if(SPECIAL_IDS.includes(id)===special)option(group,id,CHARS[id].name);
+   select.appendChild(group);
+  }
+  const selected=(training?settings.trainingCpuCid:settings.cpuCids?.[i])||'';
+  select.value=Object.hasOwn(CHARS,selected)?selected:'';
+  select.onchange=()=>{if(training)settings.trainingCpuCid=select.value;else{settings.cpuCids??=[];settings.cpuCids[i]=select.value;}};
+  row.appendChild(label);row.appendChild(select);slots.appendChild(row);
+ }
+}
+
 function buildMenus() {
   const grid = document.getElementById('char-grid');
   renderChars = () => {
@@ -108,10 +132,11 @@ function buildMenus() {
     const C = CC(settings.cid);
     document.getElementById('char-info').innerHTML = fighterInfo(C);
     updateFighterShowcase();
+    renderCpuChoices();
   };
   renderChars();
-  seg('seg-cpun', ['1体', '2体', '3体', '4体', '5体', '6体', '7体'], () => settings.cpuN - 1, i => settings.cpuN = i + 1);
-  seg('seg-cpupool', ['通常キャラ', 'スペシャル', '全キャラ'], () => cpuPoolIndex(settings.cpuPool), i => settings.cpuPool = cpuPoolFromIndex(i));
+  seg('seg-cpun', ['1体', '2体', '3体', '4体', '5体', '6体', '7体'], () => settings.cpuN - 1, i => {settings.cpuN = i + 1;renderCpuChoices();});
+  seg('seg-cpupool', ['通常キャラ', 'スペシャル', '全キャラ'], () => cpuPoolIndex(settings.cpuPool), i => {settings.cpuPool = cpuPoolFromIndex(i);renderCpuChoices();});
   seg('seg-cpulv', LV_NAME, () => settings.cpuLv, i => settings.cpuLv = i);
 
   const renderStages = () => renderStageGrid('stage-grid', settings.map, id => {

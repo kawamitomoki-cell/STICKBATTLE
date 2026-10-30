@@ -1265,7 +1265,7 @@ function mkMv(kind, w) {
 
 const myId = Math.random().toString(36).slice(2, 10);
 const urlRoom = new URLSearchParams(location.search).get('room');
-let settings = { cid: 'karate', cpuN: 1, cpuLv: 1, cpuPool: 'all', map: 'std', wpn: false, stocks: DEFAULT_STOCK, name: 'PLAYER', teamMode: false, team: 1 };
+let settings = { cid: 'karate', cpuN: 1, cpuLv: 1, cpuPool: 'all', cpuCids: [], trainingCpuCid: '', map: 'std', wpn: false, stocks: DEFAULT_STOCK, name: 'PLAYER', teamMode: false, team: 1 };
 let scene = 'title', howtoFrom = 'sc-mode', charMode = 'cpu';
 let offlineMode='normal',requestedOnlineMode='normal',trainingAiMode=0,kumiteCount=0,kumiteOpponentSeed=0,offlineTour=null;
 let online = false, isHost = false, roomId = null, roomRef = null;
