@@ -164,7 +164,7 @@ function buildMenus() {
   document.getElementById('bracket-close').onclick=()=>document.getElementById('bracket-dialog').close();
   document.getElementById('tour-network').onclick=()=>{requestedOnlineMode='tournament';show('sc-online');};
   document.getElementById('train-reset').onclick=()=>trainingReset(false);
-  document.getElementById('train-gauge').onclick=()=>{const p=byId(myId);if(p){p.energy=100;p.ko=100;p.rage=100;p.senku=100;p.gearM=100;if(p.cid==='eren'){p.erenGauge=100;p.erenGas=100;}}};
+  document.getElementById('train-gauge').onclick=()=>{const p=byId(myId);if(p){p.energy=100;p.ko=100;p.rage=100;p.senku=100;p.gearM=100;if(p.cid==='kaneki')p.kanekiGauge=100;if(p.cid==='eren'){p.erenGauge=100;p.erenGas=100;}}};
   document.getElementById('train-ai').onclick=()=>setTrainingAi(trainingAiMode+1);
   document.getElementById('champion-next').onclick=()=>{if(online){if(isHost&&roomRef)roomRef.child('gm').update({ph:'lobby',tour:null});else if(confirm('トーナメント部屋から退出しますか？'))leaveRoom();}else{offlineTour=null;show('sc-extra');}};
   document.getElementById('go-online').onclick = () => {requestedOnlineMode='normal';show('sc-online');};
@@ -1229,7 +1229,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_EREN_HUNT_V40';
+const NET_PROTOCOL='SBO_NET_KANEKI_V41';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -1261,8 +1261,9 @@ function enqueueCinematic(kind,data,cid){
  cinQueue.push({kind,data});pumpCinematics();return true;
 }
 function validCinematic(kind,d){
- if(!d||!['senku','counter','ko','rage','gear','animeform','domain','timestop','titan'].includes(kind))return false;
+ if(!d||!['senku','counter','ko','rage','gear','animeform','domain','timestop','titan','kakuja'].includes(kind))return false;
  if(!Number.isFinite(d.x)||!Number.isFinite(d.y))return false;
+ if(kind==='kakuja')return byId(d.id)?.cid==='kaneki';
  if(kind==='titan')return byId(d.id)?.cid==='eren';
  if(kind==='senku')return typeof d.eid==='string'&&!!byId(d.id)&&(d.dir===1||d.dir===-1);
  if(kind==='rage')return !!byId(d.id);
@@ -1293,7 +1294,8 @@ function pumpCinematics(){
  const cmd=cinQueue.shift();if(!cmd)return;
  activeCinematic={...cmd,started:performance.now()};cinDispatching=true;
  try{
-  if(cmd.kind==='titan')erenCutin(cmd.data);
+  if(cmd.kind==='kakuja')kanekiCutin(cmd.data);
+  else if(cmd.kind==='titan')erenCutin(cmd.data);
   else if(cmd.kind==='senku')receiveSenku(cmd.data);
   else if(cmd.kind==='counter')doCounter(cmd.data);
   else if(cmd.kind==='rage')doRageTransform(cmd.data,true);
@@ -1557,9 +1559,10 @@ function updateRemotePolished(){
   if(grip&&erenTitan(holder)&&!holder.out)pos={x:holder.x+grip.dir*64,y:holder.y-55};
   if(s.ats>0||s.adom>0)pos={x:s.x,y:s.y};
   Object.assign(f,{...pos,...(f.cid==='eren'?erenState:{}),erenGrab:grip||null,r,vx:s.vx,vy:s.vy,f:s.f,a:s.a,ch:s.ch,ct:s.ct,cs:s.cs,stn:s.stn,dg:s.dg,ivf:s.iv,kb:s.kb,w:s.w||null,sh:s.sh,sph:s.sph,castStyle:s.acs==='charge'?'charge':'',rise:s.ri,arm:s.am||0,cid:s.cid||f.cid,d:s.d,s:s.s,ko:s.ko,g:s.g,rage:s.rg||0,rageT:s.rt||0,senku:s.sk||0,senkuWind:s.sw||0,energy:s.ae||0,form:s.af||0,modeT:s.at||0,fatigue:s.az||0,cloneT:s.an||0,infinityCd:s.ai||0,slowT:s.asl||0,domainT:s.adom||0,timeStopT:s.ats||0,timeStopSelfT:s.atsf||0,orbColor:s.aoc||'blue',gear:s.gr||1,gearM:s.gm||0,gearT:s.gt||0,tired:s.td?1:0,bowUp:!!s.bu,bullets:s.bl??f.bullets,reloadT:s.rl||0,stats:s.stats||f.stats});
+  kanekiRestore(f,s);
   f.mv=mkMv(s.mk,s.w);if(erenTitan(f)&&f.erenHard>0&&f.mv?.kind==='titanPunch')f.mv.end=42;animeRemoteMove(f);if(f.cid==='rubber'&&f.mv)decorateRubber(f.mv,f);
   if(f.mv&&s.a>0&&!s.ats&&!s.adom&&!freezeT){const advance=Math.min(4,Math.max(0,(now-f.off-s.ts)/FIXED_MS));f.a=Math.min(f.mv.end,s.a+advance*(s.asl>0?.38:1));}
-  if(f.cid==='eren')erenPrepareSpin(f);
+  if(f.cid==='eren')erenPrepareSpin(f);if(f.cid==='kaneki')kanekiPrepare(f);
   if(s.o&&!f.out){
    if(f.shadowClone)shadowClonePop(f,false);
    else{f.out=true;if(!elim.includes(f.id))elim.push(f.id);}

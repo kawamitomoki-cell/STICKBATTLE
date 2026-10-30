@@ -18,7 +18,7 @@ function meleeCheck(a) {
   const giantHit=erenTitan(a)?erenAttackShape(a):null;
   const hx = giantHit?.x??a.x+a.f*mv.reach*asz, hy=giantHit?.y??a.y-mv.yo*asz, R=giantHit?.r??mv.R*asz;
   for (const t of fighters) {
-    if(mv.kind==='titanGrab'&&Object.keys(a.hit).length)break;
+    if(['titanGrab','kanekiBind'].includes(mv.kind)&&Object.keys(a.hit).length)break;
     if (t === a || t.out || a.hit[t.id] || sameTeam(a, t)) continue;
     const tsz = fighterSize(t);
     let touching;
@@ -32,7 +32,7 @@ function meleeCheck(a) {
       a.hit[t.id] = true;
       const oraFinish=mv.kind==='ora'&&a.a>=mv.act1-1;
       const A = { contact:erenTitan(t)?{x:hx,y:hy,r:R}:null, id: a.id, x: Math.round(a.x), f: mv.kind==='erenCrossSpin'?(Math.sign(t.x-a.x)||a.f):a.f, c: a.c,
-                  mv: { erenToken:mv.erenToken||null, type: oraFinish?'heavy':mv.type, kind: oraFinish?'orafinish':mv.kind, style:mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), dm: Math.round((oraFinish?14.5:mv.dm) * 10) / 10, k0: Math.round((oraFinish?15.0:mv.k0) * 10) / 10, ks: oraFinish?.115:mv.ks, up: oraFinish?.48:mv.up, ko: !!mv.ko, blockOnly: !!mv.blockOnly, ragePunch: !!mv.ragePunch, pierce: !!mv.pierce, minKb:oraFinish?15.5:(mv.minKb||0) } };
+                  mv: { kanekiToken:mv.kanekiToken||null, kanekiPhase:mv.kanekiPhase??0, erenToken:mv.erenToken||null, type: oraFinish?'heavy':mv.type, kind: oraFinish?'orafinish':mv.kind, style:mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), dm: Math.round((oraFinish?14.5:mv.dm) * 10) / 10, k0: Math.round((oraFinish?15.0:mv.k0) * 10) / 10, ks: oraFinish?.115:mv.ks, up: oraFinish?.48:mv.up, ko: !!mv.ko, blockOnly: !!mv.blockOnly, ragePunch: !!mv.ragePunch, pierce: !!mv.pierce, minKb:oraFinish?15.5:(mv.minKb||0) } };
       if (isLocal(t)) resolveMelee(A, t);
       else {
         send({ k: 'mh', to: t.id, a: a.id, ax: A.x, f: A.f, c: a.c, mv: A.mv, contact:A.contact });
@@ -63,11 +63,11 @@ function resolveMelee(A, t) {
   const bk = !mv.pierce && !mv.ko && mv.kind !== 'upper' && t.ct > 0 && (mv.type === 'normal' || !front || AXE_KINDS.includes(mv.kind));
   if (!bk && mv.type === 'normal' && isArmored(t)) {
     armorHit(t, h, A.id);
-    emitFx({ erenToken:mv.erenToken||null,res: 'armor', t: t.id, a: A.id, x: t.x, y: ty, gain: 4 });
+    emitFx({ kanekiToken:mv.kanekiToken||null, kanekiPhase:mv.kanekiPhase??0, erenToken:mv.erenToken||null,res: 'armor', t: t.id, a: A.id, x: t.x, y: ty, gain: 4 });
     return;
   }
   const kb = applyHit(t, h, bk, A.id);
-  emitFx({ erenToken:mv.erenToken||null,res: 'hit', t: t.id, a: A.id, x: t.x, y: ty, kb: Math.round(kb * 10) / 10, bk: bk ? 1 : 0, up: ['upper','gdragon','gblackflash'].includes(mv.kind) || mv.style==='blackflash' ? 1 : 0, style: mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), moveKind:mv.kind, c: t.c, gain: 8, axe:mv.kind==='axeheavy'||mv.kind==='axeup' });
+  emitFx({ kanekiToken:mv.kanekiToken||null, kanekiPhase:mv.kanekiPhase??0, erenToken:mv.erenToken||null,res: 'hit', t: t.id, a: A.id, x: t.x, y: ty, kb: Math.round(kb * 10) / 10, bk: bk ? 1 : 0, up: ['upper','gdragon','gblackflash'].includes(mv.kind) || mv.style==='blackflash' ? 1 : 0, style: mv.style|| (mv.kind==='gdragon'?'dragon':mv.kind==='gblackflash'?'blackflash':''), moveKind:mv.kind, c: t.c, gain: 8, axe:mv.kind==='axeheavy'||mv.kind==='axeup' });
 }
 
 function resolveProj(Q, t) {

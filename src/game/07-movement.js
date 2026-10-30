@@ -337,7 +337,8 @@ function stepFighter(p, inp) {
       }
     }
     if (!acted && sp && p.a === 0 && p.ch === 0 && p.sph === 0) {
-      if(p.cid==='eren'){p.dropReq=0;erenSpecial(p,inp);}
+      if(p.cid==='kaneki'){p.dropReq=0;kanekiSpecial(p,inp);}
+      else if(p.cid==='eren'){p.dropReq=0;erenSpecial(p,inp);}
       else if(isAnime(p)){p.dropReq=0;animeStart(p,inp,!!inp.u&&!inp.neutralSpecial);}
       else if (inp.u&&!inp.neutralSpecial) { if (!p.rec) upSpecial(p, dir); else if (!p.cpu) sfxNo(); }
       else if (p.cid === 'rubber' && (inp.gd || (inp.d&&!inp.neutralSpecial))) { p.dropReq = 0; gearShift(p); }
