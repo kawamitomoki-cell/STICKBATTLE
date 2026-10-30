@@ -13,18 +13,19 @@
 {{STYLE_1}}
 {{STYLE_2}}
 {{STYLE_3}}
+{{STYLE_4}}
 </head>
 <body>
 
 <div id="sc-title" class="screen" style="display:flex">
- <div class="title-art"></div><div class="title-content"><div class="title-kicker">ONE ARENA. NO LIMITS.</div>
- <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">17人のファイター。勝負を決める、ただ一撃。</p>
- <button class="tap" id="title-tap">タップしてスタート</button></div><div class="version-label">MODE SELECT / TOURNAMENT UI</div>
+ <div class="title-art"></div><div class="title-content"><div class="title-kicker">THE NEXT ROUND IS YOURS.</div>
+ <h1 class="logo">STICK<em>BATTLE</em><small>ONLINE</small></h1><p class="title-desc">個性で選べ。技で魅せろ。<br>次の一戦を、忘れられない一戦に。</p>
+ <button class="tap" id="title-tap">はじめる <span aria-hidden="true">↗</span></button></div><div class="version-label"><span id="menu-facts">FIGHTERS / ARENAS / ONLINE</span></div>
 </div>
 <div id="sc-mode" class="screen mode-rework-screen">
  <div class="mode-rework-head">
-  <div><span class="mode-overline">STICK BATTLE / SELECT YOUR MODE</span><h2>どの戦いに<span>挑む？</span></h2><p>ひとりで極める。仲間と競う。新しい戦いを見つける。</p></div>
-  <div class="mode-head-stamp" aria-hidden="true"><b>04</b><small>GAME MODES</small></div>
+  <div><span class="mode-overline">STICK BATTLE / SELECT YOUR MODE</span><h2>今日は、<span>どう戦う？</span></h2><p>すぐに対戦する？ それとも、新しい技を試す？</p></div>
+  <button id="menu-title-back" class="menu-home">← タイトル</button>
  </div>
  <div class="mode-grid mode-rework-grid">
   <button class="big mode-card" id="go-cpu" data-ghost="01"><span class="mode-no">01 / SINGLE PLAYER</span><span class="mode-symbol" aria-hidden="true">⚔</span><span class="mode-card-content"><span class="mode-card-kicker">LOCAL BATTLE</span><b>CPU対戦</b><span class="mode-card-desc">1〜7体のライバルに挑め。チーム戦も自由自在。</span><span class="mode-card-foot">ひとりで遊ぶ <span aria-hidden="true">↗</span></span></span></button>
@@ -32,7 +33,7 @@
   <button class="big mode-card" id="go-more" data-ghost="03"><span class="mode-no">03 / CHALLENGES</span><span class="mode-symbol" aria-hidden="true">✦</span><span class="mode-card-content"><span class="mode-card-kicker">EXTRA MODES</span><b>ほかの遊び</b><span class="mode-card-desc">組み手・トーナメント・トレーニング。戦い方は無限大。</span><span class="mode-card-foot">モードを選ぶ <span aria-hidden="true">↗</span></span></span></button>
   <button class="big mode-card mode-card-guide" id="go-howto" data-ghost="04"><span class="mode-no">04 / BEGINNER GUIDE</span><span class="mode-symbol" aria-hidden="true">?</span><span class="mode-card-content"><span class="mode-card-kicker">HOW TO PLAY</span><b>ルール・操作方法</b><span class="mode-card-desc">初めてでも大丈夫。技の出し方から勝ち方まで、ここで確認。</span></span><span class="mode-guide-arrow" aria-hidden="true">↗</span></button>
  </div>
- <p class="mode-rework-footer">CHOOSE YOUR FIGHT. WRITE YOUR LEGEND.</p>
+ <p class="mode-rework-footer">自分だけのスタイルを、ここから。</p>
 </div>
 
 <div id="sc-extra" class="screen mode-rework-screen">
@@ -88,22 +89,22 @@
 </div>
 
 <div id="sc-chars" class="screen" style="z-index:8">
- <div class="hd">CHOOSE YOUR FIGHTER<small>プレイスタイルで選べ。個性で勝て。</small></div>
+ <div class="hd"><span class="menu-eyebrow">01 / FIGHTER SELECT</span>主役を、選ぼう。<small>気になるファイターを選ぶと、技と特性を確認できます。</small></div>
  <div class="fighter-layout"><div class="fighter-left"><div class="fighter-preview" id="fighter-showcase"></div><div id="char-info" class="card"></div><p class="char-select-tip">技が分からなくてもOK！「上必殺技・キャラ特性を見る」で詳しく確認できます。</p></div>
- <div class="fighter-right"><div id="char-grid" class="cgrid"></div>
+ <div class="fighter-right"><div class="fighter-tools"><label class="fighter-search" for="fighter-search"><span aria-hidden="true">⌕</span><input id="fighter-search" type="search" placeholder="名前で検索 / Search" autocomplete="off"></label><div class="fighter-filters" role="group" aria-label="キャラクターの種類"><button type="button" data-roster-filter="all" aria-pressed="true">すべて</button><button type="button" data-roster-filter="normal" aria-pressed="false">通常</button><button type="button" data-roster-filter="special" aria-pressed="false">スペシャル</button></div><p id="fighter-search-status" role="status" aria-live="polite"></p></div><div id="char-grid" class="cgrid"></div>
  <div class="namebox"><label for="player-name">PLAYER NAME</label><input id="player-name" maxlength="12" autocomplete="off" placeholder="PLAYER"></div>
  <div id="cpu-opts" style="display:flex;flex-direction:column"><div class="optrow"><span>CPUの数</span><div class="seg" id="seg-cpun"></div></div><div class="optrow"><span>ランダムの対象</span><div class="seg" id="seg-cpupool"></div></div><div class="optrow"><span>CPUの強さ</span><div class="seg" id="seg-cpulv"></div></div></div><fieldset id="cpu-fighters" class="cpu-fighters" hidden><legend>対戦するCPU</legend><p>キャラを指定するか、ランダムを選べます。</p><div id="cpu-fighter-slots"></div></fieldset></div></div>
  <div class="nav"><button class="back" id="chars-back">もどる</button><button class="next" id="chars-next">ステージへ →</button></div>
 </div>
 
 <div id="sc-stage" class="screen">
-  <div class="hd">SELECT YOUR ARENA<small>勝負の舞台を選択</small></div>
+  <div class="hd"><span class="menu-eyebrow">02 / ARENA & RULES</span>舞台を、決めよう。<small>地形を選んでルールを調整。準備ができたらバトルへ。</small></div><div class="arena-layout"><section class="arena-picker" aria-label="ステージ選択"><div id="menu-arena-preview" class="arena-preview"></div>
   <div class="stage-grid" id="stage-grid" style="width:min(560px,100%)"></div>
-  <div class="optrow" style="width:min(560px,100%)"><span>対戦形式</span><div class="seg" id="seg-team-mode"></div></div>
+  </section><aside class="arena-rules"><h2>今回のバトル</h2><p id="menu-match-summary"></p><div class="optrow" style="width:min(560px,100%)"><span>対戦形式</span><div class="seg" id="seg-team-mode"></div></div>
   <div class="optrow" id="team-side-row" style="width:min(560px,100%);display:none"><span>自分のチーム</span><div class="seg" id="seg-team-side"></div></div>
   <div class="optrow" style="width:min(560px,100%)"><span>武器</span><div class="seg" id="seg-wpn"></div></div>
   <div class="optrow" style="width:min(560px,100%)"><span>残機</span><div class="seg" id="seg-stock"></div></div>
-  <p class="stage-help-tip">残機＝場外へ飛ばされても復活できる回数。迷ったら設定はそのままでOK！</p><div class="nav"><button class="back" id="stage-back">もどる</button><button class="next" id="stage-next">バトル開始！</button></div>
+  </aside></div><p class="stage-help-tip">残機＝場外へ飛ばされても復活できる回数。迷ったら設定はそのままでOK！</p><div class="nav"><button class="back" id="stage-back">もどる</button><button class="next" id="stage-next">バトル開始！</button></div>
 </div>
 
 <div id="sc-lobby" class="screen">

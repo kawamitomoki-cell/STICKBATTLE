@@ -54,3 +54,7 @@ Previous design history: [立体機動再設計](docs/EREN_FREEDOM_REWORK.md). O
 白髪金木・捕縛連携・攻撃成功による再生・半赫者「百足」の操作、検証範囲と残課題：[金木研の実装記録](docs/KANEKI_IMPLEMENTATION.md)。プロトコルV41採用後は全員再読み込み・新規ルームが必要。
 
 金木の現行連携・復帰技：[乱舞の締めスマッシュと上特殊の復帰強化](docs/KANEKI_FINISHER_RECOVERY.md)。V42採用後は全員再読み込み・新規ルームが必要。
+
+### Menu UI
+
+タイトル・モード・キャラ検索/絞り込み・ステージプレビュー・対戦確認を刷新：[画面と検証記録](docs/MENU_REDESIGN.md)。
