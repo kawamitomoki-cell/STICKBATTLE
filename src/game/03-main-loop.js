@@ -13,7 +13,7 @@ function setup() {
 
 function simulateFrame() {
   if(!online&&document.getElementById('bracket-dialog')?.open)return; // 対戦表を確認する間、ソロは一時停止
-  tickNotices();readHuman();pumpCinematics();
+  tickNotices();readHuman();raidTick();pumpCinematics();
   syncGokuMp3();
   animeWorldTick();
   if (bt.phase === 'count') {

@@ -4,7 +4,8 @@
     "src/styles/tournament.css",
     "src/styles/overrides.css",
     "src/styles/mode-bracket.css",
-    "src/styles/menu-v2.css"
+    "src/styles/menu-v2.css",
+    "src/styles/raid.css"
   ],
   "scripts": [
     "src/game/00-firebase.js",
@@ -25,6 +26,7 @@
     "src/game/13-ui-and-menus.js",
     "src/game/14-eren.js",
     "src/game/15-kaneki.js",
-    "src/game/16-menu-ui.js"
+    "src/game/16-menu-ui.js",
+    "src/game/17-boss-raid.js"
   ]
 }
