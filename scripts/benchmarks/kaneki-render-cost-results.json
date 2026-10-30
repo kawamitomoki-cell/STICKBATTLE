@@ -1,0 +1,82 @@
+[
+  {
+    "version": "before",
+    "awake": false,
+    "countsForEight": {
+      "bezierCurveTo": 128,
+      "stroke": 152,
+      "fill": 64,
+      "drawImage": 0,
+      "lineTo": 312
+    },
+    "medianMsFor30Frames": 88.60000000009313,
+    "samples": [
+      86,
+      87.89999999990687,
+      88.60000000009313,
+      90.79999999981374,
+      100.29999999981374
+    ],
+    "cache": null
+  },
+  {
+    "version": "before",
+    "awake": true,
+    "countsForEight": {
+      "bezierCurveTo": 192,
+      "stroke": 712,
+      "fill": 88,
+      "drawImage": 0,
+      "lineTo": 888
+    },
+    "medianMsFor30Frames": 180,
+    "samples": [
+      177.10000000009313,
+      178.3000000002794,
+      180,
+      181,
+      186.89999999990687
+    ],
+    "cache": null
+  },
+  {
+    "version": "after",
+    "awake": false,
+    "countsForEight": {
+      "bezierCurveTo": 0,
+      "stroke": 88,
+      "fill": 72,
+      "drawImage": 0,
+      "lineTo": 288
+    },
+    "medianMsFor30Frames": 161.70000000018626,
+    "samples": [
+      151,
+      158.09999999962747,
+      161.70000000018626,
+      162.90000000037253,
+      164
+    ],
+    "cache": 1
+  },
+  {
+    "version": "after",
+    "awake": true,
+    "countsForEight": {
+      "bezierCurveTo": 0,
+      "stroke": 112,
+      "fill": 104,
+      "drawImage": 0,
+      "lineTo": 392
+    },
+    "medianMsFor30Frames": 216.89999999990687,
+    "samples": [
+      216.3000000002794,
+      216.5,
+      216.89999999990687,
+      219.70000000018626,
+      227.29999999981374
+    ],
+    "cache": 2
+  }
+]

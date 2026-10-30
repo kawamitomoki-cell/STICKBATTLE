@@ -147,35 +147,119 @@ aiTacticalAction=function(p,t,A,I,D,plan){
  if(p.cid==='kaneki'&&aiReady(p)&&!p.spc&&!p.kanekiFatigue){if(!kanekiAwake(p)&&p.kanekiGauge>=100&&Math.abs(t.x-p.x)<240){aiUseSpecial(p,I,A,2,'down');return 'kakuja-awaken';}if(!p.rec&&t.y<p.y-35&&Math.abs(t.x-p.x)<70){aiUseSpecial(p,I,A,2,'up');return 'kagune-rise';}if(kanekiAwake(p)&&!p.kanekiBurstCd&&Math.abs(t.x-p.x)<100&&t.d>70){aiUseSpecial(p,I,A,2,'down');return 'kakuja-burst';}}return kanekiTacticsBase(p,t,A,I,D,plan);};
 const kanekiProfileBase=aiMeleeProfile;
 aiMeleeProfile=function(p,hold=2){if(p.cid!=='kaneki')return kanekiProfileBase(p,hold);const m=KANEKI_MOVES[kanekiAwake(p)?hold>=CH_TH?'kakujaPierce':'kakujaJab':hold>=CH_TH?'kanekiPierce':'kanekiJab'];return {range:m.reach+m.R,startup:m.act0+hold,damage:m.dm,hold,type:m.type,recovery:m.end-m.act1};};
-// Shared tail pose drives independent organic curves and attack telegraphs.
+// Rest poses never depend on a clock: only committed attacks move the kagune.
+const KANEKI_REST=[[-78,-77,-94,-18],[-58,-110,-101,-72],[47,-104,17,-118],[67,-49,95,-80]];
 function kanekiTailPose(p,index,time){
- const m=p.mv,awake=kanekiAwake(p),base=KANEKI_MOVES[m?.kind],active=base&&p.a>=base.act0&&p.a<=base.act1,phase=base?.multi?Math.floor((p.a-base.act0)/base.multi):0;
- let x=-35-index*9,y=-28-index*13,extend=active&&(m.kind.includes('Dance')?index===((phase%4+4)%4):m.kind.includes('Pierce')||m.kind.includes('Burst')||index<2);
- if(extend){x=m.kind.includes('Burst')?(index%2?1:-1)*115:(base.reach||70)+15;y=m.kind.includes('Rise')?-85:-base.yo+(index-1.5)*7;}
- if(extend&&m.kind.includes('Dance'))y+=[0,12,-20,-4][((phase%4)+4)%4];
- const sway=Math.sin(time*.055-index*1.6)*9,lag=Math.sin(time*.055-index*1.6-.8)*12;
- return {x:x*(awake?1.18:1),y:y+sway,cx:-38-index*5-(p.vx||0)*1.4,cy:-65-index*10+lag,extend};
+ const awake=kanekiAwake(p),m=p.mv,base=KANEKI_MOVES[m?.kind],a=p.a||0;
+ const attack=!!base&&a>0,active=attack&&a>=base.act0&&a<=base.act1;
+ const phase=base?.multi?Math.max(0,Math.floor((a-base.act0)/base.multi)):0;
+ const rest=KANEKI_REST[index],size=awake?1.28:1;
+ let x=rest[0]*size,y=rest[1]*size,cx=rest[2]*size,cy=rest[3]*size;
+ let extend=active&&(m.kind.includes('Dance')?index===phase%4:m.kind.includes('Pierce')||m.kind.includes('Burst')||index<2);
+ if(attack){
+  // A braced windup, one decisive stroke, then a short retract. No idle spring simulation.
+  const wind=constrain(a/base.act0,0,1),recover=constrain((base.end-a)/(base.end-base.act1),0,1);
+  const stroke=active?1:a>base.act1?recover*recover:0;
+  if(!active&&a<=base.act0){x-=wind*15;cx-=wind*12;}
+  const selected=m.kind.includes('Dance')?index===phase%4:m.kind.includes('Pierce')||m.kind.includes('Burst')||index<2;
+  if(selected&&stroke>0){
+   const reach=base.reach||70;
+   let tx=reach+index*3,ty=-base.yo+(index-1.5)*7;
+   if(m.kind.includes('Dance')){ty+=[-6,12,-21,0][phase%4];cx=-20;cy=phase%4===2?-115:-65;}
+   if(m.kind.includes('Rise')){tx=18+(index-1)*14;ty=-91-index*8;cx=-45;cy=-22;}
+   if(m.kind.includes('Bind')){tx=base.reach;ty=-32+(index?8:-8);cx=40;cy=-75;}
+   if(m.kind.includes('Burst')){tx=[-111,-74,72,114][index];ty=[-32,-110,-112,-32][index];cx=tx*.3;cy=-62;}
+   x+=(tx-x)*stroke;y+=(ty-y)*stroke;
+  }
+ }
+ return {x,y,cx,cy,extend};
+}
+// Tapered ribbons, highlights and centipede plates share a small fixed point budget.
+function kanekiPaintTail(ctx,q,index,awake){
+ const points=[],steps=10;
+ for(let n=0;n<=steps;n++){
+  const t=n/steps,u=1-t;
+  points.push({x:u*u*u*(-5)+3*u*u*t*q.cx+3*u*t*t*(q.cx+q.x*.6)+t*t*t*q.x,y:u*u*u*(-28)+3*u*u*t*q.cy+3*u*t*t*(q.y-17)+t*t*t*q.y});
+ }
+ const edges=points.map((p,n)=>{const prev=points[Math.max(0,n-1)],next=points[Math.min(steps,n+1)],dx=next.x-prev.x,dy=next.y-prev.y,len=Math.hypot(dx,dy)||1,w=(awake?10:5.8)*(1-n/(steps+1))+.4;return {x:p.x,y:p.y,nx:-dy/len,ny:dx/len,w};});
+ ctx.beginPath();edges.forEach((p,i)=>{const x=p.x+p.nx*p.w,y=p.y+p.ny*p.w;i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+ for(let i=edges.length-1;i>=0;i--){const p=edges[i];ctx.lineTo(p.x-p.nx*p.w,p.y-p.ny*p.w);}ctx.closePath();
+ ctx.fillStyle=awake?'#822341':'#9e2147';ctx.fill();ctx.strokeStyle='#ef5276';ctx.lineWidth=awake?1.6:1.2;ctx.stroke();
+ ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle=awake?'#f0527a':'#ed6a87';ctx.lineWidth=awake?2:1;ctx.stroke();
+ if(awake){
+  ctx.strokeStyle='#ef8298';ctx.lineWidth=1.4;ctx.beginPath();
+  for(let n=1;n<steps;n++){const p=edges[n],w=p.w+5;ctx.moveTo(p.x+p.nx*w-4,p.y+p.ny*w+3);ctx.lineTo(p.x+p.nx*p.w,p.y+p.ny*p.w);ctx.lineTo(p.x-p.nx*p.w,p.y-p.ny*p.w);ctx.lineTo(p.x-p.nx*w-4,p.y-p.ny*w+3);}ctx.stroke();
+ }
+}
+function kanekiPaintBody(c,awake,attack){
+ c.save();c.translate(attack?9:awake?6:0,0);c.lineCap='round';c.lineJoin='round';
+ const lines=(segments,color,width)=>{c.strokeStyle=color;c.lineWidth=width;c.beginPath();for(const [x,y,xx,yy]of segments){c.moveTo(x,y);c.lineTo(xx,yy);}c.stroke();};
+ const poly=(points,color)=>{c.fillStyle=color;c.beginPath();points.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fill();};
+ const oval=(x,y,rx,ry,color)=>{c.fillStyle=color;c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fill();};
+ const legs=[[-3,-24,-12,0],[3,-24,13,0]],arms=[[1,-44,attack?23:12,attack?-33:-26],[-1,-43,-12,-25]],torso=[[0,-24,awake?7:1,-47]];
+ lines(legs,'#9e8396',8);lines(legs,'#101421',6);lines(torso,'#b1a7b5',12);lines(torso,'#151522',10);lines(arms,'#726575',6);lines(arms,'#171421',4);
+ oval(attack?23:12,attack?-33:-26,2.5,2.5,'#ded3d3');oval(-12,-25,2.5,2.5,'#ded3d3');lines([[3,-43,4,-27],[-6,-4,-14,-2],[10,-4,16,-2]],'#d9a5b5',1);
+ if(awake){poly([[-8,-47],[11,-53],[17,-30],[-4,-23]],'#37152b');lines(Array.from({length:5},(_,n)=>[-4,-29-n*4,12,-33-n*4]),'#e44c73',2);}
+ oval(1,-61,9.5,11.5,'#d4c5c4');
+ poly([[-10,-55],[-14,-64],[-11,-71],[-7,-69],[-4,-77],[0,-72],[5,-76],[6,-70],[12,-72],[10,-58],[7,-64],[4,-59],[1,-66],[-3,-61],[-5,-65]],'#eaf0f5');
+ poly([[-9,-58],[11,-59],[10,-49],[-8,-49]],'#080d18');lines([[-5,-54,9,-54],...[-4,-1,2,5,8].map(x=>[x,-56,x,-52])],'#b7bcc9',1);
+ oval(6,-62,3.5,2.5,'#261326');oval(6,-62,2,1.5,'#ff3159');oval(7,-63,.75,.75,'#ffe2e9');
+ if(awake){poly([[-9,-69],[7,-81],[17,-53]],'#4e1632');lines([[7,-77,14,-58]],'#f56788',1);oval(10,-64,2,3,'#ff355d');poly([[8,-53],[18,-48],[10,-49]],'#ddd5d6');}
+ c.restore();
+}
+// Two static path sets. No idle simulation, tessellation, bitmap upload or network fields.
+const kanekiRestSprites=new Map();
+function kanekiRestSprite(awake){
+ if(kanekiRestSprites.has(awake))return kanekiRestSprites.get(awake);
+ const curves=new Path2D(),plates=new Path2D(),tips=new Path2D();
+ for(let j=0;j<4;j++){
+  const q=kanekiTailPose({cid:'kaneki',kanekiTime:awake?900:0},j,0);
+  curves.moveTo(-5,-28);curves.bezierCurveTo(q.cx,q.cy,q.cx+q.x*.6,q.y-17,q.x,q.y);
+  tips.moveTo(q.x-6,q.y-3);tips.lineTo(q.x+5,q.y);tips.lineTo(q.x-6,q.y+4);tips.closePath();
+  if(awake)for(let n=2;n<10;n+=2){const t=n/10,u=1-t,x=u*u*u*(-5)+3*u*u*t*q.cx+3*u*t*t*(q.cx+q.x*.6)+t*t*t*q.x,y=u*u*u*(-28)+3*u*u*t*q.cy+3*u*t*t*(q.y-17)+t*t*t*q.y;plates.moveTo(x-8,y-7);plates.lineTo(x+6,y+6);plates.lineTo(x+2,y+12);}
+ }
+ const paths={curves,plates,tips};kanekiRestSprites.set(awake,paths);return paths;
+}
+function kanekiPaintRest(ctx,awake){
+ const s=kanekiRestSprite(awake);ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ ctx.strokeStyle='#3d122a';ctx.lineWidth=awake?16:9;ctx.stroke(s.curves);
+ ctx.strokeStyle=awake?'#a92c53':'#c13660';ctx.lineWidth=awake?11:5;ctx.stroke(s.curves);
+ ctx.strokeStyle='#f17d9c';ctx.lineWidth=1;ctx.stroke(s.curves);
+ if(awake){ctx.lineWidth=1.5;ctx.stroke(s.plates);}ctx.fillStyle='#f37c98';ctx.fill(s.tips);
+ ctx.restore();kanekiPaintBody(ctx,awake,false);
+}
+function kanekiAttackAccent(p,awake){
+ const m=p.mv,base=KANEKI_MOVES[m?.kind];if(!base||p.a<base.act0||p.a>base.act1)return;
+ const phase=base.multi?Math.floor((p.a-base.act0)/base.multi):0;
+ const q=kanekiTailPose(p,m.kind.includes('Dance')?phase%4:0,0);
+ push();noFill();stroke(232,45,91,145);strokeWeight(awake?7:4);
+ if(m.kind.includes('Pierce')||m.kind.includes('Bind')){line(5,-33,q.x,q.y);stroke('#ffe4eb');strokeWeight(1.4);line(24,-33,q.x,q.y);}
+ else{const r=m.kind.includes('Burst')?base.R*2:base.R*2.2;arc(base.reach,-base.yo,r,r*.72,-1.8,1.4);stroke('#ffd5df');strokeWeight(1.4);arc(base.reach+2,-base.yo,r*.9,r*.64,-1.7,1.25);}
+ noStroke();fill('#ffe3ed');triangle(q.x+6,q.y,q.x-8,q.y-4,q.x-5,q.y+5);pop();
 }
 function kanekiDraw(p,time=visualFrame){
- if(p.out)return;const awake=kanekiAwake(p);push();translate(p.x,p.y);scale(p.f,1);
- for(let j=0;j<4;j++){
-  const q=kanekiTailPose(p,j,time);noFill();stroke('#320c20');strokeWeight(awake?12:7);bezier(-5,-27,q.cx,q.cy,q.cx+q.x*.45,q.y-16,q.x,q.y);stroke(p.kanekiGlow?'#ff7594':'#b3264d');strokeWeight(awake?7:4);bezier(-5,-27,q.cx,q.cy,q.cx+q.x*.45,q.y-16,q.x,q.y);
-  noStroke();fill('#ec5572');triangle(q.x-7,q.y-4,q.x+6,q.y,q.x-7,q.y+4);
-  if(awake){for(let n=1;n<9;n++){const t=n/9,u=1-t,x=3*u*u*t*q.cx+3*u*t*t*(q.cx+q.x*.45)+t*t*t*q.x,y=u*u*u*(-27)+3*u*u*t*q.cy+3*u*t*t*(q.y-16)+t*t*t*q.y;stroke('#f18a96');strokeWeight(1.5);line(x,y,x-7,y-6);line(x,y,x-7,y+6);}}
- }
- const lean=p.a>0?8:awake?5:1;translate(lean,0);stroke('#101522');strokeWeight(7);line(-3,-24,-11,0);line(3,-24,12,0);strokeWeight(10);line(0,-24,awake?6:0,-48);strokeWeight(5);line(0,-43,p.a?23:12,p.a?-34:-24);line(-2,-43,-13,-25);
- noStroke();if(awake){stroke('#8d2545');strokeWeight(3);for(let n=0;n<5;n++)line(-4,-29-n*4,10,-33-n*4);fill('#341726');noStroke();ellipse(4,-46,21,13);}
- noStroke();fill('#d7c9c4');circle(awake?7:0,-60,20);fill('#e9eef4');beginShape();for(const [x,y] of [[-11,-57],[-13,-65],[-8,-74],[-3,-69],[3,-75],[6,-69],[12,-70],[11,-56],[5,-65],[0,-61],[-4,-66]])vertex(x,y);endShape(CLOSE);
- fill('#14141e');rect(-10,-58,21,10,3);stroke('#c6c8cc');strokeWeight(1);line(-7,-54,8,-54);for(let x=-6;x<9;x+=3)line(x,-56,x,-52);noStroke();fill('#ff274c');ellipse(5,-61,5,3);
- if(awake){fill('#3a1425');triangle(-8,-68,6,-80,16,-54);fill('#ed4b70');ellipse(9,-63,4,6);stroke('#d4b8be');strokeWeight(2);line(8,-51,18,-47);}
- pop();if(p.kanekiGlow>0){push();noStroke();fill('#f35c82');const radius=30*p.kanekiGlow/30;for(let n=0;n<6;n++){const a=n*Math.PI/3+time*.06;circle(p.x+Math.cos(a)*radius,p.y-35+Math.sin(a)*radius,3);}pop();}
- push();textAlign(CENTER,CENTER);textSize(11);fill('#f2c9d5');noStroke();text(p.label,p.x,p.y-94);pop();
- if(p.kanekiPull){const a=byId(p.kanekiPull.by);if(a){push();noFill();stroke('#cb355a');strokeWeight(3);bezier(a.x,a.y-28,a.x+a.f*65,a.y-85,p.x,p.y-60,p.x,p.y-30);pop();}}
+ if(p.out)return;const awake=kanekiAwake(p),attack=p.mv&&KANEKI_MOVES[p.mv.kind]&&p.a>0;
+ push();translate(p.x,p.y);scale(p.f,1);
+ if(attack){for(let j=0;j<4;j++)kanekiPaintTail(drawingContext,kanekiTailPose(p,j,0),j,awake);}else kanekiPaintRest(drawingContext,awake);
+ kanekiAttackAccent(p,awake);
+ if(attack)kanekiPaintBody(drawingContext,awake,true);
+ pop();
+ if(p.kanekiGlow>0){push();noFill();stroke(245,83,122,160);strokeWeight(2);circle(p.x,p.y-35,46*p.kanekiGlow/30);pop();}
+ push();textAlign(CENTER,CENTER);textSize(11);stroke('#121424');strokeWeight(3);fill('#f2c9d5');text(p.label,p.x,p.y-(awake?151:125));pop();
 }
 const kanekiDrawBase=drawFighter;
 drawFighter=function(p){if(p.cid==='kaneki')return kanekiDraw(p);const r=kanekiDrawBase(p);if(p.kanekiPull){const a=byId(p.kanekiPull.by);if(a){push();stroke('#c73759');strokeWeight(3);noFill();bezier(a.x,a.y-27,a.x+a.f*80,a.y-70,p.x,p.y-60,p.x,p.y-28);ellipse(p.x,p.y-30,25,13);ellipse(p.x,p.y-23,23,10);pop();}}return r;};
+function kanekiPortraitSVG(){return `<svg viewBox="0 0 100 82" aria-hidden="true">
+ <defs><linearGradient id="kaneki-coat" x2="1" y2="1"><stop stop-color="#4a3349"/><stop offset="1" stop-color="#0c101b"/></linearGradient><linearGradient id="kaneki-rinkaku"><stop stop-color="#4c1230"/><stop offset=".6" stop-color="#c8335c"/><stop offset="1" stop-color="#ff8da5"/></linearGradient></defs>
+ <path d="M0 20L75 0H100V62L23 82H0Z" fill="#57152f"/><path d="M0 70L100 12M0 79L100 21" stroke="#d74465" opacity=".4"/>
+ <g fill="none" stroke="url(#kaneki-rinkaku)" stroke-linecap="round"><path d="M46 73C4 73-5 27 20 18M44 65C-6 51 8 0 36 9M56 64C77 1 106 12 89 35M57 71C84 39 110 42 93 67" stroke-width="7"/><path d="M46 73C4 73-5 27 20 18M56 64C77 1 106 12 89 35" stroke="#ff8da5" stroke-width="1"/></g>
+ <path d="M20 82L31 49 43 42H60L75 53 84 82Z" fill="url(#kaneki-coat)" stroke="#aa829b" stroke-width="1"/><path d="M38 48L47 62 56 47M48 62V82" fill="none" stroke="#c6a7b9" stroke-width="1"/>
+ <path d="M34 22Q50 4 66 23L63 46 50 52 36 42Z" fill="#d5cbd0"/><path d="M31 36L28 19 35 8 39 12 44 1 49 7 56 0 60 8 69 7 69 27 64 41 61 25 57 31 52 17 48 31 43 20 38 37 35 27Z" fill="#f2f4fa" stroke="#b7becd" stroke-width=".7"/>
+ <path d="M36 34L64 31 65 46 54 53 39 47Z" fill="#090f1b" stroke="#b2a1b6" stroke-width="1"/><path d="M42 41L60 39M44 38V44M48 37V43M52 37V43M56 36V42" stroke="#e7e5ec" stroke-width="1.2"/><path d="M38 34L33 31M63 32L68 28" stroke="#4a3b50" stroke-width="2"/>
+ <ellipse cx="59" cy="29" rx="5" ry="4" fill="#251124"/><ellipse cx="59" cy="29" rx="3.6" ry="2.5" fill="#ff315e"/><circle cx="60" cy="28" r="1" fill="#fff0f5"/><path d="M53 25L64 23" stroke="#6b3b51"/>
+ </svg>`;}
 const kanekiPortraitBase=portrait;
-portrait=function(id,gear=1,form=0,mode=false){if(id!=='kaneki')return kanekiPortraitBase(id,gear,form,mode);return '<svg viewBox="0 0 100 82" aria-hidden="true"><path d="M45 68Q-15 15 10 10M48 65Q0 65 9 33M55 68Q115 5 85 12M57 66Q110 77 93 36" fill="none" stroke="#b62d50" stroke-width="7"/><path d="M27 82L35 45 64 45 77 82" fill="#111723"/><ellipse cx="50" cy="29" rx="17" ry="20" fill="#d6c5c1"/><path d="M32 33L30 17 37 2 44 9 51 0 57 8 67 6 70 34 61 23 56 29 49 17 42 31 38 22Z" fill="#eef0f6"/><path d="M34 33H67V48H34Z" fill="#111421"/><path d="M38 39h25m-20-3v7m6-7v7m6-7v7" stroke="#dad4d5"/><ellipse cx="59" cy="30" rx="4" ry="3" fill="#f32953"/></svg>';};
+portrait=function(id,gear=1,form=0,mode=false){return id==='kaneki'?kanekiPortraitSVG():kanekiPortraitBase(id,gear,form,mode);};
 const kanekiHudBase=animeHud;
 animeHud=function(p){if(p.cid!=='kaneki')return kanekiHudBase(p);return {m:kanekiAwake(p)?p.kanekiTime/9:p.kanekiGauge,label:p.kanekiFatigue?'解除疲労':kanekiAwake(p)?'HALF-KAKUJA '+Math.ceil(p.kanekiTime/60)+'秒':(p.kanekiGauge>=100?'KAKUJA READY':'KAKUJA GAUGE '+Math.floor(p.kanekiGauge)+'/100')+' / 再生 '+p.kanekiHealed.toFixed(1)+'/20'};};
 const kanekiControlBase=updateControlUI;
@@ -183,7 +267,23 @@ updateControlUI=function(){kanekiControlBase();const p=byId(myId);if(p?.cid!=='k
 const kanekiFreezeWorldBase=drawFreezeWorld,kanekiFreezeTextBase=drawFreezeText,kanekiEndFreezeBase=endFreeze;
 drawFreezeWorld=function(){if(fzType==='kakuja')return;return kanekiFreezeWorldBase();};
 endFreeze=function(){if(fzType==='kakuja')return;return kanekiEndFreezeBase();};
-drawFreezeText=function(){if(fzType!=='kakuja')return kanekiFreezeTextBase();const p=byId(fz?.att);if(!p)return;const q=1-freezeT/Math.max(1,freezeMax);push();noStroke();fill(12,4,14,prefs.lowFlash?190:235);rect(0,0,W,WH);push();translate(W*.5,WH*.62);scale(2.5);kanekiDraw({...p,x:0,y:0,kanekiTime:q>.45?900:0,a:q>.2?10:0,mv:mkMv('kakujaBurst')},visualFrame);pop();fill('#ef5579');textAlign(CENTER,CENTER);textSize(Math.min(38,W/12));text(q<.45?'鱗赫、覚醒': 'HALF-KAKUJA',W*.5,WH*.24);textSize(15);fill('#e6c1cd');text('金木 研  /  半赫者「百足」',W*.5,WH*.83);pop();};
+drawFreezeText=function(){
+ if(fzType!=='kakuja')return kanekiFreezeTextBase();
+ const p=byId(fz?.att);if(!p)return;
+ const q=1-freezeT/Math.max(1,freezeMax),reveal=constrain((q-.2)*2,0,1);
+ push();noStroke();fill(9,5,16,prefs.lowFlash?235:248);rect(0,0,W,WH);
+ fill('#3c1027');quad(0,WH*.24,W,WH*.04,W,WH*.73,0,WH*.94);
+ // A few graphic cuts replace continuous full-screen particle emitters.
+ stroke('#b53059');strokeWeight(2);line(0,WH*.25,W,WH*.05);line(0,WH*.93,W,WH*.72);
+ stroke('#f17b99');strokeWeight(1);line(W*.05,WH*.29,W*.93,WH*.12);
+ push();translate(W*.6,WH*.79);scale(3.1+reveal*.7);
+ kanekiDraw({...p,label:'',x:0,y:0,kanekiTime:q>.3?900:0,a:q>.5?24:0,mv:mkMv('kakujaBurst')},0);pop();
+ noStroke();fill('#f6e8f0');textAlign(LEFT,CENTER);textStyle(BOLD);textSize(W*.085);text('金木 研',W*.06,WH*.42);
+ fill('#ee527a');textSize(W*.029);text(q<.3?'RINKAKU  /  鱗赫解放':'HALF-KAKUJA',W*.065,WH*.55);
+ fill('#e6c4d1');textSize(W*.018);text(q<.5?'4本の鱗赫が、異形へ。':'半赫者「百足」  —  15秒の覚醒',W*.065,WH*.64);
+ fill('#f3bacb');textSize(W*.014);text('KEN KANEKI',W*.065,WH*.21);
+ textStyle(NORMAL);pop();
+};
 const kanekiArmorBase=armorHit;
 armorHit=function(p,h,id){const before=p.d,r=kanekiArmorBase(p,h,id);kanekiGain(p,(p.d-before)*.4);return r;};
 const kanekiProjBase=resolveProj;
