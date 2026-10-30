@@ -7,6 +7,16 @@ for(const mobile of [false,true]){
  const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>{const u=r.request().url();if(u.includes('p5.min.js'))return r.fulfill({path:'/workspace/kaneki-tools/p5.min.js',contentType:'application/javascript'});if(!u.startsWith('http://127.0.0.1:8000'))return r.abort();return r.continue();});
  await page.goto('http://127.0.0.1:8000');await page.waitForFunction(()=>typeof noLoop==='function'&&document.querySelector('canvas'));
+ await page.locator('#sc-title').click();
+ await page.locator('#go-cpu').click();
+ const roster=await page.evaluate(()=>({expected:SPECIAL_IDS.slice(),shown:[...document.querySelectorAll('#char-grid .secret-roster .ci')].map(e=>e.dataset.cid)}));
+ for(const id of roster.expected)if(!roster.shown.includes(id))throw Error('Missing SPECIAL selection card: '+id);
+ const card=page.locator('#char-grid .ci[data-cid="kaneki"]');
+ await card.click();
+ const selection=await page.evaluate(()=>({cid:settings.cid,pressed:document.querySelector('#char-grid .ci[data-cid="kaneki"]').getAttribute('aria-pressed'),info:document.getElementById('char-info').textContent}));
+ if(selection.cid!=='kaneki'||selection.pressed!=='true'||!selection.info.includes('赫子'))throw Error('Kaneki cannot be selected '+JSON.stringify(selection));
+ await page.screenshot({path:'/workspace/kaneki-tools/'+(mobile?'mobile':'desktop')+'-selection.png'});
+ console.log(JSON.stringify({mobile,selection:selection.cid,specialCards:roster.shown.length}));
  await page.evaluate(()=>{noLoop();offlineMode='training';trainingAiMode=0;startBattleCommon([{id:myId,cid:'kaneki',owner:myId,label:'金木',cpu:0},{id:'enemy',cid:'karate',owner:myId,label:'敵',cpu:1}],'std',false,3);bt.phase='play';scene='battle';document.querySelectorAll('.screen').forEach(e=>e.classList.remove('active'));const p=byId(myId),t=byId('enemy');p.x=400;p.y=390;p.inv=0;t.x=535;t.y=390;t.inv=0;inputUnfocused=false;render();updateControlUI();});
  // Real keyboard/pointer events go through readHuman; fixed stepping keeps assertions deterministic.
  if(mobile){await page.dispatchEvent('#btn-h','pointerdown',{pointerId:1,pointerType:'touch',isPrimary:true});}else{await page.keyboard.down('ArrowRight');await page.keyboard.down('k');}
