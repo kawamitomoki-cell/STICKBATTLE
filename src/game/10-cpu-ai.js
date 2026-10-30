@@ -145,7 +145,7 @@ function aiCounterAction(p,I,A,dx,evade=false){
  I.cc++;A.t=3;return true;
 }
 function aiUseSpecial(p,I,A,hold=2,dir='neutral'){
- if(!aiReady(p)||p.spc>0&&!(p.cid==='eren'&&!erenTitan(p)&&dir==='up')||p.reloadT>0&&p.cid==='gunman')return false;
+ if(!aiReady(p)||p.spc>0&&!((p.cid==='eren'&&!erenTitan(p)||p.cid==='kaneki')&&dir==='up')||p.reloadT>0&&p.cid==='gunman')return false;
  I.l=false;I.r=false;I.u=false;I.d=false;I.gd=false;I.neutralSpecial=false;I.sideSpecial=0;
  if(dir==='up')I.u=true;
  else if(dir==='down'){I.d=true;I.gd=true;}
@@ -154,7 +154,7 @@ function aiUseSpecial(p,I,A,hold=2,dir='neutral'){
  aiSpecial(I,A,Math.max(2,hold));A.t=2;return true;
 }
 function aiUpSpecial(p,I,A){
- if(p.rec||!aiReady(p)||p.spc>0&&p.cid!=='boxer'&&p.cid!=='eren'||A.upCd>0)return false;
+ if(p.rec||!aiReady(p)||p.spc>0&&p.cid!=='boxer'&&p.cid!=='eren'&&p.cid!=='kaneki'||A.upCd>0)return false;
  if(!aiUseSpecial(p,I,A,2,'up'))return false;
  A.upCd=55;return true;
 }

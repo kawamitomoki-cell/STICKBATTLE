@@ -27,17 +27,29 @@ for(const mobile of [false,true]){
  await page.evaluate(()=>{render();updateControlUI();});await page.screenshot({path:'/workspace/kaneki-tools/'+(mobile?'mobile':'desktop')+'-bind.png'});
  await page.evaluate(()=>simulateFrame());
  if(mobile)await page.dispatchEvent('#btn-s','pointerdown',{pointerId:3,pointerType:'touch'});else await page.keyboard.down('k');
- await page.evaluate(()=>{for(let n=0;n<26;n++)simulateFrame();});
+ for(let n=0;n<26;n++){
+  if(n>0&&n%4===0){if(mobile)await page.dispatchEvent('#btn-s','pointerup',{pointerId:3,pointerType:'touch'});else await page.keyboard.up('k');}
+  if(n%4===1){if(mobile)await page.dispatchEvent('#btn-s','pointerdown',{pointerId:3,pointerType:'touch'});else await page.keyboard.down('k');}
+  await page.evaluate(()=>simulateFrame());
+ }
  if(mobile)await page.dispatchEvent('#btn-s','pointerup',{pointerId:3,pointerType:'touch'});else await page.keyboard.up('k');
  const dance=await page.evaluate(()=>({kind:byId(myId).mv?.kind,damage:byId('enemy').d}));
- if(dance.kind!=='kanekiDance'||dance.damage<=8)throw Error('Dance follow-up failed '+JSON.stringify(dance));
+ if(dance.kind!=='kanekiDance'||dance.damage!==40)throw Error('Dance follow-up failed '+JSON.stringify(dance));
+ await page.evaluate(()=>render());await page.screenshot({path:'/workspace/kaneki-tools/'+(mobile?'mobile':'desktop')+'-finisher.png'});
  await page.evaluate(()=>simulateFrame());
  if(mobile)await page.dispatchEvent('#btn-v','pointerdown',{pointerId:4,pointerType:'touch'});else{await page.keyboard.down('w');await page.keyboard.down('k');}
- await page.evaluate(()=>simulateFrame());
+ await page.evaluate(()=>{for(let n=0;n<12;n++)simulateFrame();});
  const rise=await page.evaluate(()=>byId(myId).mv?.kind);
  if(rise!=='kanekiRise')throw Error('Up follow-up failed '+rise);
  if(mobile)await page.dispatchEvent('#btn-v','pointerup',{pointerId:4,pointerType:'touch'});else{await page.keyboard.up('k');await page.keyboard.up('w');}
  console.log(JSON.stringify({mobile,dance,rise}));
+ await page.evaluate(()=>{freezeT=0;resetTouch();const p=byId(myId);clearActs(p);p.rec=false;p.spc=70;p.kb=p.stn=p.kanekiFatigue=0;p.x=stage.w/2;p.y=stage.plats[0].y+100;p.g=false;});
+ if(mobile)await page.dispatchEvent('#btn-v','pointerdown',{pointerId:5,pointerType:'touch'});else{await page.keyboard.down('w');await page.keyboard.down('k');}
+ await page.evaluate(()=>simulateFrame());
+ if(mobile)await page.dispatchEvent('#btn-v','pointerup',{pointerId:5,pointerType:'touch'});else{await page.keyboard.up('k');await page.keyboard.up('w');}
+ const recovery=await page.evaluate(()=>{const p=byId(myId),start=p.y;let top=start;for(let n=0;n<75;n++){simulateFrame();top=Math.min(top,p.y);}return {climb:start-top,landed:p.g,rec:p.rec};});
+ if(recovery.climb<180||!recovery.landed||recovery.rec)throw Error('Recovery failed '+JSON.stringify(recovery));
+ console.log(JSON.stringify({mobile,recovery}));
  await page.evaluate(()=>{for(let n=0;n<60;n++)simulateFrame();const p=byId(myId);clearActs(p);p.spc=0;p.kanekiGauge=100;});
  if(mobile)await page.dispatchEvent('#btn-g','pointerdown',{pointerId:2,pointerType:'touch',isPrimary:true});else{await page.keyboard.down('ArrowDown');await page.keyboard.down('k');}
  await page.evaluate(()=>{simulateFrame();for(let n=0;n<48;n++)simulateFrame();render();});
