@@ -139,8 +139,8 @@ function buildMenus() {
   seg('seg-cpupool', ['通常キャラ', 'スペシャル', '全キャラ'], () => cpuPoolIndex(settings.cpuPool), i => {settings.cpuPool = cpuPoolFromIndex(i);renderCpuChoices();});
   seg('seg-cpulv', LV_NAME, () => settings.cpuLv, i => settings.cpuLv = i);
 
-  const renderStages = () => renderStageGrid('stage-grid', settings.map, id => {
-    settings.map = id; renderStages();
+  const renderStages = () => renderStageGrid('stage-grid', settings.arenaChoice||settings.map, id => {
+    settings.arenaChoice=id;if(MAPS[id])settings.map = id; renderStages();
   });
   renderStages();
   const teamSideRow = document.getElementById('team-side-row');
@@ -1254,7 +1254,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_KANEKI_CAPTURE_V43';
+const NET_PROTOCOL='SBO_NET_ARENA_RANDOM_V44';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
