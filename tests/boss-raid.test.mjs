@@ -2,20 +2,21 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {game} from './helpers/game.mjs';
 function raidGame(cid='jotaro',count=3){const g=game();g.ctx.character=cid;g.ctx.cpuCount=count;g.run(`frameCount=0;offlineMode='raid';settings.cid=character;raidParty.count=cpuCount;startBattleOffline();bt.phase='play';`);return g;}
-function stop(g){g.run('raidBeginWorld();raid.at=30;');}
-function ground(g){g.run(`var hero=byId(myId),boss=byId(RAID_BOSS_ID);hero.x=500;hero.y=570;hero.g=true;hero.groundPl=0;hero.inv=0;boss.x=570;boss.y=570;boss.g=true;boss.groundPl=0;boss.inv=0;boss.f=-1;`);}
+function finishCutins(g){g.run('for(let n=0;n<400&&freezeT>0;n++){frameCount++;simulateFrame()}');}
+function stop(g){g.run('raidBeginWorld()');finishCutins(g);g.run('raid.at=30');}
+function ground(g){g.run(`var hero=byId(myId),boss=byId(RAID_BOSS_ID);hero.x=500;hero.y=stage.plats[0].y;hero.g=true;hero.groundPl=0;hero.inv=0;boss.x=570;boss.y=stage.plats[0].y;boss.g=true;boss.groundPl=0;boss.inv=0;boss.f=-1;`);}
 test('selectable 0–3 ally CPUs share normal two-stock rules; only DIO has HP',()=>{
  const g=raidGame('kaneki',0);assert.equal(g.run('raidHeroes().length'),1);
  g.run(`raidParty.count=3;raidParty.cids=['eren','jotaro','gojo'];startBattleOffline();`);
  assert.deepEqual(Array.from(g.run('raidHeroes().map(p=>p.cid)')),['kaneki','eren','jotaro','gojo']);
  assert.equal(g.run('raidHeroes().every(p=>p.team===1&&p.raidHp===undefined&&p.s===2&&p.d===0)'),true);
  assert.equal(g.run('byId(RAID_BOSS_ID).raidHp'),6400);assert.equal(g.run('Object.hasOwn(CHARS,"dio")'),false);
- assert.equal(g.run('fighterSize(byId(RAID_BOSS_ID))'),1);assert.equal(g.run('stage===MAPS.wide'),true);
+ assert.equal(g.run('fighterSize(byId(RAID_BOSS_ID))'),1);assert.equal(g.run('stage===RAID_CITY&&stage.w>MAPS.wide.w&&stage.plats[0].w>1500'),true);
 });
 test('ordinary hits accumulate percentage and knockback, and only ring-outs consume ally stocks',()=>{
  const g=raidGame('kaneki',0);ground(g);
  g.run(`applyHit(hero,{dm:150,k0:7,ks:.1,up:.6,f:1},false,boss.id);`);
- assert.equal(g.run('hero.d'),150);assert.equal(g.run('hero.s'),2);assert.ok(g.run('hero.vx')>15);assert.ok(g.run('hero.kb')>0);
+ assert.equal(g.run('hero.d'),150);assert.equal(g.run('hero.s'),2);assert.ok(g.run('hero.vx')>0&&g.run('hero.vx')<15);assert.ok(g.run('hero.kb')>0);
  g.run(`hero.x=-130;hero.kb=0;hero.vx=hero.vy=0;stepFighter(hero,blankInput());`);
  assert.equal(g.run('hero.s'),1);assert.equal(g.run('hero.d'),0);assert.equal(g.run('hero.raidHp'),undefined);
  g.run('koFighter(hero);raidTick()');assert.equal(g.run('hero.out'),true);assert.equal(g.run('raid.result'),'failed');
@@ -23,16 +24,16 @@ test('ordinary hits accumulate percentage and knockback, and only ring-outs cons
 test('DIO is a normal-sized CPU using movement, gravity, jump and ordinary attack frames',()=>{
  const g=raidGame('karate',0);ground(g);g.run(`hero.x=250;boss.x=800;var oldX=boss.x;for(let i=0;i<40;i++){frameCount++;raidTick();aiStep(boss);stepFighter(boss,boss.ai.inp);}`);
  assert.equal(g.run('boss.cpu'),true);assert.ok(g.run('boss.x')<g.run('oldX')-50);
- g.run(`boss.a=0;boss.mv=null;boss.cd=0;boss.y=500;boss.vy=0;boss.g=false;stepFighter(boss,blankInput())`);assert.ok(g.run('boss.y')>500);
+ g.run(`boss.a=0;boss.mv=null;boss.cd=0;boss.y=500;boss.vy=0;boss.g=false;boss.prev=blankInput();stepFighter(boss,blankInput())`);assert.ok(g.run('boss.y')>500);
 });
 test('NPC melee damages only touching victims during active attack frames',()=>{
  const g=raidGame('karate',0);ground(g);g.run(`dioMove(boss,'dioJab');boss.a=1;meleeCheck(boss);`);assert.equal(g.run('hero.d'),0);
- g.run('boss.a=3;meleeCheck(boss);meleeCheck(boss)');assert.equal(g.run('hero.d'),11);assert.equal(g.run('hero.s'),2);
+ g.run('boss.a=3;meleeCheck(boss);meleeCheck(boss)');assert.equal(g.run('hero.d'),8);assert.equal(g.run('hero.s'),2);
  g.run(`hero.d=0;hero.x=100;boss.hit={};meleeCheck(boss);`);assert.equal(g.run('hero.d'),0);
 });
 test('Muda rush ends with an ordinary knockback smash',()=>{
  const g=raidGame('karate',0);ground(g);g.run(`dioMove(boss,'dioRush');boss.a=31;meleeCheck(boss);`);
- assert.equal(g.run('hero.d'),24);assert.ok(g.run('Math.abs(hero.vx)')>=17);assert.equal(g.run('hero.s'),2);
+ assert.equal(g.run('hero.d'),10);assert.ok(g.run('Math.abs(hero.vx)')>0&&g.run('Math.abs(hero.vx)')<7);assert.equal(g.run('hero.s'),2);
 });
 test('knives and road rollers are moving projectiles, with no instant arena-wide damage',()=>{
  const g=raidGame('karate',0);ground(g);g.run(`boss.x=750;dioProjectile(boss,'dioKnife',hero);`);
@@ -61,7 +62,7 @@ test('Jotaro down-special counters while frozen without a bespoke damage gauge o
 test('stopped normal hits queue and resume as percentage and knockback; time expiry does not cause a global hit',()=>{
  const g=raidGame('karate',0);ground(g);stop(g);
  g.run(`applyHit(hero,{dm:20,k0:10,ks:.08,up:.5,f:-1},false,boss.id)`);assert.equal(g.run('hero.d'),0);assert.equal(g.run('hero.stoppedHits.length'),1);
- g.run('raid.at=239;raidTick()');assert.equal(g.run('hero.d'),20);assert.equal(g.run('hero.s'),2);assert.ok(g.run('hero.vx')<0);
+ g.run('raid.at=239;raidTick()');assert.equal(g.run('hero.d'),40);assert.equal(g.run('hero.s'),2);assert.ok(g.run('hero.vx')<0);
  const empty=raidGame('karate',0);stop(empty);empty.run('raid.at=239;raidTick()');assert.equal(empty.run('byId(myId).d'),0);assert.equal(empty.run('byId(myId).s'),2);
 });
 test('DIO loses HP and reacts with physics, while instant-KO flags cannot bypass the HP objective',()=>{
@@ -75,7 +76,7 @@ test('ordinary counter damage is credited against DIO HP instead of an unused pe
  assert.ok(g.run('boss.raidHp')<6400);assert.equal(g.run('boss.d'),0);assert.ok(g.run('hero.stats.dealt')>0);
 });
 test('CPU Jotaro counters and uses normal attacks on the stopped NPC',()=>{
- const g=raidGame('kaneki',1);ground(g);g.run(`var j=raidHeroes()[1];j.x=500;j.y=570;j.g=true;j.groundPl=0;`);stop(g);
+ const g=raidGame('kaneki',1);ground(g);g.run(`var j=raidHeroes()[1];j.x=500;j.y=stage.plats[0].y;j.g=true;j.groundPl=0;`);stop(g);
  g.run('for(let i=0;i<150;i++){frameCount++;simulateFrame()}');
  assert.equal(g.run('raid.counterIds.includes(j.id)'),true);assert.ok(g.run('j.stats.dealt')>0);assert.ok(g.run('boss.raidHp')<6400);assert.equal(g.run('j.s'),2);
 });
@@ -108,7 +109,7 @@ test('two clients: guest Jotaro counters, host HP resolves once, and owner ackno
  guest.run('byId(myId).spc=99;byId(myId).kb=40;raidCounter(byId(myId))');host.ctx.event=guestWrites[0];host.run('receiveNetEvent(event)');snapshot();
  assert.equal(guest.run('byId(myId).spc+byId(myId).kb'),0);assert.equal(host.run('raidFrozen(byId(myId))'),true);assert.equal(host.run('raidFrozen(byId(RAID_BOSS_ID))'),true);
  guest.run(`send({k:'mh',to:RAID_BOSS_ID,a:myId,ax:500,f:1,c:'#fff',mv:{dm:30,k0:3,ks:0,up:0,kind:'ora'}})`);
- host.ctx.event=guestWrites.at(-1);host.run('receiveNetEvent(event);receiveNetEvent(event)');assert.equal(host.run('byId(RAID_BOSS_ID).raidHp'),6370);snapshot();assert.equal(guest.run('byId(RAID_BOSS_ID).raidHp'),6370);
+ host.ctx.event=guestWrites.at(-1);host.run('receiveNetEvent(event);receiveNetEvent(event)');finishCutins(host);assert.equal(host.run('byId(RAID_BOSS_ID).raidHp'),6370);snapshot();assert.equal(guest.run('byId(RAID_BOSS_ID).raidHp'),6370);
  assert.equal(guest.run('byId(myId).raidHp'),undefined);
 });
 test('two clients: NPC hits use victim percentage and stock transport with duplicate and owner checks',()=>{
@@ -123,5 +124,40 @@ test('two clients: stopped-hit knockback resumes on the victim owner after the h
  guest.run(`var h=byId(myId);h.cid='karate'`);
  host.run(`send({k:'mh',to:guestId,a:RAID_BOSS_ID,ax:byId(RAID_BOSS_ID).x,f:-1,c:'#fff',mv:{type:'normal',kind:'dioJab',dm:11,k0:5,ks:.055,up:.35}})`);
  guest.ctx.event=hostWrites.at(-1);guest.run('receiveNetEvent(event)');assert.equal(guest.run('h.d'),0);assert.equal(guest.run('h.stoppedHits.length'),1);
- host.run('raid.at=239;raidTick()');snapshot();assert.equal(guest.run('h.d'),11);assert.equal(guest.run('h.s'),2);assert.ok(guest.run('h.vx')<0);
+ host.run('raid.at=239;raidTick()');snapshot();assert.equal(guest.run('h.d'),22);assert.equal(guest.run('h.s'),2);assert.ok(guest.run('h.vx')<0);
+});
+test('normal combat is survivable while the same stopped-time strike is lethal and not scaled twice',()=>{
+ const g=raidGame('karate',0);ground(g);
+ g.run(`hero.d=80;applyHit(hero,{dm:20,k0:10,ks:.08,up:.5,f:-1},false,boss.id);var normalSpeed=Math.abs(hero.vx);hero.d=80;hero.vx=hero.vy=hero.kb=0;hero.inv=0;`);
+ stop(g);g.run(`applyHit(hero,{dm:20,k0:10,ks:.08,up:.5,f:-1},false,boss.id);raid.at=239;raidTick()`);
+ assert.equal(g.run('hero.d'),120);assert.ok(g.run('Math.abs(hero.vx)')>g.run('normalSpeed')*3);assert.ok(g.run('Math.abs(hero.vx)')>=30);assert.equal(g.run('hero.s'),2);
+});
+test('DIO cut-in pauses the encounter clock; Jotaro cannot move or attack without activation',()=>{
+ const g=raidGame('jotaro',0);ground(g);g.run(`raidBeginWorld();var startAt=raid.at,oldX=hero.x;for(let i=0;i<20;i++){frameCount++;simulateFrame()}`);
+ assert.equal(g.run('fz.dioWorld'),true);assert.equal(g.run('raid.at'),g.run('startAt'));assert.ok(g.run('freezeT')>0);finishCutins(g);
+ g.run(`stepFighter(hero,{...blankInput(),r:true});`);assert.equal(g.run('hero.x'),g.run('oldX'));assert.equal(g.run('raidFrozen(hero)'),true);assert.equal(g.run('raidFrozen(boss)'),false);
+ g.run(`stepFighter(hero,{...blankInput(),sc:1,gd:true,s:true});`);assert.equal(g.run('fz.att'),g.run('myId'));assert.ok(g.run('freezeT')>0);assert.equal(g.run('raidFrozen(boss)'),true);
+});
+test('World strikes bypass ordinary passive defenses only after actual collision',()=>{
+ const g=raidGame('gojo',0);ground(g);stop(g);
+ g.run(`resolveProj({o:boss.id,x:boss.x,vx:-19,dir:-1,dm:6,k0:5,ks:.045,up:.3},hero);raid.at=239;raidTick()`);assert.equal(g.run('hero.d'),12);
+ const ss=raidGame('goku',0);ground(ss);ss.run('hero.form=3;hero.energy=100');stop(ss);assert.equal(ss.run('isInvuln(hero)'),false);
+});
+test('Cairo arena and camera keep ordinary-sized fighters within a larger traversable street',()=>{
+ const g=raidGame('karate',3);g.run('var camera=raidCameraTarget()');assert.equal(g.run('stage.w'),1800);assert.ok(g.run('stage.plats[0].w')>1500);assert.equal(g.run('Object.keys(MAPS).length'),10);
+ assert.equal(g.run('fighters.every(p=>p.x>=camera.x&&p.x<=camera.x+camera.w)'),true);assert.equal(g.run('fighterSize(byId(RAID_BOSS_ID))'),1);
+});
+test('world cut-in and its counter synchronize through host-owned cinematic events',()=>{
+ const {host,guest,hostWrites,guestWrites,snapshot}=linkedRaid();host.run('raidBeginWorld()');
+ const dio=hostWrites.find(e=>e.k==='cinx');assert.equal(dio.kind,'timestop');assert.ok(dio.data.raidWorld);
+ guest.ctx.event=JSON.parse(JSON.stringify(dio));guest.run('receiveNetEvent(event)');assert.equal(guest.run('fz.dioWorld'),true);assert.ok(guest.run('freezeT')>0);assert.equal(guest.run('raidFrozen(byId(myId))'),true);
+ finishCutins(host);finishCutins(guest);snapshot();guest.run('raidCounter(byId(myId))');host.ctx.event=guestWrites.find(e=>e.k==='raid-counter');host.run('receiveNetEvent(event)');
+ const counter=hostWrites.find(e=>e.k==='cinx'&&e.data?.raidCounter);guest.ctx.event=JSON.parse(JSON.stringify(counter));guest.run('receiveNetEvent(event)');assert.equal(guest.run('fz.att'),guest.run('myId'));assert.equal(guest.run('raidFrozen(byId(RAID_BOSS_ID))'),true);
+ const invalid=linkedRaid();invalid.guest.ctx.event={...dio,by:'imposter',rd:1,uid:'forged',cid:'forged'};invalid.guest.run('receiveNetEvent(event)');assert.equal(invalid.guest.run('freezeT'),0);
+});
+test('after the cut-in DIO really moves and attacks while an unactivated Jotaro stays frozen',()=>{
+ const g=raidGame('jotaro',0);ground(g);stop(g);
+ g.run(`var victimX=hero.x,startX=boss.x;for(let i=0;i<50;i++){frameCount++;simulateFrame()}`);
+ assert.equal(g.run('hero.x'),g.run('victimX'));assert.equal(g.run('hero.d'),0);assert.equal(g.run('raid.counterIds.length'),0);
+ assert.notEqual(g.run('boss.x'),g.run('startX'));assert.ok(g.run('hero.stoppedHits?.length||0')>0);
 });

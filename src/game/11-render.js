@@ -11,7 +11,7 @@ function render() {
     if(prefs.shake) translate(random(-shake, shake), random(-shake, shake));
     if (!frozen) { shake *= 0.82; if (shake < 0.5) shake = 0; }
   }
-  scale(W / stage.w);
+  if(raidActive())raidApplyCamera();else scale(W / stage.w);
   paintAnimeBackdrop();
   paintPlatforms();
   for (const id in items) drawItem(items[id]);

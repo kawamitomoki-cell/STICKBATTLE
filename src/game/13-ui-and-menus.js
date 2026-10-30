@@ -948,7 +948,7 @@ function legacy_paintJotaroTimeStopCutin(){
  fill('#a5f2dc');quad(0,y-38,W*.64,y-49,W*.64,y-44,0,y-34);
  textAlign(LEFT,CENTER);textFont('sans-serif');textStyle(BOLD);
  stroke('#100c24');strokeWeight(7);fill('#faf3ff');textSize(61);
- text('時よ止まれ！',28-(1-slide)*W*.65,y-5);
+ text('スタープラチナ！',28-(1-slide)*W*.65,y-5);
  noStroke();fill('#b9fff0');textSize(16);text('スタープラチナ・ザ・ワールド',31,y+45);
  textSize(11);fill('#d1bfec');text('空条承太郎',32,y+69);
  // 時間の停止を象徴する、割れた時計針。目立ちすぎない控えめな装飾。
@@ -1254,7 +1254,7 @@ function stageBackdropSVG(id){
 }
 
 // Ordered cinematic commands: the host assigns a sequence; all owners finish one before the next.
-const NET_PROTOCOL='SBO_NET_DIO_NPC_V46';
+const NET_PROTOCOL='SBO_NET_CAIRO_WORLD_V47';
 let netSeq=0,sendPending=false,netIssue='',eventSeen=new Set(),cinRequests=new Set();
 let cinSerial=0,cinExpected=1,cinInbox=new Map(),cinQueue=[],activeCinematic=null,cinDispatching=false;
 let deferredHits=[],replayPending=false,lastReplayAt=0;
@@ -1674,8 +1674,8 @@ function chronoText(){
  const t=1-freezeT/Math.max(1,freezeMax),inQ=1-Math.pow(1-Math.min(1,t*5),3);
  push();noStroke();fill('#090e18');rect(0,0,W,20);rect(0,WH-24,W,24);
  const y=WH*.79;fill(7,10,20,235);quad(0,y-28,W,y-45,W,y+47,0,y+58);fill('#b6a4d6');rect(0,y-28,5,83);
- textAlign(LEFT,CENTER);textFont('sans-serif');textStyle(BOLD);textSize(Math.min(66,W*.086));stroke('#120f23');strokeWeight(8);fill('#f8f4ff');text('時よ止まれ！',24-(1-inQ)*190,y-7);
- noStroke();textSize(17);fill('#99d7cf');text('ザ・ワールド',28,y+36);textAlign(RIGHT,TOP);textSize(10);fill('#b1bacb');text('空条承太郎',W-22,32);pop();
+ textAlign(LEFT,CENTER);textFont('sans-serif');textStyle(BOLD);textSize(Math.min(55,W*.07));stroke('#120f23');strokeWeight(8);fill('#f8f4ff');text('スタープラチナ！',24-(1-inQ)*190,y-7);
+ noStroke();textSize(30);fill('#99d7cf');text('ザ・ワールド！',28,y+36);textAlign(RIGHT,TOP);textSize(10);fill('#b1bacb');text('空条承太郎',W-22,32);pop();
 }
 function chronoBackdrop(){
  const ts=activeTimeStopFx();if(!ts){classicAnimeBackdrop();return;}
