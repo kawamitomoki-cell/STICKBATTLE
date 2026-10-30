@@ -60,3 +60,7 @@ Previous design history: [立体機動再設計](docs/EREN_FREEDOM_REWORK.md). O
 タイトル・モード・キャラ検索/絞り込み・ステージプレビュー・対戦確認を刷新：[画面と検証記録](docs/MENU_REDESIGN.md)。
 
 濃色UIと全体/狭い/広いステージ抽選：[現行デザインと抽選仕様](docs/PREMIUM_UI_RANDOM_ARENAS.md)。V44採用後は全員再読み込み・新規ルームが必要。
+
+### Co-op raid
+
+最大4人のHP制ボス戦。DIOの専用連携と承太郎だけの時止め返し、人数・キャラを選べる味方CPU：[協力ボスの操作と同期仕様](docs/DIO_COOP_RAID.md)。V45では全員再読み込み・新規ルームが必要。

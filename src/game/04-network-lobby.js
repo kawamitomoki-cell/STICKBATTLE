@@ -67,13 +67,14 @@ async function joinCommon() {
   if(gm.protocol!==NET_PROTOCOL){alert('この部屋は旧バージョンです。全員が最新版に更新し、新しい部屋を作ってください。');return false;}
   const humans = Object.values(existing).filter(m => m && !m.cpu);
   const reservedCpu = Math.max(0, Number(gm.cpuN) || 0);
-  if (!isHost && humans.length + reservedCpu >= MAX_PLAYERS) {
+  const roomLimit=gm.mode==='raid'?4:MAX_PLAYERS;
+  if (!isHost && humans.length + reservedCpu >= roomLimit) {
     alert('この部屋は満員です。');
     return false;
   }
   const used = new Set(humans.map(m => Number(m.slot)).filter(Number.isFinite));
-  let slot = 0; while (used.has(slot) && slot < MAX_PLAYERS) slot++;
-  if (slot >= MAX_PLAYERS) { alert('この部屋は満員です。'); return false; }
+  let slot = 0; while (used.has(slot) && slot < roomLimit) slot++;
+  if (slot >= roomLimit) { alert('この部屋は満員です。'); return false; }
   let joinTeam = normTeam(settings.team);
   if (!isHost) {
     const tc = {1:0,2:0}; for (const m of humans) tc[normTeam(m.team)]++;
